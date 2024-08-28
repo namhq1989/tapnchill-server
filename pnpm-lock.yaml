@@ -17,9 +17,6 @@ importers:
       '@types/cors':
         specifier: ^2.8.17
         version: 2.8.17
-      '@types/express-serve-static-core':
-        specifier: ^4.19.5
-        version: 4.19.5
       '@types/morgan':
         specifier: ^1.9.9
         version: 1.9.9
@@ -35,6 +32,9 @@ importers:
       express:
         specifier: ^4.19.2
         version: 4.19.2
+      express-rate-limit:
+        specifier: ^7.4.0
+        version: 7.4.0(express@4.19.2)
       ky:
         specifier: ^1.7.1
         version: 1.7.1
@@ -357,6 +357,12 @@ packages:
   expect-type@0.15.0:
     resolution: {integrity: sha512-yWnriYB4e8G54M5/fAFj7rCIBiKs1HAACaY13kCz6Ku0dezjS9aMcfcdVK2X8Tv2tEV1BPz/wKfQ7WA4S/d8aA==}
 
+  express-rate-limit@7.4.0:
+    resolution: {integrity: sha512-v1204w3cXu5gCDmAvgvzI6qjzZzoMWKnyVDk3ACgfswTQLYiGen+r8w0VnXnGMmzEN/g8fwIQ4JrFFd4ZP6ssg==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      express: 4 || 5 || ^5.0.0-beta.1
+
   express@4.19.2:
     resolution: {integrity: sha512-5T6nhjsT+EOMzuck8JjBHARTHfMht0POzlA60WV2pMD3gyXw2LZnZ+ueGdNxG+0calOJcWKbpFcuzLZ91YWq9Q==}
     engines: {node: '>= 0.10.0'}
@@ -497,6 +503,10 @@ packages:
 
   mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
+    engines: {node: '>= 0.6'}
+
+  mime-db@1.53.0:
+    resolution: {integrity: sha512-oHlN/w+3MQ3rba9rqFr6V/ypF10LSkdwUysQL7GkXoTgIWeV+tcXGA852TBxH+gsh8UWoyhR1hKcoMJTuWflpg==}
     engines: {node: '>= 0.6'}
 
   mime-types@2.1.35:
@@ -1055,7 +1065,7 @@ snapshots:
 
   compressible@2.0.18:
     dependencies:
-      mime-db: 1.52.0
+      mime-db: 1.53.0
 
   compression@1.7.4:
     dependencies:
@@ -1135,6 +1145,10 @@ snapshots:
   events@3.3.0: {}
 
   expect-type@0.15.0: {}
+
+  express-rate-limit@7.4.0(express@4.19.2):
+    dependencies:
+      express: 4.19.2
 
   express@4.19.2:
     dependencies:
@@ -1284,6 +1298,8 @@ snapshots:
   methods@1.1.2: {}
 
   mime-db@1.52.0: {}
+
+  mime-db@1.53.0: {}
 
   mime-types@2.1.35:
     dependencies:

@@ -1,5 +1,6 @@
 import { IContext, ILogger } from '@/context/types'
 import Logger from '@/context/logger'
+import { randomUUID } from '@/utils/uuid'
 
 class Context implements IContext {
   private readonly l: ILogger | null = null
@@ -7,8 +8,8 @@ class Context implements IContext {
   private readonly traceId: string
 
   constructor() {
-    this.requestId = 'unknown'
-    this.traceId = 'unknown'
+    this.requestId = randomUUID()
+    this.traceId = randomUUID()
     this.l = new Logger(this.requestId, this.traceId)
   }
 

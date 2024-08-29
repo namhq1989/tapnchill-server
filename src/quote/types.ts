@@ -13,5 +13,6 @@ export interface IQuoteDocument {
 }
 
 export interface IQuote {
+  initialize: () => Promise<void>
   fetchOne: () => Promise<IQuoteDocument | null>
 }

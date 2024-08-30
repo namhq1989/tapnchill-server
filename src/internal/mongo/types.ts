@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb'
+import { Db } from 'mongodb'
 
 export interface IMongoConnectOptions {
   url: string
@@ -6,9 +6,7 @@ export interface IMongoConnectOptions {
 }
 
 export interface IMongo {
-  connect(options: IMongoConnectOptions): Promise<Db>
+  connect(options: IMongoConnectOptions): Promise<void>
   disconnect(): Promise<void>
-  getDb(): Promise<Db>
-  generateObjectId(): ObjectId
-  validateObjectId(id: string): boolean
+  getDb(): Db
 }

@@ -1,12 +1,12 @@
 import { IMongo, IMongoConnectOptions } from '@/internal/mongo/types'
 import { Db, MongoClient, ObjectId } from 'mongodb'
 
-class MongoDB implements IMongo {
+class Mongo implements IMongo {
   private client: MongoClient | null = null
   private db: Db | null = null
   private connectOptions: IMongoConnectOptions | null = null
 
-  async connect(options: IMongoConnectOptions): Promise<Db> {
+  async connect(options: IMongoConnectOptions): Promise<void> {
     this.connectOptions = options
 
     if (!this.client) {
@@ -27,8 +27,6 @@ class MongoDB implements IMongo {
     }
 
     console.log('🚀 [mongodb] connected')
-
-    return this.db
   }
 
   async disconnect(): Promise<void> {
@@ -39,19 +37,7 @@ class MongoDB implements IMongo {
     }
   }
 
-  async getDb(): Promise<Db> {
-    if (!this.db && this.connectOptions) {
-      try {
-        console.log(
-          '[mongo] database connection not found, attempting to reconnect...',
-        )
-        await this.connect(this.connectOptions)
-      } catch (error) {
-        console.error('Failed to reconnect to the database', error)
-        throw new Error('Failed to connect to the database')
-      }
-    }
-
+  getDb(): Db {
     if (!this.db) {
       throw new Error(
         'Database connection is not established. Please call connect() first!',
@@ -61,13 +47,13 @@ class MongoDB implements IMongo {
     return this.db
   }
 
-  generateObjectId(): ObjectId {
-    return new ObjectId()
+  static generateId(): string {
+    return new ObjectId().toHexString()
   }
 
-  validateObjectId(id: string): boolean {
+  static validateObjectId(id: string): boolean {
     return ObjectId.isValid(id)
   }
 }
 
-export default MongoDB
+export default Mongo

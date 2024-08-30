@@ -5,10 +5,7 @@ import bodyParser from 'body-parser'
 import compression from 'compression'
 import morgan from 'morgan'
 import { Context } from '@/internal/context'
-
-export interface IRest {
-  server: () => Express
-}
+import { IRest } from '@/internal/rest/types'
 
 class Rest implements IRest {
   private readonly _server: Express | null = null

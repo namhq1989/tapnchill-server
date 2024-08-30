@@ -1,10 +1,11 @@
 import { Context } from '@/internal/context'
 
-export interface IRedisConfig {
+export interface IRedisConnectOptions {
   url: string
 }
 
 export interface IQueue {
+  connect(options: IRedisConnectOptions): Promise<void>
   scheduleJob(
     ctx: Context,
     queueName: string,

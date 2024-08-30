@@ -1,18 +1,20 @@
 import { Queue as BullMQQueue, Worker } from 'bullmq'
 import IORedis from 'ioredis'
-import { IQueue, IRedisConfig } from '@/internal/queue/types'
+import { IQueue, IRedisConnectOptions } from '@/internal/queue/types'
 import { Context } from '@/internal/context'
 
 class Queue implements IQueue {
-  private readonly _redisConnection: IORedis
+  private _redisConnection: IORedis | null = null
 
-  constructor(redisConfig: IRedisConfig) {
+  async connect(options: IRedisConnectOptions): Promise<void> {
     try {
-      this._redisConnection = new IORedis(redisConfig.url)
+      this._redisConnection = new IORedis(options.url)
 
       this._redisConnection.on('error', (error) => {
         console.error('Redis connection error:', error)
       })
+
+      console.log('🚀 [queue] connected')
     } catch (error) {
       console.error('Failed to establish Redis connection:', error)
       throw new Error('Unable to connect to Redis')
@@ -27,7 +29,7 @@ class Queue implements IQueue {
     data: any = {},
   ): Promise<void> {
     const queue = new BullMQQueue(queueName, {
-      connection: this._redisConnection,
+      connection: this._redisConnection!,
     })
 
     await queue.add(jobName, data, {
@@ -57,13 +59,13 @@ class Queue implements IQueue {
         ctx.logger().info(`Processing job '${jobName}' in queue '${queueName}'`)
         await processor()
       },
-      { connection: this._redisConnection },
+      { connection: this._redisConnection! },
     )
 
     // graceful shutdown
     process.on('SIGTERM', async () => {
       await worker.close()
-      await this._redisConnection.quit()
+      await this._redisConnection!.quit()
       ctx.logger().info(`Worker for queue '${queueName}' shut down gracefully`)
     })
   }

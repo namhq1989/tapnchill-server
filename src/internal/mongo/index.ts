@@ -1,3 +1,3 @@
-import MongoDB from '@/internal/mongo/mongo'
+import Mongo from '@/internal/mongo/mongo'
 
-export { MongoDB }
+export { Mongo }

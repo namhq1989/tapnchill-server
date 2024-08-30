@@ -1,4 +1,4 @@
-import { ILogger } from '@/context/types'
+import { ILogger } from '@/internal/context/types'
 import { Logger as PinoLogger, pino } from 'pino'
 
 class Logger implements ILogger {

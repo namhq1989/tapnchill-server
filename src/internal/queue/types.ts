@@ -1,4 +1,4 @@
-import { Context } from '@/context'
+import { Context } from '@/internal/context'
 
 export interface IRedisConfig {
   url: string

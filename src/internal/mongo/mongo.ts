@@ -1,4 +1,4 @@
-import { IMongo, IMongoConnectOptions } from '@/mongo/types'
+import { IMongo, IMongoConnectOptions } from '@/internal/mongo/types'
 import { Db, MongoClient, ObjectId } from 'mongodb'
 
 class MongoDB implements IMongo {

@@ -1,7 +1,7 @@
 import { Queue as BullMQQueue, Worker } from 'bullmq'
 import IORedis from 'ioredis'
-import { IQueue, IRedisConfig } from '@/queue/types'
-import { Context } from '@/context'
+import { IQueue, IRedisConfig } from '@/internal/queue/types'
+import { Context } from '@/internal/context'
 
 class Queue implements IQueue {
   private readonly _redisConnection: IORedis

@@ -1,6 +1,6 @@
-import { IContext, ILogger } from '@/context/types'
-import Logger from '@/context/logger'
-import { randomUUID } from '@/utils/uuid'
+import { IContext, ILogger } from '@/internal/context/types'
+import Logger from '@/internal/context/logger'
+import { randomUUID } from '@/internal/utils/uuid'
 
 class Context implements IContext {
   private readonly l: ILogger | null = null

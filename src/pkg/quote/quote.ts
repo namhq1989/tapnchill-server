@@ -1,4 +1,4 @@
-import { IQuotableDocument, IQuote, IQuoteDocument } from '@/quote/types'
+import { IQuotableDocument, IQuote, IQuoteDocument } from '@/pkg/quote/types'
 import ky from 'ky'
 import { Db } from 'mongodb'
 

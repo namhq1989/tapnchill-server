@@ -1,11 +1,15 @@
-import Quote, { IQuoteRepository } from '@/pkg/quote/domain/quote'
+import Quote from '@/pkg/quote/domain/quote'
 import { IMongo } from '@/internal/mongo/types'
 import { Collection } from 'mongodb'
 import { IContext } from '@/internal/context/types'
+import Quotable from '@/pkg/quote/domain/quotable'
+import { IQuoteRepository } from '@/pkg/quote/repository/types'
+import axios from 'axios'
 
 class QuoteRepository implements IQuoteRepository {
   private readonly _mongo: IMongo
   private readonly _collectionName = 'quotes'
+  private readonly _apiFetchRandomQuote = 'https://api.quotable.io/random'
 
   constructor(mongo: IMongo) {
     this._mongo = mongo
@@ -20,9 +24,8 @@ class QuoteRepository implements IQuoteRepository {
         { key: { originalId: 1 }, unique: true },
         { key: { createdAt: -1 } },
       ])
-      console.log('Index on rawId field created')
     } catch (error) {
-      console.error('Error creating index on rawId field:', error)
+      console.error('error creating index on rawId field:', error)
     }
   }
 
@@ -53,6 +56,24 @@ class QuoteRepository implements IQuoteRepository {
     const collection = this._getCollection()
     const count = await collection.countDocuments({ originalId })
     return count > 0
+  }
+
+  async quotableRandom(
+    _: IContext,
+  ): Promise<{ quote: Quote | null; error: Error | null }> {
+    try {
+      const response = await axios.get<Quotable>(this._apiFetchRandomQuote)
+      const quotable = response.data
+
+      if (!quotable) return { quote: null, error: null }
+
+      return {
+        quote: new Quote(quotable._id, quotable.content, quotable.author),
+        error: null,
+      }
+    } catch (error) {
+      return { quote: null, error: error as Error }
+    }
   }
 }
 

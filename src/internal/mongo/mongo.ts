@@ -2,53 +2,55 @@ import { IMongo, IMongoConnectOptions } from '@/internal/mongo/types'
 import { Db, MongoClient, ObjectId } from 'mongodb'
 
 class Mongo implements IMongo {
-  private client: MongoClient | null = null
-  private db: Db | null = null
-  private connectOptions: IMongoConnectOptions | null = null
+  private _client: MongoClient | null = null
+  private _db: Db | null = null
+  private _connectOptions: IMongoConnectOptions | null = null
 
-  async connect(options: IMongoConnectOptions): Promise<void> {
-    this.connectOptions = options
+  constructor(options: IMongoConnectOptions) {
+    this._connectOptions = options
+  }
 
-    if (!this.client) {
+  async connect(): Promise<void> {
+    if (!this._client) {
       try {
-        this.client = await MongoClient.connect(options.url)
-        await this.client.connect()
-        await this.client.db().command({ ping: 1 })
+        this._client = await MongoClient.connect(this._connectOptions!.url)
+        await this._client.connect()
+        await this._client.db().command({ ping: 1 })
       } catch (pingError) {
-        await this.client?.close()
-        this.client = null
+        await this._client?.close()
+        this._client = null
         console.error('Failed to ping MongoDB server', pingError)
         throw new Error('Unable to connect to MongoDB server: ping failed!')
       }
     }
 
-    if (!this.db) {
-      this.db = this.client.db(options.dbName)
+    if (!this._db) {
+      this._db = this._client.db(this._connectOptions!.dbName)
     }
 
     console.log('🚀 [mongodb] connected')
   }
 
   async disconnect(): Promise<void> {
-    if (this.client) {
-      await this.client.close()
-      this.client = null
-      this.db = null
+    if (this._client) {
+      await this._client.close()
+      this._client = null
+      this._db = null
     }
   }
 
   getDb(): Db {
-    if (!this.db) {
+    if (!this._db) {
       throw new Error(
         'Database connection is not established. Please call connect() first!',
       )
     }
 
-    return this.db
+    return this._db
   }
 
-  static generateId(): string {
-    return new ObjectId().toHexString()
+  static generateId(): ObjectId {
+    return new ObjectId()
   }
 
   static validateObjectId(id: string): boolean {

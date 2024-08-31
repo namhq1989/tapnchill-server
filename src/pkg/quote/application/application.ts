@@ -4,7 +4,8 @@ import {
   IFetchQuoteRequestDto,
   IFetchQuoteResponseDto,
 } from '@/pkg/quote/dto/fetch-quote'
-import { Context } from '@/internal/context'
+import { convertQuoteFromDomainToDto } from '@/pkg/quote/dto/quote'
+import { IContext } from '@/internal/context/types'
 
 class QuoteApplication implements IQuoteApplication {
   private readonly _quoteRepository: IQuoteRepository
@@ -14,7 +15,7 @@ class QuoteApplication implements IQuoteApplication {
   }
 
   async fetchQuote(
-    ctx: Context,
+    ctx: IContext,
     performerId: string,
     _: IFetchQuoteRequestDto,
   ): Promise<{ response: IFetchQuoteResponseDto | null; error: Error | null }> {
@@ -34,12 +35,7 @@ class QuoteApplication implements IQuoteApplication {
     ctx.logger().info('convert quote and respond')
     return {
       response: {
-        quote: {
-          id: quote.id,
-          originalId: quote.originalId,
-          content: quote.content,
-          author: quote.author,
-        },
+        quote: convertQuoteFromDomainToDto(quote),
       },
       error: null,
     }

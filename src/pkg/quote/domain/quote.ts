@@ -1,12 +1,12 @@
 import { Mongo } from '@/internal/mongo'
-import { Context } from '@/internal/context'
+import { IContext } from '@/internal/context/types'
 
 export interface IQuoteRepository {
   fetchLatest: (
-    ctx: Context,
+    ctx: IContext,
   ) => Promise<{ quote: Quote | null; error: Error | null }>
-  create: (ctx: Context, quote: Quote) => Promise<Error | null>
-  isDuplicate(ctx: Context, originalId: string): Promise<boolean>
+  create: (ctx: IContext, quote: Quote) => Promise<Error | null>
+  isDuplicate(ctx: IContext, originalId: string): Promise<boolean>
 }
 
 class Quote {

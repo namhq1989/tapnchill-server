@@ -1,7 +1,7 @@
 import Quote, { IQuoteRepository } from '@/pkg/quote/domain/quote'
 import { IMongo } from '@/internal/mongo/types'
 import { Collection } from 'mongodb'
-import { Context } from '@/internal/context'
+import { IContext } from '@/internal/context/types'
 
 class QuoteRepository implements IQuoteRepository {
   private readonly _mongo: IMongo
@@ -31,7 +31,7 @@ class QuoteRepository implements IQuoteRepository {
   }
 
   async fetchLatest(
-    _: Context,
+    _: IContext,
   ): Promise<{ quote: Quote | null; error: Error | null }> {
     const collection = this._getCollection()
     const quote = await collection.findOne({}, { sort: { createdAt: -1 } })
@@ -43,13 +43,13 @@ class QuoteRepository implements IQuoteRepository {
     }
   }
 
-  async create(_: Context, quote: Quote): Promise<Error | null> {
+  async create(_: IContext, quote: Quote): Promise<Error | null> {
     const collection = this._getCollection()
     await collection.insertOne(quote)
     return null
   }
 
-  async isDuplicate(_: Context, originalId: string): Promise<boolean> {
+  async isDuplicate(_: IContext, originalId: string): Promise<boolean> {
     const collection = this._getCollection()
     const count = await collection.countDocuments({ originalId })
     return count > 0

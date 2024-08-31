@@ -1,10 +1,12 @@
+import { IContext } from '@/internal/context/types'
 import {
   IFetchQuoteRequestDto,
   IFetchQuoteResponseDto,
 } from '@/pkg/quote/dto/fetch-quote'
-import { IContext } from '@/internal/context/types'
 
-export interface IQuoteApplication {
+export interface IQuoteApplication extends IQuoteQueryFetchQuote {}
+
+export interface IQuoteQueryFetchQuote {
   fetchQuote: (
     ctx: IContext,
     performerId: string,

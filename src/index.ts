@@ -34,14 +34,13 @@ const createApp = async (): Promise<IApp> => {
   const config = new Config()
   const rest = new Rest()
 
-  const mongo = new Mongo()
-  await mongo.connect({
+  const mongo = new Mongo({
     url: config.mongoUrl(),
     dbName: config.mongoDbName(),
   })
+  await mongo.connect()
 
-  const queue = new Queue()
-  await queue.connect({
+  const queue = new Queue({
     url: config.queueRedisUrl(),
   })
 

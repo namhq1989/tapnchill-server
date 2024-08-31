@@ -2,6 +2,7 @@ import { IApp, IModule } from '@/app'
 import QuoteRepository from '@/pkg/quote/repository/quote-repository'
 import QuoteApplication from '@/pkg/quote/application/application'
 import QuoteRest from '@/pkg/quote/rest/rest'
+import QuoteWorker from '@/pkg/quote/worker/worker'
 
 class QuoteModule implements IModule {
   name = () => 'Quote'
@@ -16,7 +17,11 @@ class QuoteModule implements IModule {
     const quoteRest = new QuoteRest(app.getRest(), quoteApplication)
     quoteRest.start()
 
-    console.log('🚀 [quote] started')
+    // worker
+    const quoteWorker = new QuoteWorker(app.getQueue(), quoteRepository)
+    await quoteWorker.start()
+
+    console.log('🚀 [pkg quote] started')
     return null
   }
 }

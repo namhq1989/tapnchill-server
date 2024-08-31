@@ -1,12 +1,51 @@
-import express, { Express, Request, Response } from 'express'
+import { IContext } from '@/internal/context/types'
+import { Config } from '@/internal/config'
+import { Rest } from '@/internal/rest'
+import App, { IApp, IModule } from '@/app'
+import { Mongo } from '@/internal/mongo'
+import { Queue } from '@/internal/queue'
+import QuoteModule from '@/pkg/quote'
 
-const app: Express = express()
-const port = process.env.PORT || 3000
+declare global {
+  namespace Express {
+    interface Request {
+      context: IContext
+    }
+  }
+}
 
-app.get('/', (_: Request, res: Response) => {
-  res.send('Express + TypeScript Server')
-})
+const start = async () => {
+  const app = await createApp()
+  const config = app.getConfig()
+  const rest = app.getRest()
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`)
-})
+  // modules
+  const modules: IModule[] = [new QuoteModule()]
+  for (const module of modules) {
+    await module.start(app)
+  }
+
+  rest.server().listen(config.restPort(), () => {
+    console.log(`🚀 [server] running at http://localhost:${config.restPort()}`)
+  })
+}
+
+const createApp = async (): Promise<IApp> => {
+  const config = new Config()
+  const rest = new Rest()
+
+  const mongo = new Mongo()
+  await mongo.connect({
+    url: config.mongoUrl(),
+    dbName: config.mongoDbName(),
+  })
+
+  const queue = new Queue()
+  await queue.connect({
+    url: config.queueRedisUrl(),
+  })
+
+  return new App(config, rest, mongo, queue)
+}
+
+start().then()

@@ -2,21 +2,38 @@ import { Queue as BullMQQueue, Worker } from 'bullmq'
 import IORedis from 'ioredis'
 import {
   IQueue,
+  IQueueDashboardCredentials,
   IRedisConnectOptions,
   IWorkerOptions,
 } from '@/internal/queue/types'
 import { Context } from '@/internal/context'
+import { ExpressAdapter } from '@bull-board/express'
+import { createBullBoard } from '@bull-board/api'
+import { BullAdapter } from '@bull-board/api/bullAdapter'
+import { Express, NextFunction, Request, Response } from 'express'
+
+process.setMaxListeners(30)
 
 class Queue implements IQueue {
   private readonly _redisConnection: IORedis | null = null
+  private readonly _dashboardCreds: IQueueDashboardCredentials | null = null
+  private readonly _server: Express | null = null
   private readonly _queues: Map<string, BullMQQueue> = new Map()
   private readonly _workers: Map<string, Worker> = new Map()
 
-  constructor(options: IRedisConnectOptions) {
+  constructor(
+    options: IRedisConnectOptions,
+    dashboardCreds: IQueueDashboardCredentials,
+    server: Express,
+  ) {
     this._redisConnection = new IORedis(options.url, {
       maxRetriesPerRequest: null,
     })
+    this._dashboardCreds = dashboardCreds
+
+    this._server = server
     this._connect()
+    this._startDashboard()
   }
 
   private _connect(): void {
@@ -74,6 +91,51 @@ class Queue implements IQueue {
     }
 
     return this._workers.get(queueName)!
+  }
+
+  private _setDashboardBasicAuth(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const authHeader = req.headers['authorization']
+    if (!authHeader) {
+      res.setHeader('WWW-Authenticate', 'Basic realm="tapnchill"')
+      return res.status(401).send('Authentication required.')
+    }
+
+    const base64Credentials = authHeader.split(' ')[1]
+    const credentials = Buffer.from(base64Credentials, 'base64').toString(
+      'ascii',
+    )
+    const [username, password] = credentials.split(':')
+
+    const validUsername = this._dashboardCreds!.username
+    const validPassword = this._dashboardCreds!.password
+
+    if (username === validUsername && password === validPassword) {
+      return next()
+    } else {
+      return res.status(403).send('Forbidden: Incorrect username or password')
+    }
+  }
+
+  private _startDashboard() {
+    const serverAdapter = new ExpressAdapter()
+    serverAdapter.setBasePath('/api/q')
+
+    createBullBoard({
+      queues: [
+        new BullAdapter(this._getOrCreateQueue('quotes')),
+      ],
+      serverAdapter,
+    })
+
+    this._server!.use(
+      '/api/q',
+      this._setDashboardBasicAuth.bind(this),
+      serverAdapter.getRouter(),
+    )
   }
 
   async scheduleJob(

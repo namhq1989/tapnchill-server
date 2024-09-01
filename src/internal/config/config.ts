@@ -3,7 +3,11 @@ import * as process from 'node:process'
 
 class Config implements IConfig {
   private readonly _restPort: number
+
   private readonly _queueRedisUrl?: string
+  private readonly _queueDashboardUsername?: string
+  private readonly _queueDashboardPassword?: string
+
   private readonly _mongoUrl?: string
   private readonly _mongoDbName?: string
 
@@ -11,13 +15,17 @@ class Config implements IConfig {
     this._restPort = process.env.REST_PORT
       ? Number(process.env.REST_PORT)
       : 3000
+
     this._queueRedisUrl = process.env.QUEUE_REDIS_URL
+    this._queueDashboardUsername = process.env.QUEUE_DASHBOARD_USERNAME
+    this._queueDashboardPassword = process.env.QUEUE_DASHBOARD_PASSWORD
+
     this._mongoUrl = process.env.MONGO_URL
     this._mongoDbName = process.env.MONGO_DB_NAME
 
     const error = this.validate()
     if (error) {
-      console.log('Config validation error:', error)
+      console.log('config validation error:', error)
       process.exit(1)
     }
   }
@@ -42,6 +50,14 @@ class Config implements IConfig {
 
   queueRedisUrl(): string {
     return this._queueRedisUrl!
+  }
+
+  queueDashboardUsername(): string {
+    return this._queueDashboardUsername!
+  }
+
+  queueDashboardPassword(): string {
+    return this._queueDashboardPassword!
   }
 
   mongoUrl(): string {

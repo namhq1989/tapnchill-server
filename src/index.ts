@@ -40,9 +40,16 @@ const createApp = async (): Promise<IApp> => {
   })
   await mongo.connect()
 
-  const queue = new Queue({
-    url: config.queueRedisUrl(),
-  })
+  const queue = new Queue(
+    {
+      url: config.queueRedisUrl(),
+    },
+    {
+      username: config.queueDashboardUsername(),
+      password: config.queueDashboardPassword(),
+    },
+    rest.server(),
+  )
 
   return new App(config, rest, mongo, queue)
 }

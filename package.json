@@ -20,6 +20,8 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@bull-board/api": "^5.21.4",
+    "@bull-board/express": "^5.21.4",
     "@types/body-parser": "^1.19.5",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",

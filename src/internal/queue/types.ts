@@ -4,6 +4,11 @@ export interface IRedisConnectOptions {
   url: string
 }
 
+export interface IQueueDashboardCredentials {
+  username: string
+  password: string
+}
+
 export interface IWorkerOptions {
   autorun?: boolean
 }

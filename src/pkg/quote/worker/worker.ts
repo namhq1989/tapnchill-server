@@ -6,7 +6,7 @@ import { IQueue } from '@/internal/queue/types'
 
 class QuoteWorker implements IQuoteWorker {
   private readonly _queue: IQueue | null = null
-  private readonly _queueName = 'fetchQuote'
+  private readonly _queueName = 'quotes'
   private readonly _quoteRepository: IQuoteRepository
 
   private readonly _jobNames = {

@@ -2,6 +2,7 @@ import { IRest } from '@/internal/rest/types'
 import { IQuoteApplication } from '@/pkg/quote/application/types'
 import { Request, Response, Router } from 'express'
 import { IQuoteRest } from '@/pkg/quote/rest/types'
+import httpRespond from '@/internal/utils/http-respond'
 
 class QuoteRest implements IQuoteRest {
   private readonly _rest: IRest
@@ -24,13 +25,13 @@ class QuoteRest implements IQuoteRest {
           {},
         )
         if (error) {
-          return res.status(400).json({ error: (error as Error).message })
+          return httpRespond.r400(res, {}, error)
         }
 
-        return res.status(200).json(response)
+        return httpRespond.r200(res, response!)
       } catch (error) {
-        console.error('Failed to fetch quote:', error)
-        res.status(500).json({ error: (error as Error).message })
+        console.error('failed to fetch quote:', error)
+        return httpRespond.r400(res, {}, error as Error)
       }
     })
   }

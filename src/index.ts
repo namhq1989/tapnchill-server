@@ -5,6 +5,10 @@ import App, { IApp, IModule } from '@/app'
 import { Mongo } from '@/internal/mongo'
 import { Queue } from '@/internal/queue'
 import QuoteModule from '@/pkg/quote'
+import { Location } from '@/internal/location'
+import Weather from '@/internal/weather/weather'
+import Caching from '@/internal/caching/caching'
+import WeatherModule from '@/pkg/weather'
 
 declare global {
   namespace Express {
@@ -20,7 +24,10 @@ const start = async () => {
   const rest = app.getRest()
 
   // modules
-  const modules: IModule[] = [new QuoteModule()]
+  const modules: IModule[] = [
+    new QuoteModule(),
+    new WeatherModule(),
+  ]
   for (const module of modules) {
     await module.start(app)
   }
@@ -51,7 +58,15 @@ const createApp = async (): Promise<IApp> => {
     rest.server(),
   )
 
-  return new App(config, rest, mongo, queue)
+  const caching = new Caching({
+    url: config.cachingRedisUrl(),
+  })
+
+  const location = new Location(config.ipInfoToken())
+
+  const weather = new Weather(config.visualCrossingToken())
+
+  return new App(config, rest, mongo, queue, caching, location, weather)
 }
 
 start().then()

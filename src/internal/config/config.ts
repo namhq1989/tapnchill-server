@@ -11,6 +11,12 @@ class Config implements IConfig {
   private readonly _mongoUrl?: string
   private readonly _mongoDbName?: string
 
+  private readonly _cachingRedisUrl?: string
+
+  private readonly _ipInfoToken?: string
+
+  private readonly _visualCrossingToken?: string
+
   constructor() {
     this._restPort = process.env.REST_PORT
       ? Number(process.env.REST_PORT)
@@ -22,6 +28,12 @@ class Config implements IConfig {
 
     this._mongoUrl = process.env.MONGO_URL
     this._mongoDbName = process.env.MONGO_DB_NAME
+
+    this._cachingRedisUrl = process.env.CACHING_REDIS_URL
+
+    this._ipInfoToken = process.env.IP_INFO_TOKEN
+
+    this._visualCrossingToken = process.env.VISUAL_CROSSING_TOKEN
 
     const error = this.validate()
     if (error) {
@@ -39,6 +51,17 @@ class Config implements IConfig {
     }
     if (!this._mongoDbName) {
       return Error('Missing required MONGO_DB_NAME environment variable')
+    }
+    if (!this._cachingRedisUrl) {
+      return Error('Missing required CACHING_REDIS_URL environment variable')
+    }
+    if (!this._ipInfoToken) {
+      return Error('Missing required IP_INFO_TOKEN environment variable')
+    }
+    if (!this._visualCrossingToken) {
+      return Error(
+        'Missing required VISUAL_CROSSING_TOKEN environment variable',
+      )
     }
 
     return null
@@ -66,6 +89,18 @@ class Config implements IConfig {
 
   mongoDbName(): string {
     return this._mongoDbName!
+  }
+
+  cachingRedisUrl(): string {
+    return this._cachingRedisUrl!
+  }
+
+  ipInfoToken(): string {
+    return this._ipInfoToken!
+  }
+
+  visualCrossingToken(): string {
+    return this._visualCrossingToken!
   }
 }
 

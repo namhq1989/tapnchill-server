@@ -9,6 +9,8 @@ import { Location } from '@/internal/location'
 import Weather from '@/internal/weather/weather'
 import Caching from '@/internal/caching/caching'
 import WeatherModule from '@/pkg/weather'
+import { Realtime } from '@/internal/realtime'
+import WebhookModule from '@/pkg/webhook'
 
 declare global {
   namespace Express {
@@ -27,12 +29,13 @@ const start = async () => {
   const modules: IModule[] = [
     new QuoteModule(),
     new WeatherModule(),
+    new WebhookModule(),
   ]
   for (const module of modules) {
     await module.start(app)
   }
 
-  rest.server().listen(config.restPort(), () => {
+  rest.http().listen(config.restPort(), () => {
     console.log(`🚀 [server] running at http://localhost:${config.restPort()}`)
   })
 }
@@ -62,11 +65,22 @@ const createApp = async (): Promise<IApp> => {
     url: config.cachingRedisUrl(),
   })
 
+  const realtime = new Realtime(rest.http())
+
   const location = new Location(config.ipInfoToken())
 
   const weather = new Weather(config.visualCrossingToken())
 
-  return new App(config, rest, mongo, queue, caching, location, weather)
+  return new App(
+    config,
+    rest,
+    mongo,
+    queue,
+    caching,
+    realtime,
+    location,
+    weather,
+  )
 }
 
 start().then()

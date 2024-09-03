@@ -6,9 +6,11 @@ import compression from 'compression'
 import morgan from 'morgan'
 import { Context } from '@/internal/context'
 import { IRest } from '@/internal/rest/types'
+import { createServer, Server } from 'http'
 
 class Rest implements IRest {
   private readonly _server: Express | null = null
+  private readonly _http: Server | null = null
 
   constructor() {
     this._server = express()
@@ -26,10 +28,16 @@ class Rest implements IRest {
       req.context = new Context()
       next()
     })
+
+    this._http = createServer(this._server)
   }
 
   server(): Express {
     return this._server!
+  }
+
+  http(): Server {
+    return this._http!
   }
 }
 

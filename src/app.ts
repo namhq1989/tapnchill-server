@@ -5,6 +5,7 @@ import { IRest } from '@/internal/rest/types'
 import { ILocation } from '@/internal/location/types'
 import { IWeather } from '@/internal/weather/types'
 import { ICaching } from '@/internal/caching/types'
+import { IRealtime } from '@/internal/realtime/types'
 
 export interface IModule {
   name: () => string
@@ -17,6 +18,7 @@ export interface IApp {
   getMongo: () => IMongo
   getQueue: () => IQueue
   getCaching: () => ICaching
+  getRealtime: () => IRealtime
   getLocation: () => ILocation
   getWeather: () => IWeather
 }
@@ -27,6 +29,7 @@ class App implements IApp {
   private readonly _mongo: IMongo
   private readonly _queue: IQueue
   private readonly _caching: ICaching
+  private readonly _realtime: IRealtime
   private readonly _location: ILocation
   private readonly _weather: IWeather
 
@@ -36,6 +39,7 @@ class App implements IApp {
     mongo: IMongo,
     queue: IQueue,
     caching: ICaching,
+    realtime: IRealtime,
     location: ILocation,
     weather: IWeather,
   ) {
@@ -44,6 +48,7 @@ class App implements IApp {
     this._mongo = mongo
     this._queue = queue
     this._caching = caching
+    this._realtime = realtime
     this._location = location
     this._weather = weather
   }
@@ -66,6 +71,10 @@ class App implements IApp {
 
   getCaching(): ICaching {
     return this._caching
+  }
+
+  getRealtime(): IRealtime {
+    return this._realtime
   }
 
   getLocation(): ILocation {

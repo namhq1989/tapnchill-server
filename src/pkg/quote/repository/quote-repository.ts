@@ -25,7 +25,7 @@ class QuoteRepository implements IQuoteRepository {
         { key: { createdAt: -1 } },
       ])
     } catch (error) {
-      console.error('error creating index on rawId field:', error)
+      console.error('error creating quotes indexes:', error)
     }
   }
 

@@ -11,6 +11,7 @@ import Caching from '@/internal/caching/caching'
 import WeatherModule from '@/pkg/weather'
 import { Realtime } from '@/internal/realtime'
 import WebhookModule from '@/pkg/webhook'
+import FeedbackModule from '@/pkg/feedback'
 
 declare global {
   namespace Express {
@@ -28,6 +29,7 @@ const start = async () => {
   // modules
   const modules: IModule[] = [
     new QuoteModule(),
+    new FeedbackModule(),
     new WeatherModule(),
     new WebhookModule(),
   ]

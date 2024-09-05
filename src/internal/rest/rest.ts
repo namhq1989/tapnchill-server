@@ -49,7 +49,7 @@ const corsOptions = {
 }
 
 const rateLimitOptions = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 5 * 60 * 1000, // 5 minutes
   limit: 100, // Limit each IP to 100 requests per `window`
   standardHeaders: 'draft-7',
   legacyHeaders: false,

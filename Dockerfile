@@ -1,21 +1,32 @@
+# Stage 1: Build the application
 FROM node:20-alpine AS builder
 
-RUN npm install -g pnpm pkg
+# Install pnpm globally
+RUN npm install -g pnpm
 
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
+# Copy package.json and pnpm-lock.yaml for dependency installation
 COPY package.json pnpm-lock.yaml ./
 
+# Install dependencies, including tsconfig-paths
 RUN pnpm install --frozen-lockfile
 
+# Copy the rest of the application source code
 COPY . .
 
+# Build the TypeScript code for production
 RUN pnpm build
 
-RUN pkg dist/index.js --targets node18-linux-x64 --output /usr/src/app/server
+# Stage 2: Create a minimal production image
+FROM node:20-alpine
 
-FROM alpine:3.20
+# Set the working directory inside the container
+WORKDIR /usr/src/app
 
-COPY --from=builder /usr/src/app/server /usr/local/bin/server
+# Copy only the production files from the builder stage
+COPY --from=builder /usr/src/app/ .
 
-CMD ["server"]
+# Use node to run the compiled app with tsconfig-paths to resolve aliases
+CMD ["node", "-r", "ts-node/register/transpile-only", "-r", "tsconfig-paths/register", "dist/src/index.js"]

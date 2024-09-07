@@ -53,6 +53,9 @@ const rateLimitOptions = rateLimit({
   limit: 100, // Limit each IP to 100 requests per `window`
   standardHeaders: 'draft-7',
   legacyHeaders: false,
+  validate: {
+    xForwardedForHeader: false,
+  },
 })
 
 export default Rest

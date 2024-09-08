@@ -10,7 +10,10 @@ class FeedbackModule implements IModule {
     const feedbackRepository = new FeedbackRepository(app.getMongo())
 
     // application
-    const feedbackApplication = new FeedbackApplication(feedbackRepository)
+    const feedbackApplication = new FeedbackApplication(
+      feedbackRepository,
+      app.getTelegram(),
+    )
 
     // rest
     const feedbackRest = new FeedbackRest(app.getRest(), feedbackApplication)

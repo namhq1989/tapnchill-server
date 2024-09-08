@@ -12,6 +12,7 @@ import WeatherModule from '@/pkg/weather'
 import { Realtime } from '@/internal/realtime'
 import WebhookModule from '@/pkg/webhook'
 import FeedbackModule from '@/pkg/feedback'
+import { Telegram } from '@/internal/telegram'
 
 declare global {
   namespace Express {
@@ -73,6 +74,11 @@ const createApp = async (): Promise<IApp> => {
 
   const weather = new Weather(config.visualCrossingToken())
 
+  const telegram = new Telegram(
+    config.telegramBotToken(),
+    config.telegramChannelId(),
+  )
+
   return new App(
     config,
     rest,
@@ -82,6 +88,7 @@ const createApp = async (): Promise<IApp> => {
     realtime,
     location,
     weather,
+    telegram,
   )
 }
 

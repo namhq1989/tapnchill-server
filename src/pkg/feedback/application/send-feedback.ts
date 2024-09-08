@@ -6,12 +6,15 @@ import {
   ISendFeedbackResponseDto,
 } from '@/pkg/feedback/dto/send-feedback'
 import Feedback from '@/pkg/feedback/domain/feedback'
+import { ITelegram } from '@/internal/telegram/types'
 
 class FeedbackCommandSendFeedback implements IFeedbackCommandSendFeedback {
   private readonly _feedbackRepository: IFeedbackRepository
+  private readonly _telegram: ITelegram
 
-  constructor(feedbackRepository: IFeedbackRepository) {
+  constructor(feedbackRepository: IFeedbackRepository, telegram: ITelegram) {
     this._feedbackRepository = feedbackRepository
+    this._telegram = telegram
   }
 
   async sendFeedback(
@@ -40,6 +43,11 @@ class FeedbackCommandSendFeedback implements IFeedbackCommandSendFeedback {
       }
     }
 
+    ctx.logger().info('send notification to Telegram')
+    const message = `New feedback from [${req.email || 'N/A'}]:\n${req.feedback}`
+    this._telegram.sendMessage(message)
+
+    ctx.logger().info('done send feedback request')
     return {
       response: {
         ok: true,

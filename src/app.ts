@@ -6,6 +6,7 @@ import { ILocation } from '@/internal/location/types'
 import { IWeather } from '@/internal/weather/types'
 import { ICaching } from '@/internal/caching/types'
 import { IRealtime } from '@/internal/realtime/types'
+import { ITelegram } from '@/internal/telegram/types'
 
 export interface IModule {
   name: () => string
@@ -21,6 +22,7 @@ export interface IApp {
   getRealtime: () => IRealtime
   getLocation: () => ILocation
   getWeather: () => IWeather
+  getTelegram: () => ITelegram
 }
 
 class App implements IApp {
@@ -32,6 +34,7 @@ class App implements IApp {
   private readonly _realtime: IRealtime
   private readonly _location: ILocation
   private readonly _weather: IWeather
+  private readonly _telegram: ITelegram
 
   constructor(
     config: IConfig,
@@ -42,6 +45,7 @@ class App implements IApp {
     realtime: IRealtime,
     location: ILocation,
     weather: IWeather,
+    telegram: ITelegram,
   ) {
     this._config = config
     this._rest = rest
@@ -51,6 +55,7 @@ class App implements IApp {
     this._realtime = realtime
     this._location = location
     this._weather = weather
+    this._telegram = telegram
   }
 
   getConfig(): IConfig {
@@ -83,6 +88,10 @@ class App implements IApp {
 
   getWeather(): IWeather {
     return this._weather
+  }
+
+  getTelegram(): ITelegram {
+    return this._telegram
   }
 }
 

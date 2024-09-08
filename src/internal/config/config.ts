@@ -17,6 +17,9 @@ class Config implements IConfig {
 
   private readonly _visualCrossingToken?: string
 
+  private readonly _telegramBotToken?: string
+  private readonly _telegramChannelId?: string
+
   constructor() {
     this._restPort = process.env.REST_PORT
       ? Number(process.env.REST_PORT)
@@ -34,6 +37,9 @@ class Config implements IConfig {
     this._ipInfoToken = process.env.IP_INFO_TOKEN
 
     this._visualCrossingToken = process.env.VISUAL_CROSSING_TOKEN
+
+    this._telegramBotToken = process.env.TELEGRAM_BOT_TOKEN
+    this._telegramChannelId = process.env.TELEGRAM_CHANNEL_ID
 
     const error = this.validate()
     if (error) {
@@ -62,6 +68,12 @@ class Config implements IConfig {
       return Error(
         'Missing required VISUAL_CROSSING_TOKEN environment variable',
       )
+    }
+    if (!this._telegramBotToken) {
+      return Error('Missing required TELEGRAM_BOT_TOKEN environment variable')
+    }
+    if (!this._telegramChannelId) {
+      return Error('Missing required TELEGRAM_CHANNEL_ID environment variable')
     }
 
     return null
@@ -101,6 +113,14 @@ class Config implements IConfig {
 
   visualCrossingToken(): string {
     return this._visualCrossingToken!
+  }
+
+  telegramBotToken(): string {
+    return this._telegramBotToken!
+  }
+
+  telegramChannelId(): string {
+    return this._telegramChannelId!
   }
 }
 

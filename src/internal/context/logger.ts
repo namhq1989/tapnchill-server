@@ -59,6 +59,7 @@ class Logger implements ILogger {
         requestId: this.requestId,
         traceId: this.traceId,
         data: data || {},
+        error: error.message,
       },
       message,
     )

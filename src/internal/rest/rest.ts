@@ -8,6 +8,8 @@ import { Context } from '@/internal/context'
 import { IRest } from '@/internal/rest/types'
 import { createServer, Server } from 'http'
 
+// import heapdump from 'heapdump'
+
 class Rest implements IRest {
   private readonly _server: Express | null = null
   private readonly _http: Server | null = null
@@ -31,6 +33,18 @@ class Rest implements IRest {
       })
       next()
     })
+
+    // this._server.get('/heapdump', (req, res) => {
+    //   const filename = `./${Date.now()}.heapsnapshot`
+    //   heapdump.writeSnapshot(filename, (err, filename) => {
+    //     if (err) {
+    //       console.error('Error writing heap snapshot', err)
+    //       return res.status(500).send('Failed to write heap snapshot')
+    //     }
+    //     console.log('Heap snapshot written to', filename)
+    //     res.send(`Heap snapshot written to ${filename}`)
+    //   })
+    // })
 
     this._http = createServer(this._server)
   }

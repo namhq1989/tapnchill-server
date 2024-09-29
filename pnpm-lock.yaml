@@ -47,9 +47,6 @@ importers:
       express-rate-limit:
         specifier: ^7.4.0
         version: 7.4.0(express@4.19.2)
-      heapdump:
-        specifier: ^0.3.15
-        version: 0.3.15
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
@@ -90,6 +87,9 @@ importers:
       '@types/request-ip':
         specifier: ^0.0.41
         version: 0.0.41
+      heapdump:
+        specifier: ^0.3.15
+        version: 0.3.15
       nodemon:
         specifier: ^3.1.4
         version: 3.1.4

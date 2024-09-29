@@ -47,6 +47,9 @@ importers:
       express-rate-limit:
         specifier: ^7.4.0
         version: 7.4.0(express@4.19.2)
+      heapdump:
+        specifier: ^0.3.15
+        version: 0.3.15
       ioredis:
         specifier: ^5.4.1
         version: 5.4.1
@@ -62,6 +65,9 @@ importers:
       pino-pretty:
         specifier: ^11.2.2
         version: 11.2.2
+      pnpm:
+        specifier: ^9.11.0
+        version: 9.11.0
       request-ip:
         specifier: ^3.3.0
         version: 3.3.0
@@ -75,6 +81,9 @@ importers:
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
+      '@types/heapdump':
+        specifier: ^0.3.4
+        version: 0.3.4
       '@types/node':
         specifier: ^22.5.1
         version: 22.5.1
@@ -207,6 +216,9 @@ packages:
 
   '@types/express@4.17.21':
     resolution: {integrity: sha512-ejlPM315qwLpaQlQDTjPdsUFSc6ZsP4AN6AlWnogPjQ7CVi7PYF3YVz+CY3jE2pwYf7E/7HlDAN0rV2GxTG0HQ==}
+
+  '@types/heapdump@0.3.4':
+    resolution: {integrity: sha512-gTGn7W7i58F1yzvLZ5+hRE7M/VqgEzgccERJ9ZThC6qor5R8wo3oP7iiHvwgHIZzoqPF22ngu8mBagcqPWMVTg==}
 
   '@types/http-errors@2.0.4':
     resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
@@ -603,6 +615,10 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
+  heapdump@0.3.15:
+    resolution: {integrity: sha512-n8aSFscI9r3gfhOcAECAtXFaQ1uy4QSke6bnaL+iymYZ/dWs9cqDqHM+rALfsHUwukUbxsdlECZ0pKmJdQ/4OA==}
+    engines: {node: '>=0.10.0'}
+
   help-me@5.0.0:
     resolution: {integrity: sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg==}
 
@@ -768,6 +784,9 @@ packages:
   msgpackr@1.11.0:
     resolution: {integrity: sha512-I8qXuuALqJe5laEBYoFykChhSXLikZmUhccjGsPuSJ/7uPip2TJ7lwdIQwWSAi0jGZDXv4WOP8Qg65QZRuXxXw==}
 
+  nan@2.20.0:
+    resolution: {integrity: sha512-bk3gXBZDGILuuo/6sKtr0DQmSThYHLtNCdSdXk9YkxD/jK6X2vmCyyXBBxyqZ4XcnzTyYEAThfX3DCEnLf6igw==}
+
   negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
@@ -838,6 +857,11 @@ packages:
 
   pino@9.3.2:
     resolution: {integrity: sha512-WtARBjgZ7LNEkrGWxMBN/jvlFiE17LTbBoH0konmBU684Kd0uIiDwBXlcTCW7iJnA6HfIKwUssS/2AC6cDEanw==}
+    hasBin: true
+
+  pnpm@9.11.0:
+    resolution: {integrity: sha512-CiA/+u1aP2MkLNBkyPtYkjZsED4ygHkxj3gGLyTqjJ1QvGpHqjVnyr79gk0XDnj6J0XtHxaxMuFkNhRrdojxmw==}
+    engines: {node: '>=18.12'}
     hasBin: true
 
   prettier-plugin-multiline-arrays@3.0.6:
@@ -1238,6 +1262,8 @@ snapshots:
       '@types/express-serve-static-core': 4.19.5
       '@types/qs': 6.9.15
       '@types/serve-static': 1.15.7
+
+  '@types/heapdump@0.3.4': {}
 
   '@types/http-errors@2.0.4': {}
 
@@ -1660,6 +1686,10 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
+  heapdump@0.3.15:
+    dependencies:
+      nan: 2.20.0
+
   help-me@5.0.0: {}
 
   http-errors@2.0.0:
@@ -1800,6 +1830,8 @@ snapshots:
     optionalDependencies:
       msgpackr-extract: 3.0.3
 
+  nan@2.20.0: {}
+
   negotiator@0.6.3: {}
 
   node-abort-controller@3.1.1: {}
@@ -1887,6 +1919,8 @@ snapshots:
       safe-stable-stringify: 2.5.0
       sonic-boom: 4.0.1
       thread-stream: 3.1.0
+
+  pnpm@9.11.0: {}
 
   prettier-plugin-multiline-arrays@3.0.6(prettier@3.3.3):
     dependencies:

@@ -3,7 +3,7 @@ import Logger from '@/internal/context/logger'
 import { randomUUID } from '@/internal/utils/uuid'
 
 class Context implements IContext {
-  private readonly l: ILogger | null = null
+  private l: ILogger | null = null
   private readonly requestId: string
   private readonly traceId: string
 
@@ -15,6 +15,10 @@ class Context implements IContext {
 
   logger(): ILogger {
     return this.l!
+  }
+
+  destroy(): void {
+    this.l = null
   }
 }
 

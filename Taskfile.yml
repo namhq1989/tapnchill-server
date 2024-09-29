@@ -5,6 +5,10 @@ tasks:
     cmds:
       - doppler run -- pnpm dev
 
+  debug:
+    cmds:
+      - doppler run -- clinic doctor -- node dist/src/index.js
+
   build:
     cmds:
       - docker build -t namhq1989/tapnchill-server:latest -t namhq1989/tapnchill-server:$(git rev-parse --short HEAD) .

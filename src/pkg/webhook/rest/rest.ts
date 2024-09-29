@@ -1,10 +1,10 @@
-import { IWeatherRest } from '@/pkg/weather/rest/types'
 import { IRest } from '@/internal/rest/types'
 import { Request, Response, Router } from 'express'
-import httpRespond from '@/internal/utils/http-respond'
 import { IRealtime } from '@/internal/realtime/types'
+import { IWebhookRest } from '@/pkg/webhook/rest/types'
+import httpRespond from '@/internal/utils/http-respond'
 
-class WebhookRest implements IWeatherRest {
+class WebhookRest implements IWebhookRest {
   private readonly _rest: IRest
   private readonly _realtime: IRealtime
 

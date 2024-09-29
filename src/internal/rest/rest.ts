@@ -18,7 +18,7 @@ class Rest implements IRest {
     this._server.use(cors(corsOptions))
     this._server.use(rateLimitOptions)
 
-    this._server.use(bodyParser.json())
+    this._server.use(bodyParser.json({ limit: '1mb' }))
     this._server.use(compression())
     if (process.env.ENV !== 'release') {
       this._server.use(morgan('dev'))
@@ -26,6 +26,9 @@ class Rest implements IRest {
 
     this._server.use((req: Request, _: Response, next: NextFunction) => {
       req.context = new Context()
+      req.on('close', () => {
+        req.context.destroy()
+      })
       next()
     })
 

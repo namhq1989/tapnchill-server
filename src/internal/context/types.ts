@@ -1,5 +1,6 @@
 export interface IContext {
   logger: () => ILogger
+  destroy: () => void
 }
 
 export interface ILogger {

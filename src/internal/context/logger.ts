@@ -1,68 +1,41 @@
 import { ILogger } from '@/internal/context/types'
 import { Logger as PinoLogger, pino } from 'pino'
 
+const _logger = pino(
+  pino({
+    transport:
+      process.env.ENV !== 'release'
+        ? {
+            target: 'pino-pretty',
+            options: {
+              colorize: true,
+            },
+          }
+        : undefined,
+  }),
+)
+
 class Logger implements ILogger {
   private logger: PinoLogger | null = null
-  private readonly requestId: string
-  private readonly traceId: string
 
   constructor(requestId: string, traceId: string) {
-    this.logger = pino({
-      transport:
-        process.env.ENV !== 'release'
-          ? {
-              target: 'pino-pretty',
-              options: {
-                colorize: true,
-              },
-            }
-          : undefined,
+    this.logger = _logger.child({
+      requestId,
+      traceId,
     })
-
-    this.requestId = requestId
-    this.traceId = traceId
   }
 
   debug(message: string, data?: object): void {
-    this.logger?.debug(
-      {
-        requestId: this.requestId,
-        traceId: this.traceId,
-        data: data || {},
-      },
-      message,
-    )
+    this.logger?.debug(data || {}, message)
   }
   info(message: string, data?: object): void {
-    this.logger?.info(
-      {
-        requestId: this.requestId,
-        traceId: this.traceId,
-        data: data || {},
-      },
-      message,
-    )
+    this.logger?.info(data || {}, message)
   }
   warn(message: string, data?: object): void {
-    this.logger?.warn(
-      {
-        requestId: this.requestId,
-        traceId: this.traceId,
-        data: data || {},
-      },
-      message,
-    )
+    this.logger?.warn(data || {}, message)
   }
   error(message: string, error: Error, data?: object): void {
-    this.logger?.error(
-      {
-        requestId: this.requestId,
-        traceId: this.traceId,
-        data: data || {},
-        error: error.message,
-      },
-      message,
-    )
+    this.logger?.error({ error: error.message, ...data }, message)
   }
 }
 

@@ -13,8 +13,10 @@
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/heapdump": "^0.3.4",
     "@types/node": "^22.5.1",
     "@types/request-ip": "^0.0.41",
+    "heapdump": "^0.3.15",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "prettier-plugin-multiline-arrays": "^3.0.6",

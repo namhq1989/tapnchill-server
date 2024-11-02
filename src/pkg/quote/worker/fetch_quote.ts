@@ -17,17 +17,17 @@ class QuoteWorkerFetchQuote implements IQuoteWorkerFetchQuote {
     let isDuplicated
 
     do {
-      ctx.logger().info('fetching quote from Quotable api')
+      ctx.logger().info('fetching quote from api')
       ;({ quote, error } = await this._quoteRepository.quotableRandom(ctx))
 
       if (error) {
-        ctx.logger().error('failed to fetch quote from Quotable api', error)
+        ctx.logger().error('failed to fetch quote from api', error)
         throw error
       }
 
       if (!quote) {
-        ctx.logger().warn('no quote found in Quotable api')
-        throw new Error('no quote found in Quotable api')
+        ctx.logger().warn('no quote found in api')
+        throw new Error('no quote found in api')
       }
 
       isDuplicated = await this._quoteRepository.isDuplicate(

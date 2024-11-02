@@ -1,11 +1,11 @@
 class Quotable {
   _id: string
-  content: string
+  quote: string
   author: string
 
   constructor(_id: string, content: string, author: string) {
     this._id = _id
-    this.content = content
+    this.quote = content
     this.author = author
   }
 }

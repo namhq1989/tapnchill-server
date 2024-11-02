@@ -9,7 +9,8 @@ import axios from 'axios'
 class QuoteRepository implements IQuoteRepository {
   private readonly _mongo: IMongo
   private readonly _collectionName = 'quotes'
-  private readonly _apiFetchRandomQuote = 'https://api.quotable.io/random'
+  private readonly _apiFetchRandomQuote =
+    'https://quoteslate.vercel.app/api/quotes/random'
 
   constructor(mongo: IMongo) {
     this._mongo = mongo
@@ -68,7 +69,7 @@ class QuoteRepository implements IQuoteRepository {
       if (!quotable) return { quote: null, error: null }
 
       return {
-        quote: new Quote(quotable._id, quotable.content, quotable.author),
+        quote: new Quote(quotable._id, quotable.quote, quotable.author),
         error: null,
       }
     } catch (error) {

@@ -13,10 +13,11 @@ export interface IVisualCrossingWeatherResponse {
 interface IVisualCrossingWeatherCurrentConditions {
   datetimeEpoch: number
   temp: number
+  feelslike: number
   humidity: number
   windspeed: number
   precipprob: number
-  conditions: string
+  preciptype: string[]
   icon: string
 }
 

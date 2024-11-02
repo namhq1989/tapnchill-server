@@ -59,7 +59,12 @@ class Rest implements IRest {
 }
 
 const corsOptions = {
-  origin: ['http://localhost:5173', 'https://tapnchill.live', 'tapnchill.live'],
+  origin: [
+    'chrome-extension://inncdblgnijbdpedbfcoieknfgpkflnd',
+    'http://localhost:5173',
+    'https://tapnchill.live',
+    'tapnchill.live',
+  ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204,

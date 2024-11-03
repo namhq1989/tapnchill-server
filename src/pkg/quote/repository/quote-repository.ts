@@ -69,7 +69,7 @@ class QuoteRepository implements IQuoteRepository {
       if (!quotable) return { quote: null, error: null }
 
       return {
-        quote: new Quote(quotable._id, quotable.quote, quotable.author),
+        quote: new Quote(quotable.id, quotable.quote, quotable.author),
         error: null,
       }
     } catch (error) {

@@ -15,8 +15,15 @@ class QuoteWorkerFetchQuote implements IQuoteWorkerFetchQuote {
     let quote
     let error
     let isDuplicated
+    let attempts = 0
 
     do {
+      if (attempts > 3) {
+        error = new Error('3 attempts exceeded')
+        ctx.logger().error('failed to fetch quote from api', error)
+        throw error
+      }
+
       ctx.logger().info('fetching quote from api')
       ;({ quote, error } = await this._quoteRepository.quotableRandom(ctx))
 
@@ -36,6 +43,8 @@ class QuoteWorkerFetchQuote implements IQuoteWorkerFetchQuote {
       )
       if (isDuplicated) {
         ctx.logger().info('quote already exists in db, fetching another one...')
+        attempts++
+        await new Promise((resolve) => setTimeout(resolve, 1000))
       }
     } while (isDuplicated)
 

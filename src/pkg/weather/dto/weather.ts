@@ -11,7 +11,6 @@ interface IWeatherCurrentDto {
   humidity: number
   windSpeed: number
   precipitationProbability: number
-  type: string
   icon: string
 }
 
@@ -46,7 +45,6 @@ const convertWeatherFromApiToDto = (
       humidity: data.currentConditions.humidity,
       windSpeed: data.currentConditions.windspeed,
       precipitationProbability: data.currentConditions.precipprob,
-      type: data.currentConditions.preciptype[0],
       icon: data.currentConditions.icon,
     },
     days: data.days.map((day) => ({

@@ -8,9 +8,9 @@ class Quote {
   author: string
   createdAt: Date
 
-  constructor(originalId: string, content: string, author: string) {
+  constructor(originalId: number, content: string, author: string) {
     this._id = Mongo.generateId()
-    this.originalId = originalId
+    this.originalId = originalId.toString()
     this.content = content
     this.author = author
     this.createdAt = new Date()

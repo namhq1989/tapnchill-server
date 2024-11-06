@@ -15,6 +15,7 @@ var Common = struct {
 	InvalidEmail        error
 	InvalidCode         error
 	InvalidStatus       error
+	InvalidFeedback     error
 }{
 	Success:             errors.New("success"),
 	BadRequest:          errors.New("bad_request"),
@@ -28,4 +29,5 @@ var Common = struct {
 	InvalidEmail:        errors.New("invalid_email"),
 	InvalidCode:         errors.New("invalid_code"),
 	InvalidStatus:       errors.New("invalid_status"),
+	InvalidFeedback:     errors.New("invalid_feedback"),
 }

@@ -1,16 +1,55 @@
 version: '3'
 
 tasks:
+  # run server
   run:
+    dotenv: ['.env']
     cmds:
-      - doppler run -- pnpm dev
+      - go run cmd/*.go
 
-  debug:
+  # mandatory tools for code generation
+  install-tools:
     cmds:
-      - doppler run -- clinic doctor -- node dist/src/index.js
+      - echo "installing tools"
+      - go install google.golang.org/protobuf/cmd/protoc-gen-go
+      - go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+      - go install github.com/jackc/tern/v2@latest
+      - go install github.com/swaggo/swag/cmd/swag@latest
+      - echo "done"
 
-  build:
+  # code generation
+  code-gen:
     cmds:
-      - docker build -t namhq1989/tapnchill-server:latest -t namhq1989/tapnchill-server:$(git rev-parse --short HEAD) .
-      - docker push namhq1989/tapnchill-server:latest
-      - docker push namhq1989/tapnchill-server:$(git rev-parse --short HEAD)
+      - echo "running code generation"
+      - rm -rf internal/genproto
+      - go generate ./...
+      - echo "done"
+
+  # mock generation
+  mock-gen:
+    cmds:
+      - rm -rf internal/mock
+
+      # common
+#      - mockgen -source=pkg/common/domain/location.go -destination=internal/mock/common/location.go -package=mockcommon
+
+  # test
+  test:
+    dotenv: ['.env.test']
+    cmds:
+      - gotestsum --junitfile-hide-empty-pkg --format testname ./pkg/...
+
+
+  # test with coverage
+  test-coverage:
+    dotenv: ['.env.test']
+    cmds:
+      - gotestsum --format testname -- -coverprofile=coverrage.out ./pkg/... && \
+      - go tool cover -html=coverrage.out -o coverage.html
+
+  # test with debug
+  test-debug:
+    dotenv: ['.env.test']
+    cmds:
+      - go test -v ./pkg/...
+

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/namhq1989/tapnchill-server/pkg/common"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/namhq1989/go-utilities/logger"
@@ -68,7 +70,9 @@ func main() {
 	a.waiter = waiter.New(waiter.CatchSignals())
 
 	// modules
-	a.modules = []monolith.Module{}
+	a.modules = []monolith.Module{
+		&common.Module{},
+	}
 
 	// start
 	if err = a.startupModules(); err != nil {

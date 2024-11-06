@@ -3,9 +3,8 @@ version: '3'
 tasks:
   # run server
   run:
-    dotenv: ['.env']
     cmds:
-      - go run cmd/*.go
+      - doppler run -- go run cmd/*.go
 
   # mandatory tools for code generation
   install-tools:
@@ -31,7 +30,7 @@ tasks:
       - rm -rf internal/mock
 
       # common
-#      - mockgen -source=pkg/common/domain/location.go -destination=internal/mock/common/location.go -package=mockcommon
+      - mockgen -source=pkg/common/domain/feedback.go -destination=internal/mock/common/feedback.go -package=mockcommon
 
   # test
   test:

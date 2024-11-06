@@ -10,8 +10,8 @@ var Collections = struct {
 }{
 	User: "user.users",
 
-	Quote:    "quote.quotes",
-	Feedback: "feedback.feedbacks",
+	Quote:    "common.quotes",
+	Feedback: "common.feedbacks",
 }
 
 func (db Database) GetCollection(table string) *mongo.Collection {

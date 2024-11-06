@@ -14,6 +14,7 @@ invalid_name = "Tên không hợp lệ"
 invalid_email = "Email không hợp lệ"
 invalid_code = "Mã không hợp lệ"
 invalid_status = "Trạng thái không hợp lệ"
+invalid_feedback = "Góp ý không hợp lệ"
 
 # auth
 auth_invalid_auth_token = "Token xác thực không hợp lệ"

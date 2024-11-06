@@ -102,6 +102,7 @@ func addCorsMiddleware(e *echo.Echo, cfg config.Server) {
 		"http://127.0.0.1:5173",
 		"http://localhost:3000",
 		"http://127.0.0.1:3000",
+		"chrome-extension://inncdblgnijbdpedbfcoieknfgpkflnd",
 	}
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     allowedOrigins,

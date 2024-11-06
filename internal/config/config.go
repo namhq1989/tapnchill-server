@@ -1,6 +1,8 @@
 package config
 
-import "errors"
+import (
+	"errors"
+)
 
 type (
 	Server struct {

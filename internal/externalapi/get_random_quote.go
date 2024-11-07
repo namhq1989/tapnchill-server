@@ -21,7 +21,7 @@ type getRandomQuoteApiResult struct {
 func (ea ExternalApi) GetRandomQuote(ctx *appcontext.AppContext) (*GetRandomQuoteResult, error) {
 	var apiResult = &getRandomQuoteApiResult{}
 
-	_, err := ea.quote.R().
+	_, err := ea.quoteClient.R().
 		SetResult(&apiResult).
 		Get("/api/quotes/random")
 

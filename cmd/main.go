@@ -57,7 +57,7 @@ func main() {
 	a.caching = caching.NewCachingClient(cfg.CachingRedisURL)
 
 	// external api
-	a.externalApi = externalapi.NewExternalAPIClient()
+	a.externalApi = externalapi.NewExternalAPIClient(cfg.VisualCrossingToken, cfg.IpInfoToken)
 
 	// queue
 	a.queue = queue.Init(cfg.QueueRedisURL, cfg.QueueConcurrency)

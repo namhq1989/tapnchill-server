@@ -31,6 +31,8 @@ tasks:
 
       # common
       - mockgen -source=pkg/common/domain/feedback.go -destination=internal/mock/common/feedback.go -package=mockcommon
+      - mockgen -source=pkg/common/domain/quote.go -destination=internal/mock/common/quote.go -package=mockcommon
+      - mockgen -source=pkg/common/domain/external_api.go -destination=internal/mock/common/external_api.go -package=mockcommon
 
   # test
   test:

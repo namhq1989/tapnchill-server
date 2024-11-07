@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/namhq1989/tapnchill-server/internal/externalapi"
+
 	"github.com/namhq1989/tapnchill-server/pkg/common"
 
 	"github.com/labstack/echo/v4"
@@ -53,6 +55,9 @@ func main() {
 
 	// caching
 	a.caching = caching.NewCachingClient(cfg.CachingRedisURL)
+
+	// external api
+	a.externalApi = externalapi.NewExternalAPIClient()
 
 	// queue
 	a.queue = queue.Init(cfg.QueueRedisURL, cfg.QueueConcurrency)

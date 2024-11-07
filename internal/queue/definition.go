@@ -1,7 +1,7 @@
 package queue
 
 var TypeNames = struct {
-	UpdateUserStatistic string
+	GetRandomQuote string
 }{
-	UpdateUserStatistic: "user.updateUserStatistic",
+	GetRandomQuote: "common.GetRandomQuote",
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/namhq1989/tapnchill-server/internal/caching"
 	"github.com/namhq1989/tapnchill-server/internal/config"
 	"github.com/namhq1989/tapnchill-server/internal/database"
+	"github.com/namhq1989/tapnchill-server/internal/externalapi"
 	appjwt "github.com/namhq1989/tapnchill-server/internal/jwt"
 	"github.com/namhq1989/tapnchill-server/internal/monolith"
 	"github.com/namhq1989/tapnchill-server/internal/queue"
@@ -22,15 +23,16 @@ import (
 )
 
 type app struct {
-	cfg      config.Server
-	database *database.Database
-	caching  *caching.Caching
-	jwt      *appjwt.JWT
-	queue    *queue.Queue
-	rest     *echo.Echo
-	rpc      *grpc.Server
-	waiter   waiter.Waiter
-	modules  []monolith.Module
+	cfg         config.Server
+	database    *database.Database
+	caching     *caching.Caching
+	jwt         *appjwt.JWT
+	queue       *queue.Queue
+	externalApi *externalapi.ExternalApi
+	rest        *echo.Echo
+	rpc         *grpc.Server
+	waiter      waiter.Waiter
+	modules     []monolith.Module
 }
 
 func (a *app) Config() config.Server {
@@ -63,6 +65,10 @@ func (a *app) JWT() *appjwt.JWT {
 
 func (a *app) Queue() *queue.Queue {
 	return a.queue
+}
+
+func (a *app) ExternalApi() *externalapi.ExternalApi {
+	return a.externalApi
 }
 
 func (a *app) startupModules() error {

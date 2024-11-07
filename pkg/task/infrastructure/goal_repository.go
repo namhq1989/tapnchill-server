@@ -2,8 +2,11 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
+
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
@@ -98,4 +101,23 @@ func (r GoalRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.G
 		result = append(result, doc.ToDomain())
 	}
 	return result, nil
+}
+
+func (r GoalRepository) FindByID(ctx *appcontext.AppContext, goalID string) (*domain.Goal, error) {
+	gid, err := database.ObjectIDFromString(goalID)
+	if err != nil {
+		return nil, apperrors.Common.InvalidGoal
+	}
+
+	var doc dbmodel.Goal
+	if err = r.collection().FindOne(ctx.Context(), bson.M{
+		"_id": gid,
+	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	} else if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, nil
+	}
+
+	result := doc.ToDomain()
+	return &result, nil
 }

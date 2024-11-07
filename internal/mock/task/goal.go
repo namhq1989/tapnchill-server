@@ -69,6 +69,21 @@ func (mr *MockGoalRepositoryMockRecorder) FindByFilter(ctx, filter any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByFilter", reflect.TypeOf((*MockGoalRepository)(nil).FindByFilter), ctx, filter)
 }
 
+// FindByID mocks base method.
+func (m *MockGoalRepository) FindByID(ctx *appcontext.AppContext, goalID string) (*domain.Goal, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByID", ctx, goalID)
+	ret0, _ := ret[0].(*domain.Goal)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByID indicates an expected call of FindByID.
+func (mr *MockGoalRepositoryMockRecorder) FindByID(ctx, goalID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockGoalRepository)(nil).FindByID), ctx, goalID)
+}
+
 // Update mocks base method.
 func (m *MockGoalRepository) Update(ctx *appcontext.AppContext, goal domain.Goal) error {
 	m.ctrl.T.Helper()

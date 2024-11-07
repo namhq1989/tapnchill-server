@@ -14,6 +14,7 @@ type GoalRepository interface {
 	Create(ctx *appcontext.AppContext, goal Goal) error
 	Update(ctx *appcontext.AppContext, goal Goal) error
 	FindByFilter(ctx *appcontext.AppContext, filter GoalFilter) ([]Goal, error)
+	FindByID(ctx *appcontext.AppContext, goalID string) (*Goal, error)
 }
 
 type Goal struct {
@@ -68,11 +69,10 @@ func (g *Goal) SetName(name string) error {
 	return nil
 }
 
-func (g *Goal) SetDescription(description string) error {
+func (g *Goal) SetDescription(description string) {
 	g.Description = description
 	g.SearchString = manipulation.NormalizeText(fmt.Sprintf("%s %s", g.Name, description))
 	g.SetUpdatedAt()
-	return nil
 }
 
 func (g *Goal) SetIsCompleted(isCompleted bool) {

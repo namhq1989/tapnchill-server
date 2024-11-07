@@ -10,6 +10,7 @@ import (
 type (
 	Commands interface {
 		CreateGoal(ctx *appcontext.AppContext, performerID string, req dto.CreateGoalRequest) (*dto.CreateGoalResponse, error)
+		UpdateGoal(ctx *appcontext.AppContext, performerID, goalID string, req dto.UpdateGoalRequest) (*dto.UpdateGoalResponse, error)
 	}
 	Instance interface {
 		Commands
@@ -17,6 +18,7 @@ type (
 
 	commandHandlers struct {
 		command.CreateGoalHandler
+		command.UpdateGoalHandler
 	}
 	Application struct {
 		commandHandlers
@@ -31,6 +33,7 @@ func New(
 	return &Application{
 		commandHandlers: commandHandlers{
 			CreateGoalHandler: command.NewCreateGoalHandler(goalRepository),
+			UpdateGoalHandler: command.NewUpdateGoalHandler(goalRepository),
 		},
 	}
 }

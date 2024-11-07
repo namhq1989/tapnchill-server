@@ -85,3 +85,28 @@ func RemoveSpacesAndValidateNumber(s string) string {
 
 	return digitsOnly
 }
+
+func NormalizeText(input string) string {
+	result := removeDiacritics(input)
+
+	result = strings.ReplaceAll(result, "đ", "d")
+	result = strings.ReplaceAll(result, "Đ", "d")
+
+	result = strings.ToLower(result)
+
+	re := regexp.MustCompile(`[^a-z0-9\s]+`)
+	result = re.ReplaceAllString(result, " ")
+
+	words := strings.Fields(result)
+
+	uniqueWords := make([]string, 0, len(words))
+	wordSet := make(map[string]bool)
+	for _, word := range words {
+		if !wordSet[word] {
+			wordSet[word] = true
+			uniqueWords = append(uniqueWords, word)
+		}
+	}
+
+	return strings.Join(uniqueWords, " ")
+}

@@ -5,10 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/namhq1989/tapnchill-server/internal/externalapi"
-
-	"github.com/namhq1989/tapnchill-server/pkg/common"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/namhq1989/go-utilities/logger"
@@ -16,10 +12,13 @@ import (
 	"github.com/namhq1989/tapnchill-server/internal/config"
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
+	"github.com/namhq1989/tapnchill-server/internal/externalapi"
 	appjwt "github.com/namhq1989/tapnchill-server/internal/jwt"
 	"github.com/namhq1989/tapnchill-server/internal/monolith"
 	"github.com/namhq1989/tapnchill-server/internal/queue"
 	"github.com/namhq1989/tapnchill-server/internal/utils/waiter"
+	"github.com/namhq1989/tapnchill-server/pkg/common"
+	"github.com/namhq1989/tapnchill-server/pkg/task"
 )
 
 func main() {
@@ -77,6 +76,7 @@ func main() {
 	// modules
 	a.modules = []monolith.Module{
 		&common.Module{},
+		&task.Module{},
 	}
 
 	// start

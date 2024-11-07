@@ -36,6 +36,10 @@ tasks:
       - mockgen -source=pkg/common/domain/external_api.go -destination=internal/mock/common/external_api.go -package=mockcommon
       - mockgen -source=pkg/common/domain/service.go -destination=internal/mock/common/service.go -package=mockcommon
 
+      # task
+      - mockgen -source=pkg/task/domain/goal.go -destination=internal/mock/task/goal.go -package=mocktask
+      - mockgen -source=pkg/task/domain/task.go -destination=internal/mock/task/task.go -package=mocktask
+
   # test
   test:
     dotenv: ['.env.test']

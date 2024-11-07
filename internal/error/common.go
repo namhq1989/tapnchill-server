@@ -12,6 +12,7 @@ var Common = struct {
 	EmailAlreadyExisted error
 	InvalidID           error
 	InvalidName         error
+	InvalidDescription  error
 	InvalidEmail        error
 	InvalidCode         error
 	InvalidStatus       error
@@ -29,6 +30,7 @@ var Common = struct {
 	EmailAlreadyExisted: errors.New("email_already_existed"),
 	InvalidID:           errors.New("invalid_id"),
 	InvalidName:         errors.New("invalid_name"),
+	InvalidDescription:  errors.New("invalid_description"),
 	InvalidEmail:        errors.New("invalid_email"),
 	InvalidCode:         errors.New("invalid_code"),
 	InvalidStatus:       errors.New("invalid_status"),

@@ -30,6 +30,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 		app = application.New(
 			feedbackRepository,
 			quoteRepository,
+			cachingRepository,
 			service,
 		)
 	)

@@ -70,6 +70,21 @@ func (mr *MockCachingRepositoryMockRecorder) GetIpCity(ctx, ip any) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIpCity", reflect.TypeOf((*MockCachingRepository)(nil).GetIpCity), ctx, ip)
 }
 
+// GetLatestQuote mocks base method.
+func (m *MockCachingRepository) GetLatestQuote(ctx *appcontext.AppContext) (*domain.Quote, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLatestQuote", ctx)
+	ret0, _ := ret[0].(*domain.Quote)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLatestQuote indicates an expected call of GetLatestQuote.
+func (mr *MockCachingRepositoryMockRecorder) GetLatestQuote(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestQuote", reflect.TypeOf((*MockCachingRepository)(nil).GetLatestQuote), ctx)
+}
+
 // SetCityWeather mocks base method.
 func (m *MockCachingRepository) SetCityWeather(ctx *appcontext.AppContext, city string, weather domain.Weather) error {
 	m.ctrl.T.Helper()
@@ -96,4 +111,18 @@ func (m *MockCachingRepository) SetIpCity(ctx *appcontext.AppContext, ip, city s
 func (mr *MockCachingRepositoryMockRecorder) SetIpCity(ctx, ip, city any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetIpCity", reflect.TypeOf((*MockCachingRepository)(nil).SetIpCity), ctx, ip, city)
+}
+
+// SetLatestQuote mocks base method.
+func (m *MockCachingRepository) SetLatestQuote(ctx *appcontext.AppContext, quote domain.Quote) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetLatestQuote", ctx, quote)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetLatestQuote indicates an expected call of SetLatestQuote.
+func (mr *MockCachingRepositoryMockRecorder) SetLatestQuote(ctx, quote any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetLatestQuote", reflect.TypeOf((*MockCachingRepository)(nil).SetLatestQuote), ctx, quote)
 }

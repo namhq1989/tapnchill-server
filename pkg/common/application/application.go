@@ -39,6 +39,7 @@ var _ Instance = (*Application)(nil)
 func New(
 	feedbackRepository domain.FeedbackRepository,
 	quoteRepository domain.QuoteRepository,
+	cachingRepository domain.CachingRepository,
 	service domain.Service,
 ) *Application {
 	return &Application{
@@ -46,7 +47,7 @@ func New(
 			CreateFeedbackHandler: command.NewCreateFeedbackHandler(feedbackRepository),
 		},
 		queryHandlers: queryHandlers{
-			GetQuoteHandler:   query.NewGetQuoteHandler(quoteRepository),
+			GetQuoteHandler:   query.NewGetQuoteHandler(quoteRepository, cachingRepository),
 			GetWeatherHandler: query.NewGetWeatherHandler(service),
 		},
 	}

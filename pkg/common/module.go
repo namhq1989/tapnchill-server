@@ -26,6 +26,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 		// app
 		app = application.New(
 			feedbackRepository,
+			quoteRepository,
 		)
 	)
 

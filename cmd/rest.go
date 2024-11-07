@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -50,6 +51,12 @@ func addContext(e *echo.Echo) {
 	})
 }
 
+var localIps = []string{
+	"127.0.0.1",
+	"::ffff:127.0.0.1",
+	"::1",
+}
+
 func addIp(e *echo.Echo) {
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -57,6 +64,10 @@ func addIp(e *echo.Echo) {
 				ctx = c.Get("ctx").(*appcontext.AppContext)
 				ip  = c.RealIP()
 			)
+
+			if slices.Contains(localIps, ip) {
+				ip = "171.225.184.76" // set default to DN for local testing
+			}
 
 			ctx.SetIP(ip)
 			return next(c)

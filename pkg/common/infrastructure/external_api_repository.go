@@ -17,15 +17,46 @@ func NewExternalAPIRepository(ea externalapi.Operations) ExternalAPIRepository {
 }
 
 func (r ExternalAPIRepository) GetRandomQuote(ctx *appcontext.AppContext) (*domain.Quote, error) {
-	apiQuote, err := r.ea.GetRandomQuote(ctx)
+	apiResult, err := r.ea.GetRandomQuote(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	quote, err := domain.NewQuote(apiQuote.OriginalID, apiQuote.Content, apiQuote.Author)
+	quote, err := domain.NewQuote(apiResult.OriginalID, apiResult.Content, apiResult.Author)
 	if err != nil {
 		return nil, err
 	}
 
 	return quote, nil
+}
+
+func (r ExternalAPIRepository) GetIpCity(ctx *appcontext.AppContext, ip string) (*string, error) {
+	apiResult, err := r.ea.GetIpCity(ctx, ip)
+	if err != nil {
+		return nil, err
+	}
+	if apiResult == nil {
+		return nil, nil
+	}
+
+	return &apiResult.City, nil
+}
+
+func (r ExternalAPIRepository) GetCityWeather(ctx *appcontext.AppContext, city string) (*domain.Weather, error) {
+	apiResult, err := r.ea.GetCityWeather(ctx, city)
+	if err != nil {
+		return nil, err
+	}
+	if apiResult == nil {
+		return nil, nil
+	}
+
+	return &domain.Weather{
+		Temp:       apiResult.Temp,
+		FeelsLike:  apiResult.FeelsLike,
+		Humidity:   apiResult.Humidity,
+		WindSpeed:  apiResult.WindSpeed,
+		PrecipProb: apiResult.PrecipProb,
+		Icon:       apiResult.Icon,
+	}, nil
 }

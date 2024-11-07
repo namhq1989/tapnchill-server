@@ -14,6 +14,7 @@ type (
 	}
 	Queries interface {
 		GetQuote(ctx *appcontext.AppContext, performerID string, _ dto.GetQuoteRequest) (*dto.GetQuoteResponse, error)
+		GetWeather(ctx *appcontext.AppContext, performerID string, _ dto.GetWeatherRequest) (*dto.GetWeatherResponse, error)
 	}
 	Instance interface {
 		Commands
@@ -25,6 +26,7 @@ type (
 	}
 	queryHandlers struct {
 		query.GetQuoteHandler
+		query.GetWeatherHandler
 	}
 	Application struct {
 		commandHandlers
@@ -37,13 +39,15 @@ var _ Instance = (*Application)(nil)
 func New(
 	feedbackRepository domain.FeedbackRepository,
 	quoteRepository domain.QuoteRepository,
+	service domain.Service,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
 			CreateFeedbackHandler: command.NewCreateFeedbackHandler(feedbackRepository),
 		},
 		queryHandlers: queryHandlers{
-			GetQuoteHandler: query.NewGetQuoteHandler(quoteRepository),
+			GetQuoteHandler:   query.NewGetQuoteHandler(quoteRepository),
+			GetWeatherHandler: query.NewGetWeatherHandler(service),
 		},
 	}
 }

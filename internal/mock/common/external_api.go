@@ -40,6 +40,36 @@ func (m *MockExternalApiRepository) EXPECT() *MockExternalApiRepositoryMockRecor
 	return m.recorder
 }
 
+// GetCityWeather mocks base method.
+func (m *MockExternalApiRepository) GetCityWeather(ctx *appcontext.AppContext, city string) (*domain.Weather, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCityWeather", ctx, city)
+	ret0, _ := ret[0].(*domain.Weather)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCityWeather indicates an expected call of GetCityWeather.
+func (mr *MockExternalApiRepositoryMockRecorder) GetCityWeather(ctx, city any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCityWeather", reflect.TypeOf((*MockExternalApiRepository)(nil).GetCityWeather), ctx, city)
+}
+
+// GetIpCity mocks base method.
+func (m *MockExternalApiRepository) GetIpCity(ctx *appcontext.AppContext, ip string) (*string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetIpCity", ctx, ip)
+	ret0, _ := ret[0].(*string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetIpCity indicates an expected call of GetIpCity.
+func (mr *MockExternalApiRepositoryMockRecorder) GetIpCity(ctx, ip any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIpCity", reflect.TypeOf((*MockExternalApiRepository)(nil).GetIpCity), ctx, ip)
+}
+
 // GetRandomQuote mocks base method.
 func (m *MockExternalApiRepository) GetRandomQuote(ctx *appcontext.AppContext) (*domain.Quote, error) {
 	m.ctrl.T.Helper()

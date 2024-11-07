@@ -44,6 +44,7 @@ func (h GetWeatherHandler) GetWeather(ctx *appcontext.AppContext, performerID st
 
 	ctx.Logger().Text("done get weather request")
 	return &dto.GetWeatherResponse{
+		City:    *city,
 		Weather: dto.Weather{}.FromDomain(*weather),
 	}, nil
 }

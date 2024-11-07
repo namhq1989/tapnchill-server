@@ -17,9 +17,10 @@ import (
 
 type getQuoteTestSuite struct {
 	suite.Suite
-	handler             query.GetQuoteHandler
-	mockCtrl            *gomock.Controller
-	mockQuoteRepository *mockcommon.MockQuoteRepository
+	handler               query.GetQuoteHandler
+	mockCtrl              *gomock.Controller
+	mockQuoteRepository   *mockcommon.MockQuoteRepository
+	mockCachingRepository *mockcommon.MockCachingRepository
 }
 
 func (s *getQuoteTestSuite) SetupSuite() {
@@ -29,8 +30,9 @@ func (s *getQuoteTestSuite) SetupSuite() {
 func (s *getQuoteTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockQuoteRepository = mockcommon.NewMockQuoteRepository(s.mockCtrl)
+	s.mockCachingRepository = mockcommon.NewMockCachingRepository(s.mockCtrl)
 
-	s.handler = query.NewGetQuoteHandler(s.mockQuoteRepository)
+	s.handler = query.NewGetQuoteHandler(s.mockQuoteRepository, s.mockCachingRepository)
 }
 
 func (s *getQuoteTestSuite) TearDownTest() {
@@ -43,8 +45,32 @@ func (s *getQuoteTestSuite) TearDownTest() {
 
 func (s *getQuoteTestSuite) Test_1_Success() {
 	// mock data
+	s.mockCachingRepository.EXPECT().
+		GetLatestQuote(gomock.Any()).
+		Return(nil, nil)
+
 	s.mockQuoteRepository.EXPECT().
 		FindLatest(gomock.Any()).
+		Return(&domain.Quote{
+			ID: database.NewStringID(),
+		}, nil)
+
+	s.mockCachingRepository.EXPECT().
+		SetLatestQuote(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	// call
+	ctx := appcontext.NewRest(context.Background())
+	resp, err := s.handler.GetQuote(ctx, database.NewStringID(), dto.GetQuoteRequest{})
+
+	assert.Nil(s.T(), err)
+	assert.NotNil(s.T(), resp)
+}
+
+func (s *getQuoteTestSuite) Test_1_Success_FoundInCaching() {
+	// mock data
+	s.mockCachingRepository.EXPECT().
+		GetLatestQuote(gomock.Any()).
 		Return(&domain.Quote{
 			ID: database.NewStringID(),
 		}, nil)

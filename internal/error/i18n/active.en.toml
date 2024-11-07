@@ -16,6 +16,8 @@ invalid_code = "Invalid code"
 invalid_status = "Invalid status"
 invalid_feedback = "Invalid feedback"
 invalid_quote = "Invalid quote"
+invalid_goal = "Invalid goal"
+invalid_task = "Invalid task"
 
 # auth
 auth_invalid_auth_token = "Invalid auth token"

@@ -2,7 +2,6 @@ package command
 
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
-	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/pkg/task/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/task/dto"
 )
@@ -10,12 +9,18 @@ import (
 type CreateTaskHandler struct {
 	taskRepository domain.TaskRepository
 	goalRepository domain.GoalRepository
+	service        domain.Service
 }
 
-func NewCreateTaskHandler(taskRepository domain.TaskRepository, goalRepository domain.GoalRepository) CreateTaskHandler {
+func NewCreateTaskHandler(
+	taskRepository domain.TaskRepository,
+	goalRepository domain.GoalRepository,
+	service domain.Service,
+) CreateTaskHandler {
 	return CreateTaskHandler{
 		taskRepository: taskRepository,
 		goalRepository: goalRepository,
+		service:        service,
 	}
 }
 
@@ -25,19 +30,9 @@ func (h CreateTaskHandler) CreateTask(ctx *appcontext.AppContext, performerID st
 		"name": req.Name, "description": req.Description, "dueDate": req.DueDate,
 	})
 
-	ctx.Logger().Text("find goal in db")
-	goal, err := h.goalRepository.FindByID(ctx, req.GoalID)
+	goal, err := h.service.GetGoalByID(ctx, req.GoalID, performerID)
 	if err != nil {
-		ctx.Logger().Error("failed to find goal in db", err, appcontext.Fields{})
 		return nil, err
-	}
-	if goal == nil {
-		ctx.Logger().ErrorText("goal not found, respond")
-		return nil, apperrors.Common.NotFound
-	}
-	if goal.UserID != performerID {
-		ctx.Logger().ErrorText("goal author not match, respond")
-		return nil, apperrors.Common.NotFound
 	}
 
 	ctx.Logger().Text("create new task model")
@@ -55,6 +50,7 @@ func (h CreateTaskHandler) CreateTask(ctx *appcontext.AppContext, performerID st
 
 	ctx.Logger().Text("increase goal stats")
 	goal.AdjustTotalTask(1)
+
 	ctx.Logger().Text("update goal in db")
 	if err = h.goalRepository.Update(ctx, *goal); err != nil {
 		ctx.Logger().Error("failed to update goal in db", err, appcontext.Fields{})

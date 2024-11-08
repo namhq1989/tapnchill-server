@@ -21,6 +21,7 @@ type updateTaskTestSuite struct {
 	handler            command.UpdateTaskHandler
 	mockCtrl           *gomock.Controller
 	mockTaskRepository *mocktask.MockTaskRepository
+	mockService        *mocktask.MockService
 }
 
 func (s *updateTaskTestSuite) SetupSuite() {
@@ -30,8 +31,9 @@ func (s *updateTaskTestSuite) SetupSuite() {
 func (s *updateTaskTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockTaskRepository = mocktask.NewMockTaskRepository(s.mockCtrl)
+	s.mockService = mocktask.NewMockService(s.mockCtrl)
 
-	s.handler = command.NewUpdateTaskHandler(s.mockTaskRepository)
+	s.handler = command.NewUpdateTaskHandler(s.mockTaskRepository, s.mockService)
 }
 
 func (s *updateTaskTestSuite) TearDownTest() {
@@ -48,8 +50,8 @@ func (s *updateTaskTestSuite) Test_1_Success() {
 		performerID = database.NewStringID()
 	)
 
-	s.mockTaskRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
+	s.mockService.EXPECT().
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(&domain.Task{
 			ID:     database.NewStringID(),
 			UserID: performerID,
@@ -76,8 +78,8 @@ func (s *updateTaskTestSuite) Test_2_Fail_InvalidName() {
 		performerID = database.NewStringID()
 	)
 
-	s.mockTaskRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
+	s.mockService.EXPECT().
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(&domain.Task{
 			ID:     database.NewStringID(),
 			UserID: performerID,
@@ -97,9 +99,9 @@ func (s *updateTaskTestSuite) Test_2_Fail_InvalidName() {
 
 func (s *updateTaskTestSuite) Test_2_Fail_NotFound() {
 	// mock data
-	s.mockTaskRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
-		Return(nil, nil)
+	s.mockService.EXPECT().
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil, apperrors.Common.NotFound)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
@@ -115,12 +117,9 @@ func (s *updateTaskTestSuite) Test_2_Fail_NotFound() {
 
 func (s *updateTaskTestSuite) Test_2_Fail_NotOwner() {
 	// mock data
-	s.mockTaskRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
-		Return(&domain.Task{
-			ID:     database.NewStringID(),
-			UserID: database.NewStringID(),
-		}, nil)
+	s.mockService.EXPECT().
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil, apperrors.Common.NotFound)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())

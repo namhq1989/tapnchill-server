@@ -2,18 +2,19 @@ package command
 
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
-	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/pkg/task/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/task/dto"
 )
 
 type UpdateTaskHandler struct {
 	taskRepository domain.TaskRepository
+	service        domain.Service
 }
 
-func NewUpdateTaskHandler(taskRepository domain.TaskRepository) UpdateTaskHandler {
+func NewUpdateTaskHandler(taskRepository domain.TaskRepository, service domain.Service) UpdateTaskHandler {
 	return UpdateTaskHandler{
 		taskRepository: taskRepository,
+		service:        service,
 	}
 }
 
@@ -23,20 +24,9 @@ func (h UpdateTaskHandler) UpdateTask(ctx *appcontext.AppContext, performerID, t
 		"name": req.Name, "description": req.Description, "dueDate": req.DueDate,
 	})
 
-	ctx.Logger().Text("find task in db")
-	task, err := h.taskRepository.FindByID(ctx, taskID)
+	task, err := h.service.GetTaskByID(ctx, taskID, performerID)
 	if err != nil {
-		ctx.Logger().Error("failed to find task in db", err, appcontext.Fields{})
 		return nil, err
-	}
-	if task == nil {
-		ctx.Logger().ErrorText("task not found, respond")
-		return nil, apperrors.Common.NotFound
-	}
-
-	if task.UserID != performerID {
-		ctx.Logger().ErrorText("task author not match, respond")
-		return nil, apperrors.Common.NotFound
 	}
 
 	ctx.Logger().Text("update task")

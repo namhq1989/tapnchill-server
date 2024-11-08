@@ -47,15 +47,16 @@ var _ Instance = (*Application)(nil)
 func New(
 	taskRepository domain.TaskRepository,
 	goalRepository domain.GoalRepository,
+	service domain.Service,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
 			CreateGoalHandler: command.NewCreateGoalHandler(goalRepository),
-			UpdateGoalHandler: command.NewUpdateGoalHandler(goalRepository),
-			DeleteGoalHandler: command.NewDeleteGoalHandler(goalRepository),
+			UpdateGoalHandler: command.NewUpdateGoalHandler(goalRepository, service),
+			DeleteGoalHandler: command.NewDeleteGoalHandler(goalRepository, service),
 
-			CreateTaskHandler: command.NewCreateTaskHandler(taskRepository, goalRepository),
-			UpdateTaskHandler: command.NewUpdateTaskHandler(taskRepository),
+			CreateTaskHandler: command.NewCreateTaskHandler(taskRepository, goalRepository, service),
+			UpdateTaskHandler: command.NewUpdateTaskHandler(taskRepository, service),
 		},
 		queryHandlers: queryHandlers{
 			GetGoalsHandler: query.NewGetGoalsHandler(goalRepository),

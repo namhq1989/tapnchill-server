@@ -22,6 +22,7 @@ type createTaskTestSuite struct {
 	mockCtrl           *gomock.Controller
 	mockTaskRepository *mocktask.MockTaskRepository
 	mockGoalRepository *mocktask.MockGoalRepository
+	mockService        *mocktask.MockService
 }
 
 func (s *createTaskTestSuite) SetupSuite() {
@@ -32,8 +33,9 @@ func (s *createTaskTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockTaskRepository = mocktask.NewMockTaskRepository(s.mockCtrl)
 	s.mockGoalRepository = mocktask.NewMockGoalRepository(s.mockCtrl)
+	s.mockService = mocktask.NewMockService(s.mockCtrl)
 
-	s.handler = command.NewCreateTaskHandler(s.mockTaskRepository, s.mockGoalRepository)
+	s.handler = command.NewCreateTaskHandler(s.mockTaskRepository, s.mockGoalRepository, s.mockService)
 }
 
 func (s *createTaskTestSuite) TearDownTest() {
@@ -51,8 +53,8 @@ func (s *createTaskTestSuite) Test_1_Success() {
 		performerID = database.NewStringID()
 	)
 
-	s.mockGoalRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
+	s.mockService.EXPECT().
+		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(&domain.Goal{
 			ID:     goalID,
 			UserID: performerID,
@@ -85,8 +87,8 @@ func (s *createTaskTestSuite) Test_2_Fail_InvalidName() {
 		performerID = database.NewStringID()
 	)
 
-	s.mockGoalRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
+	s.mockService.EXPECT().
+		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(&domain.Goal{
 			ID:     goalID,
 			UserID: performerID,
@@ -106,9 +108,9 @@ func (s *createTaskTestSuite) Test_2_Fail_InvalidName() {
 
 func (s *createTaskTestSuite) Test_2_Fail_InvalidGoalID() {
 	// call
-	s.mockGoalRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
-		Return(nil, apperrors.Task.InvalidGoalID)
+	s.mockService.EXPECT().
+		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil, apperrors.Common.NotFound)
 
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.CreateTask(ctx, database.NewStringID(), dto.CreateTaskRequest{
@@ -119,25 +121,18 @@ func (s *createTaskTestSuite) Test_2_Fail_InvalidGoalID() {
 
 	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), resp)
-	assert.Equal(s.T(), apperrors.Task.InvalidGoalID, err)
+	assert.Equal(s.T(), apperrors.Common.NotFound, err)
 }
 
-func (s *createTaskTestSuite) Test_2_Fail_NotOwner() {
+func (s *createTaskTestSuite) Test_2_Fail_NotGoalOwner() {
 	// mock data
-	var (
-		goalID = database.NewStringID()
-	)
-
-	s.mockGoalRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
-		Return(&domain.Goal{
-			ID:     goalID,
-			UserID: database.NewStringID(),
-		}, nil)
+	s.mockService.EXPECT().
+		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil, apperrors.Common.NotFound)
 
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.CreateTask(ctx, database.NewStringID(), dto.CreateTaskRequest{
-		GoalID:      goalID,
+		GoalID:      database.NewStringID(),
 		Name:        "task name",
 		Description: "task description",
 	})

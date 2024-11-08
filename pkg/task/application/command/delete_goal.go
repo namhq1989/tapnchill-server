@@ -9,30 +9,22 @@ import (
 
 type DeleteGoalHandler struct {
 	goalRepository domain.GoalRepository
+	service        domain.Service
 }
 
-func NewDeleteGoalHandler(goalRepository domain.GoalRepository) DeleteGoalHandler {
+func NewDeleteGoalHandler(goalRepository domain.GoalRepository, service domain.Service) DeleteGoalHandler {
 	return DeleteGoalHandler{
 		goalRepository: goalRepository,
+		service:        service,
 	}
 }
 
 func (h DeleteGoalHandler) DeleteGoal(ctx *appcontext.AppContext, performerID, goalID string, _ dto.DeleteGoalRequest) (*dto.DeleteGoalResponse, error) {
 	ctx.Logger().Info("new delete goal request", appcontext.Fields{"performerID": performerID, "goalID": goalID})
 
-	ctx.Logger().Text("find goal in db")
-	goal, err := h.goalRepository.FindByID(ctx, goalID)
+	goal, err := h.service.GetGoalByID(ctx, goalID, performerID)
 	if err != nil {
-		ctx.Logger().Error("failed to find goal in db", err, appcontext.Fields{})
 		return nil, err
-	}
-	if goal == nil {
-		ctx.Logger().ErrorText("goal not found, respond")
-		return nil, apperrors.Common.NotFound
-	}
-	if goal.UserID != performerID {
-		ctx.Logger().ErrorText("goal author not match, respond")
-		return nil, apperrors.Common.NotFound
 	}
 	if goal.Stats.TotalTask > 0 {
 		ctx.Logger().ErrorText("goal has tasks, respond")

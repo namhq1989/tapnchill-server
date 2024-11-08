@@ -21,6 +21,7 @@ type deleteGoalTestSuite struct {
 	handler            command.DeleteGoalHandler
 	mockCtrl           *gomock.Controller
 	mockGoalRepository *mocktask.MockGoalRepository
+	mockService        *mocktask.MockService
 }
 
 func (s *deleteGoalTestSuite) SetupSuite() {
@@ -30,8 +31,9 @@ func (s *deleteGoalTestSuite) SetupSuite() {
 func (s *deleteGoalTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockGoalRepository = mocktask.NewMockGoalRepository(s.mockCtrl)
+	s.mockService = mocktask.NewMockService(s.mockCtrl)
 
-	s.handler = command.NewDeleteGoalHandler(s.mockGoalRepository)
+	s.handler = command.NewDeleteGoalHandler(s.mockGoalRepository, s.mockService)
 }
 
 func (s *deleteGoalTestSuite) TearDownTest() {
@@ -48,8 +50,8 @@ func (s *deleteGoalTestSuite) Test_1_Success() {
 		performerID = database.NewStringID()
 	)
 
-	s.mockGoalRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
+	s.mockService.EXPECT().
+		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(&domain.Goal{
 			ID:     database.NewStringID(),
 			UserID: performerID,
@@ -69,9 +71,9 @@ func (s *deleteGoalTestSuite) Test_1_Success() {
 
 func (s *deleteGoalTestSuite) Test_2_Fail_NotFound() {
 	// mock data
-	s.mockGoalRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
-		Return(nil, nil)
+	s.mockService.EXPECT().
+		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil, apperrors.Common.NotFound)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
@@ -84,12 +86,9 @@ func (s *deleteGoalTestSuite) Test_2_Fail_NotFound() {
 
 func (s *deleteGoalTestSuite) Test_2_Fail_NotOwner() {
 	// mock data
-	s.mockGoalRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
-		Return(&domain.Goal{
-			ID:     database.NewStringID(),
-			UserID: database.NewStringID(),
-		}, nil)
+	s.mockService.EXPECT().
+		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil, apperrors.Common.NotFound)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
@@ -106,8 +105,8 @@ func (s *deleteGoalTestSuite) Test_2_Fail_StillHasTasksRemaining() {
 		performerID = database.NewStringID()
 	)
 
-	s.mockGoalRepository.EXPECT().
-		FindByID(gomock.Any(), gomock.Any()).
+	s.mockService.EXPECT().
+		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(&domain.Goal{
 			ID:     database.NewStringID(),
 			UserID: performerID,

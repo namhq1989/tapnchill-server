@@ -81,8 +81,19 @@ func (g *Goal) SetIsCompleted(isCompleted bool) {
 	g.SetUpdatedAt()
 }
 
-func (g *Goal) SetStats(stats GoalStats) {
-	g.Stats = stats
+func (g *Goal) AdjustTotalTask(value int) {
+	g.Stats.TotalTask += value
+	if g.Stats.TotalTask < 0 {
+		g.Stats.TotalTask = 0
+	}
+	g.SetUpdatedAt()
+}
+
+func (g *Goal) AdjustTotalCompletedTask(value int) {
+	g.Stats.TotalCompletedTask += value
+	if g.Stats.TotalCompletedTask < 0 {
+		g.Stats.TotalCompletedTask = 0
+	}
 	g.SetUpdatedAt()
 }
 

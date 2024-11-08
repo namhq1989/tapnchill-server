@@ -2,8 +2,11 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
+
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
@@ -71,6 +74,30 @@ func (r TaskRepository) Update(ctx *appcontext.AppContext, task domain.Task) err
 
 	_, err = r.collection().UpdateByID(ctx.Context(), doc.ID, bson.M{"$set": doc})
 	return err
+}
+
+func (r TaskRepository) Delete(ctx *appcontext.AppContext, taskID string) error {
+	_, err := r.collection().DeleteOne(ctx.Context(), bson.M{"_id": taskID})
+	return err
+}
+
+func (r TaskRepository) FindByID(ctx *appcontext.AppContext, taskID string) (*domain.Task, error) {
+	tid, err := database.ObjectIDFromString(taskID)
+	if err != nil {
+		return nil, apperrors.Task.InvalidTaskID
+	}
+
+	var doc dbmodel.Task
+	if err = r.collection().FindOne(ctx.Context(), bson.M{
+		"_id": tid,
+	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	} else if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, nil
+	}
+
+	result := doc.ToDomain()
+	return &result, nil
 }
 
 func (r TaskRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.TaskFilter) ([]domain.Task, error) {

@@ -71,7 +71,12 @@ func (r GoalRepository) Update(ctx *appcontext.AppContext, goal domain.Goal) err
 }
 
 func (r GoalRepository) Delete(ctx *appcontext.AppContext, goalID string) error {
-	_, err := r.collection().DeleteOne(ctx.Context(), bson.M{"_id": goalID})
+	gid, err := database.ObjectIDFromString(goalID)
+	if err != nil {
+		return apperrors.Task.InvalidGoalID
+	}
+
+	_, err = r.collection().DeleteOne(ctx.Context(), bson.M{"_id": gid})
 	return err
 }
 

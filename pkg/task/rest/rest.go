@@ -23,6 +23,7 @@ func RegisterServer(_ *appcontext.AppContext, app application.Instance, e *echo.
 	}
 
 	s.registerGoalRoutes()
+	s.registerTaskRoutes()
 
 	return nil
 }

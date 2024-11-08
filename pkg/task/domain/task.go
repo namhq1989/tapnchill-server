@@ -1,15 +1,21 @@
 package domain
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/namhq1989/go-utilities/appcontext"
+	"github.com/namhq1989/tapnchill-server/internal/database"
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
+	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 )
 
 type TaskRepository interface {
 	Create(ctx *appcontext.AppContext, task Task) error
 	Update(ctx *appcontext.AppContext, task Task) error
+	Delete(ctx *appcontext.AppContext, taskID string) error
 	FindByFilter(ctx *appcontext.AppContext, filter TaskFilter) ([]Task, error)
+	FindByID(ctx *appcontext.AppContext, taskID string) (*Task, error)
 }
 
 type Task struct {
@@ -23,4 +29,59 @@ type Task struct {
 	IsCompleted  bool
 	CreatedAt    time.Time
 	CompletedAt  *time.Time
+}
+
+func NewTask(userID, goalID, name, description string, dueDate *time.Time) (*Task, error) {
+	if !database.IsValidObjectID(userID) {
+		return nil, apperrors.User.InvalidUserID
+	}
+
+	if !database.IsValidObjectID(goalID) {
+		return nil, apperrors.Task.InvalidGoalID
+	}
+
+	if len(name) < 2 {
+		return nil, apperrors.Common.InvalidName
+	}
+
+	return &Task{
+		ID:           database.NewStringID(),
+		UserID:       userID,
+		GoalID:       goalID,
+		Name:         name,
+		Description:  description,
+		SearchString: manipulation.NormalizeText(fmt.Sprintf("%s %s", name, description)),
+		DueDate:      dueDate,
+		IsCompleted:  false,
+		CreatedAt:    manipulation.NowUTC(),
+	}, nil
+}
+
+func (t *Task) SetName(name string) error {
+	if len(name) < 2 {
+		return apperrors.Common.InvalidName
+	}
+
+	t.Name = name
+	t.SearchString = manipulation.NormalizeText(fmt.Sprintf("%s %s", name, t.Description))
+	return nil
+}
+
+func (t *Task) SetDescription(description string) {
+	t.Description = description
+	t.SearchString = manipulation.NormalizeText(fmt.Sprintf("%s %s", t.Name, description))
+}
+
+func (t *Task) SetDueDate(dueDate *time.Time) {
+	t.DueDate = dueDate
+}
+
+func (t *Task) SetIsCompleted(isCompleted bool) {
+	t.IsCompleted = isCompleted
+	if isCompleted {
+		now := manipulation.NowUTC()
+		t.CompletedAt = &now
+	} else {
+		t.CompletedAt = nil
+	}
 }

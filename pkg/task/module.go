@@ -17,10 +17,12 @@ func (Module) Name() string {
 func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error {
 	var (
 		// dependencies
+		taskRepository = infrastructure.NewTaskRepository(mono.Database())
 		goalRepository = infrastructure.NewGoalRepository(mono.Database())
 
 		// app
 		app = application.New(
+			taskRepository,
 			goalRepository,
 		)
 	)

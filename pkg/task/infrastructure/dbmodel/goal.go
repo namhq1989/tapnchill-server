@@ -22,8 +22,8 @@ type Goal struct {
 }
 
 type GoalStats struct {
-	TotalTask          int `bson:"totalTask"`
-	TotalCompletedTask int `bson:"totalCompletedTask"`
+	TotalTask     int `bson:"totalTask"`
+	TotalDoneTask int `bson:"totalDoneTask"`
 }
 
 func (g Goal) ToDomain() domain.Goal {
@@ -34,8 +34,8 @@ func (g Goal) ToDomain() domain.Goal {
 		Description:  g.Description,
 		SearchString: g.SearchString,
 		Stats: domain.GoalStats{
-			TotalTask:          g.Stats.TotalTask,
-			TotalCompletedTask: g.Stats.TotalCompletedTask,
+			TotalTask:     g.Stats.TotalTask,
+			TotalDoneTask: g.Stats.TotalDoneTask,
 		},
 		IsCompleted: g.IsCompleted,
 		CreatedAt:   g.CreatedAt,
@@ -61,8 +61,8 @@ func (Goal) FromDomain(goal domain.Goal) (*Goal, error) {
 		Description:  goal.Description,
 		SearchString: goal.SearchString,
 		Stats: GoalStats{
-			TotalTask:          goal.Stats.TotalTask,
-			TotalCompletedTask: goal.Stats.TotalCompletedTask,
+			TotalTask:     goal.Stats.TotalTask,
+			TotalDoneTask: goal.Stats.TotalDoneTask,
 		},
 		IsCompleted: goal.IsCompleted,
 		CreatedAt:   goal.CreatedAt,

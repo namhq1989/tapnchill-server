@@ -11,6 +11,23 @@ import (
 func (s server) registerTaskRoutes() {
 	g := s.echo.Group("/api/task")
 
+	g.GET("", func(c echo.Context) error {
+		var (
+			ctx         = c.Get("ctx").(*appcontext.AppContext)
+			req         = c.Get("req").(dto.GetTasksRequest)
+			performerID = ctx.GetUserID()
+		)
+
+		resp, err := s.app.GetTasks(ctx, performerID, req)
+		if err != nil {
+			return httprespond.R400(c, err, nil)
+		}
+
+		return httprespond.R200(c, resp)
+	}, s.jwt.RequireLoggedIn, func(next echo.HandlerFunc) echo.HandlerFunc {
+		return validation.ValidateHTTPPayload[dto.GetTasksRequest](next)
+	})
+
 	g.POST("", func(c echo.Context) error {
 		var (
 			ctx         = c.Get("ctx").(*appcontext.AppContext)
@@ -46,22 +63,22 @@ func (s server) registerTaskRoutes() {
 		return validation.ValidateHTTPPayload[dto.UpdateTaskRequest](next)
 	})
 
-	g.PATCH("/:id/completed", func(c echo.Context) error {
+	g.PATCH("/:id/status", func(c echo.Context) error {
 		var (
 			ctx         = c.Get("ctx").(*appcontext.AppContext)
-			req         = c.Get("req").(dto.ChangeTaskCompletedStatusRequest)
+			req         = c.Get("req").(dto.ChangeTaskStatusRequest)
 			performerID = ctx.GetUserID()
 			taskID      = c.Param("id")
 		)
 
-		resp, err := s.app.ChangeTaskCompletedStatus(ctx, performerID, taskID, req)
+		resp, err := s.app.ChangeTaskStatus(ctx, performerID, taskID, req)
 		if err != nil {
 			return httprespond.R400(c, err, nil)
 		}
 
 		return httprespond.R200(c, resp)
 	}, s.jwt.RequireLoggedIn, func(next echo.HandlerFunc) echo.HandlerFunc {
-		return validation.ValidateHTTPPayload[dto.ChangeTaskCompletedStatusRequest](next)
+		return validation.ValidateHTTPPayload[dto.ChangeTaskStatusRequest](next)
 	})
 
 	g.DELETE("/:id", func(c echo.Context) error {

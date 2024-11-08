@@ -15,8 +15,8 @@ type Goal struct {
 }
 
 type GoalStats struct {
-	TotalTask          int `json:"totalTask"`
-	TotalCompletedTask int `json:"totalCompletedTask"`
+	TotalTask     int `json:"totalTask"`
+	TotalDoneTask int `json:"totalDoneTask"`
 }
 
 func (Goal) FromDomain(goal domain.Goal) Goal {
@@ -25,8 +25,8 @@ func (Goal) FromDomain(goal domain.Goal) Goal {
 		Name:        goal.Name,
 		Description: goal.Description,
 		Stats: GoalStats{
-			TotalTask:          goal.Stats.TotalTask,
-			TotalCompletedTask: goal.Stats.TotalCompletedTask,
+			TotalTask:     goal.Stats.TotalTask,
+			TotalDoneTask: goal.Stats.TotalDoneTask,
 		},
 		IsCompleted: goal.IsCompleted,
 		CreatedAt:   httprespond.NewTimeResponse(goal.CreatedAt),

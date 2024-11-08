@@ -119,11 +119,17 @@ func (r TaskRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.T
 		condition["goalId"] = filter.GoalID
 	}
 
+	if filter.Status.IsValid() {
+		condition["status"] = filter.Status
+	}
+
 	if filter.Keyword != "" {
 		condition["searchString"] = bson.M{"$text": bson.M{"$search": filter.Keyword}}
 	}
 
-	cursor, err := r.collection().Find(ctx.Context(), condition, nil)
+	cursor, err := r.collection().Find(ctx.Context(), condition, &options.FindOptions{
+		Sort: bson.M{"createdAt": -1},
+	})
 	if err != nil {
 		return result, err
 	}

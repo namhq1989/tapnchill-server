@@ -26,7 +26,7 @@ type Task struct {
 	Description  string
 	SearchString string
 	DueDate      *time.Time
-	IsCompleted  bool
+	Status       TaskStatus
 	CreatedAt    time.Time
 	CompletedAt  *time.Time
 }
@@ -52,7 +52,7 @@ func NewTask(userID, goalID, name, description string, dueDate *time.Time) (*Tas
 		Description:  description,
 		SearchString: manipulation.NormalizeText(fmt.Sprintf("%s %s", name, description)),
 		DueDate:      dueDate,
-		IsCompleted:  false,
+		Status:       TaskStatusTodo,
 		CreatedAt:    manipulation.NowUTC(),
 	}, nil
 }
@@ -76,12 +76,17 @@ func (t *Task) SetDueDate(dueDate *time.Time) {
 	t.DueDate = dueDate
 }
 
-func (t *Task) SetCompleted(isCompleted bool) {
-	t.IsCompleted = isCompleted
-	if isCompleted {
+func (t *Task) SetStatus(status TaskStatus) {
+	t.Status = status
+
+	if status == TaskStatusTodo {
+		t.CompletedAt = nil
+	} else {
 		now := manipulation.NowUTC()
 		t.CompletedAt = &now
-	} else {
-		t.CompletedAt = nil
 	}
+}
+
+func (t *Task) IsDone() bool {
+	return t.Status == TaskStatusDone
 }

@@ -31,8 +31,8 @@ type Goal struct {
 }
 
 type GoalStats struct {
-	TotalTask          int
-	TotalCompletedTask int
+	TotalTask     int
+	TotalDoneTask int
 }
 
 func NewGoal(userID, name, description string) (*Goal, error) {
@@ -51,8 +51,8 @@ func NewGoal(userID, name, description string) (*Goal, error) {
 		Description:  description,
 		SearchString: manipulation.NormalizeText(fmt.Sprintf("%s %s", name, description)),
 		Stats: GoalStats{
-			TotalTask:          0,
-			TotalCompletedTask: 0,
+			TotalTask:     0,
+			TotalDoneTask: 0,
 		},
 		IsCompleted: false,
 		CreatedAt:   manipulation.NowUTC(),
@@ -89,10 +89,10 @@ func (g *Goal) AdjustTotalTask(value int) {
 	g.SetUpdatedAt()
 }
 
-func (g *Goal) AdjustTotalCompletedTask(value int) {
-	g.Stats.TotalCompletedTask += value
-	if g.Stats.TotalCompletedTask < 0 {
-		g.Stats.TotalCompletedTask = 0
+func (g *Goal) AdjustTotalDoneTask(value int) {
+	g.Stats.TotalDoneTask += value
+	if g.Stats.TotalDoneTask < 0 {
+		g.Stats.TotalDoneTask = 0
 	}
 	g.SetUpdatedAt()
 }

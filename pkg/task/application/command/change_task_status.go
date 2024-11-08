@@ -2,44 +2,49 @@ package command
 
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/pkg/task/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/task/dto"
 )
 
-type ChangeTaskCompletedStatusHandler struct {
+type ChangeTaskStatusHandler struct {
 	taskRepository domain.TaskRepository
 	goalRepository domain.GoalRepository
 	service        domain.Service
 }
 
-func NewChangeTaskCompletedStatusHandler(
+func NewChangeTaskStatusHandler(
 	taskRepository domain.TaskRepository,
 	goalRepository domain.GoalRepository,
 	service domain.Service,
-) ChangeTaskCompletedStatusHandler {
-	return ChangeTaskCompletedStatusHandler{
+) ChangeTaskStatusHandler {
+	return ChangeTaskStatusHandler{
 		taskRepository: taskRepository,
 		goalRepository: goalRepository,
 		service:        service,
 	}
 }
 
-func (h ChangeTaskCompletedStatusHandler) ChangeTaskCompletedStatus(ctx *appcontext.AppContext, performerID, taskID string, req dto.ChangeTaskCompletedStatusRequest) (*dto.ChangeTaskCompletedStatusResponse, error) {
-	ctx.Logger().Info("new change task completed status request", appcontext.Fields{
-		"performerID": performerID, "taskID": taskID,
-		"completed": req.Completed,
+func (h ChangeTaskStatusHandler) ChangeTaskStatus(ctx *appcontext.AppContext, performerID, taskID string, req dto.ChangeTaskStatusRequest) (*dto.ChangeTaskStatusResponse, error) {
+	ctx.Logger().Info("new change task status request", appcontext.Fields{
+		"performerID": performerID, "taskID": taskID, "status": req.Status,
 	})
+
+	ctx.Logger().Text("check status")
+	status := domain.ToTaskStatus(req.Status)
+	if !status.IsValid() {
+		ctx.Logger().ErrorText("invalid status, respond")
+		return nil, apperrors.Common.BadRequest
+	}
 
 	task, err := h.service.GetTaskByID(ctx, taskID, performerID)
 	if err != nil {
 		return nil, err
 	}
 
-	if task.IsCompleted == req.Completed {
-		ctx.Logger().Text("task completed status not changed, respond")
-		return &dto.ChangeTaskCompletedStatusResponse{
-			Completed: task.IsCompleted,
-		}, nil
+	if task.Status == status {
+		ctx.Logger().Text("task status does not change, respond")
+		return &dto.ChangeTaskStatusResponse{}, nil
 	}
 
 	goal, err := h.service.GetGoalByID(ctx, task.GoalID, performerID)
@@ -48,7 +53,7 @@ func (h ChangeTaskCompletedStatusHandler) ChangeTaskCompletedStatus(ctx *appcont
 	}
 
 	ctx.Logger().Text("change task completed status")
-	task.SetCompleted(req.Completed)
+	task.SetStatus(status)
 
 	ctx.Logger().Text("update task in db")
 	if err = h.taskRepository.Update(ctx, *task); err != nil {
@@ -58,10 +63,10 @@ func (h ChangeTaskCompletedStatusHandler) ChangeTaskCompletedStatus(ctx *appcont
 
 	ctx.Logger().Text("adjust goal stats")
 	adjustValue := 1
-	if !req.Completed {
+	if !task.IsDone() {
 		adjustValue = -1
 	}
-	goal.AdjustTotalCompletedTask(adjustValue)
+	goal.AdjustTotalDoneTask(adjustValue)
 
 	ctx.Logger().Text("update goal in db")
 	if err = h.goalRepository.Update(ctx, *goal); err != nil {
@@ -69,7 +74,5 @@ func (h ChangeTaskCompletedStatusHandler) ChangeTaskCompletedStatus(ctx *appcont
 	}
 
 	ctx.Logger().Text("done change task completed status request")
-	return &dto.ChangeTaskCompletedStatusResponse{
-		Completed: task.IsCompleted,
-	}, nil
+	return &dto.ChangeTaskStatusResponse{}, nil
 }

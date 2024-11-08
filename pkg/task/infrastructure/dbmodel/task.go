@@ -17,7 +17,7 @@ type Task struct {
 	Description  string             `bson:"description"`
 	SearchString string             `bson:"searchString"`
 	DueDate      *time.Time         `bson:"dueDate"`
-	IsCompleted  bool               `bson:"isCompleted"`
+	Status       string             `bson:"status"`
 	CreatedAt    time.Time          `bson:"createdAt"`
 	CompletedAt  *time.Time         `bson:"completedAt"`
 }
@@ -31,7 +31,7 @@ func (t Task) ToDomain() domain.Task {
 		Description:  t.Description,
 		SearchString: t.SearchString,
 		DueDate:      t.DueDate,
-		IsCompleted:  t.IsCompleted,
+		Status:       domain.ToTaskStatus(t.Status),
 		CreatedAt:    t.CreatedAt,
 		CompletedAt:  t.CompletedAt,
 	}
@@ -61,7 +61,7 @@ func (Task) FromDomain(task domain.Task) (*Task, error) {
 		Description:  task.Description,
 		SearchString: task.SearchString,
 		DueDate:      task.DueDate,
-		IsCompleted:  task.IsCompleted,
+		Status:       task.Status.String(),
 		CreatedAt:    task.CreatedAt,
 		CompletedAt:  task.CompletedAt,
 	}, nil

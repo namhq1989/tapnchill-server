@@ -16,29 +16,29 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-type changeTaskCompletedStatusTestSuite struct {
+type ChangeTaskStatusTestSuite struct {
 	suite.Suite
-	handler            command.ChangeTaskCompletedStatusHandler
+	handler            command.ChangeTaskStatusHandler
 	mockCtrl           *gomock.Controller
 	mockTaskRepository *mocktask.MockTaskRepository
 	mockGoalRepository *mocktask.MockGoalRepository
 	mockService        *mocktask.MockService
 }
 
-func (s *changeTaskCompletedStatusTestSuite) SetupSuite() {
+func (s *ChangeTaskStatusTestSuite) SetupSuite() {
 	s.setupApplication()
 }
 
-func (s *changeTaskCompletedStatusTestSuite) setupApplication() {
+func (s *ChangeTaskStatusTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockTaskRepository = mocktask.NewMockTaskRepository(s.mockCtrl)
 	s.mockGoalRepository = mocktask.NewMockGoalRepository(s.mockCtrl)
 	s.mockService = mocktask.NewMockService(s.mockCtrl)
 
-	s.handler = command.NewChangeTaskCompletedStatusHandler(s.mockTaskRepository, s.mockGoalRepository, s.mockService)
+	s.handler = command.NewChangeTaskStatusHandler(s.mockTaskRepository, s.mockGoalRepository, s.mockService)
 }
 
-func (s *changeTaskCompletedStatusTestSuite) TearDownTest() {
+func (s *ChangeTaskStatusTestSuite) TearDownTest() {
 	s.mockCtrl.Finish()
 }
 
@@ -46,7 +46,7 @@ func (s *changeTaskCompletedStatusTestSuite) TearDownTest() {
 // CASES
 //
 
-func (s *changeTaskCompletedStatusTestSuite) Test_1_Success() {
+func (s *ChangeTaskStatusTestSuite) Test_1_Success() {
 	// mock data
 	var (
 		performerID = database.NewStringID()
@@ -76,15 +76,15 @@ func (s *changeTaskCompletedStatusTestSuite) Test_1_Success() {
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.ChangeTaskCompletedStatus(ctx, performerID, database.NewStringID(), dto.ChangeTaskCompletedStatusRequest{
-		Completed: true,
+	resp, err := s.handler.ChangeTaskStatus(ctx, performerID, database.NewStringID(), dto.ChangeTaskStatusRequest{
+		Status: domain.TaskStatusDone.String(),
 	})
 
 	assert.Nil(s.T(), err)
 	assert.NotNil(s.T(), resp)
 }
 
-func (s *changeTaskCompletedStatusTestSuite) Test_2_Fail_NotFound() {
+func (s *ChangeTaskStatusTestSuite) Test_2_Fail_NotFound() {
 	// mock data
 	s.mockService.EXPECT().
 		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
@@ -92,8 +92,8 @@ func (s *changeTaskCompletedStatusTestSuite) Test_2_Fail_NotFound() {
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.ChangeTaskCompletedStatus(ctx, database.NewStringID(), database.NewStringID(), dto.ChangeTaskCompletedStatusRequest{
-		Completed: true,
+	resp, err := s.handler.ChangeTaskStatus(ctx, database.NewStringID(), database.NewStringID(), dto.ChangeTaskStatusRequest{
+		Status: domain.TaskStatusDone.String(),
 	})
 
 	assert.NotNil(s.T(), err)
@@ -101,7 +101,7 @@ func (s *changeTaskCompletedStatusTestSuite) Test_2_Fail_NotFound() {
 	assert.Equal(s.T(), apperrors.Common.NotFound, err)
 }
 
-func (s *changeTaskCompletedStatusTestSuite) Test_2_Fail_NotOwner() {
+func (s *ChangeTaskStatusTestSuite) Test_2_Fail_NotOwner() {
 	// mock data
 	s.mockService.EXPECT().
 		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
@@ -109,19 +109,31 @@ func (s *changeTaskCompletedStatusTestSuite) Test_2_Fail_NotOwner() {
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.ChangeTaskCompletedStatus(ctx, database.NewStringID(), database.NewStringID(), dto.ChangeTaskCompletedStatusRequest{
-		Completed: true,
+	resp, err := s.handler.ChangeTaskStatus(ctx, database.NewStringID(), database.NewStringID(), dto.ChangeTaskStatusRequest{
+		Status: domain.TaskStatusDone.String(),
 	})
 
 	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), resp)
 	assert.Equal(s.T(), apperrors.Common.NotFound, err)
+}
+
+func (s *ChangeTaskStatusTestSuite) Test_2_Fail_InvalidStatus() {
+	// call
+	ctx := appcontext.NewRest(context.Background())
+	resp, err := s.handler.ChangeTaskStatus(ctx, database.NewStringID(), database.NewStringID(), dto.ChangeTaskStatusRequest{
+		Status: "invalid status",
+	})
+
+	assert.NotNil(s.T(), err)
+	assert.Nil(s.T(), resp)
+	assert.Equal(s.T(), apperrors.Common.BadRequest, err)
 }
 
 //
 // END OF CASES
 //
 
-func TestChangeTaskCompletedStatusTestSuite(t *testing.T) {
-	suite.Run(t, new(changeTaskCompletedStatusTestSuite))
+func TestChangeTaskStatusTestSuite(t *testing.T) {
+	suite.Run(t, new(ChangeTaskStatusTestSuite))
 }

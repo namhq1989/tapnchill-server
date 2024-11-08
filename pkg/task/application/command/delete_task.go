@@ -41,8 +41,8 @@ func (h DeleteTaskHandler) DeleteTask(ctx *appcontext.AppContext, performerID, t
 
 	ctx.Logger().Text("update goal stats")
 	goal.AdjustTotalTask(-1)
-	if task.IsCompleted {
-		goal.AdjustTotalCompletedTask(-1)
+	if task.IsDone() {
+		goal.AdjustTotalDoneTask(-1)
 	}
 
 	ctx.Logger().Text("update goal in db")

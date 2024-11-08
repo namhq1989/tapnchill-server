@@ -16,11 +16,12 @@ type (
 
 		CreateTask(ctx *appcontext.AppContext, performerID string, req dto.CreateTaskRequest) (*dto.CreateTaskResponse, error)
 		UpdateTask(ctx *appcontext.AppContext, performerID, taskID string, req dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error)
-		ChangeTaskCompletedStatus(ctx *appcontext.AppContext, performerID, taskID string, req dto.ChangeTaskCompletedStatusRequest) (*dto.ChangeTaskCompletedStatusResponse, error)
+		ChangeTaskStatus(ctx *appcontext.AppContext, performerID, taskID string, req dto.ChangeTaskStatusRequest) (*dto.ChangeTaskStatusResponse, error)
 		DeleteTask(ctx *appcontext.AppContext, performerID, taskID string, _ dto.DeleteTaskRequest) (*dto.DeleteTaskResponse, error)
 	}
 	Queries interface {
 		GetGoals(ctx *appcontext.AppContext, performerID string, req dto.GetGoalsRequest) (*dto.GetGoalsResponse, error)
+		GetTasks(ctx *appcontext.AppContext, performerID string, req dto.GetTasksRequest) (*dto.GetTasksResponse, error)
 	}
 	Instance interface {
 		Commands
@@ -34,11 +35,12 @@ type (
 
 		command.CreateTaskHandler
 		command.UpdateTaskHandler
-		command.ChangeTaskCompletedStatusHandler
+		command.ChangeTaskStatusHandler
 		command.DeleteTaskHandler
 	}
 	queryHandlers struct {
 		query.GetGoalsHandler
+		query.GetTasksHandler
 	}
 	Application struct {
 		commandHandlers
@@ -61,7 +63,7 @@ func New(
 
 			CreateTaskHandler: command.NewCreateTaskHandler(taskRepository, goalRepository, service),
 			UpdateTaskHandler: command.NewUpdateTaskHandler(taskRepository, service),
-			ChangeTaskCompletedStatusHandler: command.NewChangeTaskCompletedStatusHandler(
+			ChangeTaskStatusHandler: command.NewChangeTaskStatusHandler(
 				taskRepository,
 				goalRepository,
 				service,
@@ -70,6 +72,7 @@ func New(
 		},
 		queryHandlers: queryHandlers{
 			GetGoalsHandler: query.NewGetGoalsHandler(goalRepository),
+			GetTasksHandler: query.NewGetTasksHandler(taskRepository),
 		},
 	}
 }

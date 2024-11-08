@@ -15,6 +15,7 @@ type (
 		DeleteGoal(ctx *appcontext.AppContext, performerID, goalID string, _ dto.DeleteGoalRequest) (*dto.DeleteGoalResponse, error)
 
 		CreateTask(ctx *appcontext.AppContext, performerID string, req dto.CreateTaskRequest) (*dto.CreateTaskResponse, error)
+		UpdateTask(ctx *appcontext.AppContext, performerID, taskID string, req dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error)
 	}
 	Queries interface {
 		GetGoals(ctx *appcontext.AppContext, performerID string, req dto.GetGoalsRequest) (*dto.GetGoalsResponse, error)
@@ -30,6 +31,7 @@ type (
 		command.DeleteGoalHandler
 
 		command.CreateTaskHandler
+		command.UpdateTaskHandler
 	}
 	queryHandlers struct {
 		query.GetGoalsHandler
@@ -53,6 +55,7 @@ func New(
 			DeleteGoalHandler: command.NewDeleteGoalHandler(goalRepository),
 
 			CreateTaskHandler: command.NewCreateTaskHandler(taskRepository, goalRepository),
+			UpdateTaskHandler: command.NewUpdateTaskHandler(taskRepository),
 		},
 		queryHandlers: queryHandlers{
 			GetGoalsHandler: query.NewGetGoalsHandler(goalRepository),

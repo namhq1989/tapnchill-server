@@ -27,4 +27,22 @@ func (s server) registerTaskRoutes() {
 	}, s.jwt.RequireLoggedIn, func(next echo.HandlerFunc) echo.HandlerFunc {
 		return validation.ValidateHTTPPayload[dto.CreateTaskRequest](next)
 	})
+
+	g.PUT("/:id", func(c echo.Context) error {
+		var (
+			ctx         = c.Get("ctx").(*appcontext.AppContext)
+			req         = c.Get("req").(dto.UpdateTaskRequest)
+			performerID = ctx.GetUserID()
+			taskID      = c.Param("id")
+		)
+
+		resp, err := s.app.UpdateTask(ctx, performerID, taskID, req)
+		if err != nil {
+			return httprespond.R400(c, err, nil)
+		}
+
+		return httprespond.R200(c, resp)
+	}, s.jwt.RequireLoggedIn, func(next echo.HandlerFunc) echo.HandlerFunc {
+		return validation.ValidateHTTPPayload[dto.UpdateTaskRequest](next)
+	})
 }

@@ -6,10 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
-
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/pkg/task/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/task/infrastructure/dbmodel"
 	"go.mongodb.org/mongo-driver/bson"
@@ -77,7 +76,12 @@ func (r TaskRepository) Update(ctx *appcontext.AppContext, task domain.Task) err
 }
 
 func (r TaskRepository) Delete(ctx *appcontext.AppContext, taskID string) error {
-	_, err := r.collection().DeleteOne(ctx.Context(), bson.M{"_id": taskID})
+	tid, err := database.ObjectIDFromString(taskID)
+	if err != nil {
+		return apperrors.Task.InvalidGoalID
+	}
+
+	_, err = r.collection().DeleteOne(ctx.Context(), bson.M{"_id": tid})
 	return err
 }
 

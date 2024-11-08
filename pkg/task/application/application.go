@@ -17,6 +17,7 @@ type (
 		CreateTask(ctx *appcontext.AppContext, performerID string, req dto.CreateTaskRequest) (*dto.CreateTaskResponse, error)
 		UpdateTask(ctx *appcontext.AppContext, performerID, taskID string, req dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error)
 		ChangeTaskCompletedStatus(ctx *appcontext.AppContext, performerID, taskID string, req dto.ChangeTaskCompletedStatusRequest) (*dto.ChangeTaskCompletedStatusResponse, error)
+		DeleteTask(ctx *appcontext.AppContext, performerID, taskID string, _ dto.DeleteTaskRequest) (*dto.DeleteTaskResponse, error)
 	}
 	Queries interface {
 		GetGoals(ctx *appcontext.AppContext, performerID string, req dto.GetGoalsRequest) (*dto.GetGoalsResponse, error)
@@ -34,6 +35,7 @@ type (
 		command.CreateTaskHandler
 		command.UpdateTaskHandler
 		command.ChangeTaskCompletedStatusHandler
+		command.DeleteTaskHandler
 	}
 	queryHandlers struct {
 		query.GetGoalsHandler
@@ -64,6 +66,7 @@ func New(
 				goalRepository,
 				service,
 			),
+			DeleteTaskHandler: command.NewDeleteTaskHandler(taskRepository, goalRepository, service),
 		},
 		queryHandlers: queryHandlers{
 			GetGoalsHandler: query.NewGetGoalsHandler(goalRepository),

@@ -11,6 +11,23 @@ import (
 func (s server) registerGoalRoutes() {
 	g := s.echo.Group("/api/task")
 
+	g.GET("/goal", func(c echo.Context) error {
+		var (
+			ctx         = c.Get("ctx").(*appcontext.AppContext)
+			req         = c.Get("req").(dto.GetGoalsRequest)
+			performerID = ctx.GetUserID()
+		)
+
+		resp, err := s.app.GetGoals(ctx, performerID, req)
+		if err != nil {
+			return httprespond.R400(c, err, nil)
+		}
+
+		return httprespond.R200(c, resp)
+	}, s.jwt.RequireLoggedIn, func(next echo.HandlerFunc) echo.HandlerFunc {
+		return validation.ValidateHTTPPayload[dto.GetGoalsRequest](next)
+	})
+
 	g.POST("/goal", func(c echo.Context) error {
 		var (
 			ctx         = c.Get("ctx").(*appcontext.AppContext)

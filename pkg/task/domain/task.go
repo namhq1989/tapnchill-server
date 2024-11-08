@@ -76,7 +76,7 @@ func (t *Task) SetDueDate(dueDate *time.Time) {
 	t.DueDate = dueDate
 }
 
-func (t *Task) SetIsCompleted(isCompleted bool) {
+func (t *Task) SetCompleted(isCompleted bool) {
 	t.IsCompleted = isCompleted
 	if isCompleted {
 		now := manipulation.NowUTC()

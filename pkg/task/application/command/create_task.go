@@ -48,7 +48,7 @@ func (h CreateTaskHandler) CreateTask(ctx *appcontext.AppContext, performerID st
 		return nil, err
 	}
 
-	ctx.Logger().Text("increase goal stats")
+	ctx.Logger().Text("adjust goal stats")
 	goal.AdjustTotalTask(1)
 
 	ctx.Logger().Text("update goal in db")

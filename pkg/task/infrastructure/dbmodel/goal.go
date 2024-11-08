@@ -18,6 +18,7 @@ type Goal struct {
 	Stats        GoalStats          `bson:"stats"`
 	IsCompleted  bool               `bson:"isCompleted"`
 	CreatedAt    time.Time          `bson:"createdAt"`
+	UpdatedAt    time.Time          `bson:"updatedAt"`
 }
 
 type GoalStats struct {
@@ -38,13 +39,14 @@ func (g Goal) ToDomain() domain.Goal {
 		},
 		IsCompleted: g.IsCompleted,
 		CreatedAt:   g.CreatedAt,
+		UpdatedAt:   g.UpdatedAt,
 	}
 }
 
 func (Goal) FromDomain(goal domain.Goal) (*Goal, error) {
 	id, err := database.ObjectIDFromString(goal.ID)
 	if err != nil {
-		return nil, apperrors.Common.InvalidGoal
+		return nil, apperrors.Task.InvalidGoalID
 	}
 
 	uid, err := database.ObjectIDFromString(goal.UserID)
@@ -64,5 +66,6 @@ func (Goal) FromDomain(goal domain.Goal) (*Goal, error) {
 		},
 		IsCompleted: goal.IsCompleted,
 		CreatedAt:   goal.CreatedAt,
+		UpdatedAt:   goal.UpdatedAt,
 	}, nil
 }

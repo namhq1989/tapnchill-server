@@ -40,8 +40,8 @@ type (
 
 func Init() Server {
 	cfg := Server{
-		RestPort: ":3000",
-		GRPCPort: ":3001",
+		RestPort: ":3070",
+		GRPCPort: ":3071",
 
 		AppName:     getEnvStr("APP_NAME"),
 		Environment: getEnvStr("ENVIRONMENT"),

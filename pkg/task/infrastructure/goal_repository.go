@@ -2,11 +2,13 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/pkg/task/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/task/infrastructure/dbmodel"
 	"go.mongodb.org/mongo-driver/bson"
@@ -68,6 +70,11 @@ func (r GoalRepository) Update(ctx *appcontext.AppContext, goal domain.Goal) err
 	return err
 }
 
+func (r GoalRepository) Delete(ctx *appcontext.AppContext, goalID string) error {
+	_, err := r.collection().DeleteOne(ctx.Context(), bson.M{"_id": goalID})
+	return err
+}
+
 func (r GoalRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.GoalFilter) ([]domain.Goal, error) {
 	var (
 		condition = bson.M{
@@ -98,4 +105,23 @@ func (r GoalRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.G
 		result = append(result, doc.ToDomain())
 	}
 	return result, nil
+}
+
+func (r GoalRepository) FindByID(ctx *appcontext.AppContext, goalID string) (*domain.Goal, error) {
+	gid, err := database.ObjectIDFromString(goalID)
+	if err != nil {
+		return nil, apperrors.Task.InvalidGoalID
+	}
+
+	var doc dbmodel.Goal
+	if err = r.collection().FindOne(ctx.Context(), bson.M{
+		"_id": gid,
+	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	} else if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, nil
+	}
+
+	result := doc.ToDomain()
+	return &result, nil
 }

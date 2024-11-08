@@ -25,7 +25,7 @@ func NewTaskFilter(userID, keyword, pt string) (*TaskFilter, error) {
 
 	gid, err := database.ObjectIDFromString(keyword)
 	if err != nil {
-		return nil, apperrors.Common.InvalidGoal
+		return nil, apperrors.Task.InvalidGoalID
 	}
 
 	pageToken := pagetoken.Decode(pt)

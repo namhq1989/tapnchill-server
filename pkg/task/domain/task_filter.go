@@ -12,29 +12,39 @@ import (
 type TaskFilter struct {
 	UserID    primitive.ObjectID
 	GoalID    primitive.ObjectID
+	Status    TaskStatus
 	Keyword   string
 	Timestamp time.Time
 	Limit     int64
 }
 
-func NewTaskFilter(userID, keyword, pt string) (*TaskFilter, error) {
+func NewTaskFilter(userID, goalID, status, keyword, pt string) (*TaskFilter, error) {
 	uid, err := database.ObjectIDFromString(userID)
 	if err != nil {
 		return nil, apperrors.User.InvalidUserID
 	}
 
-	gid, err := database.ObjectIDFromString(keyword)
-	if err != nil {
-		return nil, apperrors.Task.InvalidGoalID
-	}
-
 	pageToken := pagetoken.Decode(pt)
 
-	return &TaskFilter{
+	filter := &TaskFilter{
 		UserID:    uid,
-		GoalID:    gid,
 		Keyword:   keyword,
 		Timestamp: pageToken.Timestamp,
 		Limit:     20,
-	}, nil
+	}
+
+	if goalID != "" {
+		gid, gErr := database.ObjectIDFromString(goalID)
+		if gErr != nil {
+			return nil, apperrors.Task.InvalidGoalID
+		}
+		filter.GoalID = gid
+	}
+
+	dStatus := ToTaskStatus(status)
+	if dStatus.IsValid() {
+		filter.Status = dStatus
+	}
+
+	return filter, nil
 }

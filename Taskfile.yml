@@ -39,6 +39,7 @@ tasks:
       # task
       - mockgen -source=pkg/task/domain/goal.go -destination=internal/mock/task/goal.go -package=mocktask
       - mockgen -source=pkg/task/domain/task.go -destination=internal/mock/task/task.go -package=mocktask
+      - mockgen -source=pkg/task/domain/service.go -destination=internal/mock/task/service.go -package=mocktask
 
   # test
   test:

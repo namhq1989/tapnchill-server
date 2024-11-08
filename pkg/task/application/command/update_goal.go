@@ -2,18 +2,19 @@ package command
 
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
-	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/pkg/task/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/task/dto"
 )
 
 type UpdateGoalHandler struct {
 	goalRepository domain.GoalRepository
+	service        domain.Service
 }
 
-func NewUpdateGoalHandler(goalRepository domain.GoalRepository) UpdateGoalHandler {
+func NewUpdateGoalHandler(goalRepository domain.GoalRepository, service domain.Service) UpdateGoalHandler {
 	return UpdateGoalHandler{
 		goalRepository: goalRepository,
+		service:        service,
 	}
 }
 
@@ -23,20 +24,9 @@ func (h UpdateGoalHandler) UpdateGoal(ctx *appcontext.AppContext, performerID, g
 		"name": req.Name, "description": req.Description,
 	})
 
-	ctx.Logger().Text("find goal in db")
-	goal, err := h.goalRepository.FindByID(ctx, goalID)
+	goal, err := h.service.GetGoalByID(ctx, goalID, performerID)
 	if err != nil {
-		ctx.Logger().Error("failed to find goal in db", err, appcontext.Fields{})
 		return nil, err
-	}
-	if goal == nil {
-		ctx.Logger().ErrorText("goal not found, respond")
-		return nil, apperrors.Common.NotFound
-	}
-
-	if goal.UserID != performerID {
-		ctx.Logger().ErrorText("goal author not match, respond")
-		return nil, apperrors.Common.NotFound
 	}
 
 	ctx.Logger().Text("update goal")

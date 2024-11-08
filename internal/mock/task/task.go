@@ -54,6 +54,20 @@ func (mr *MockTaskRepositoryMockRecorder) Create(ctx, task any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockTaskRepository)(nil).Create), ctx, task)
 }
 
+// Delete mocks base method.
+func (m *MockTaskRepository) Delete(ctx *appcontext.AppContext, taskID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", ctx, taskID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockTaskRepositoryMockRecorder) Delete(ctx, taskID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockTaskRepository)(nil).Delete), ctx, taskID)
+}
+
 // FindByFilter mocks base method.
 func (m *MockTaskRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.TaskFilter) ([]domain.Task, error) {
 	m.ctrl.T.Helper()
@@ -67,6 +81,21 @@ func (m *MockTaskRepository) FindByFilter(ctx *appcontext.AppContext, filter dom
 func (mr *MockTaskRepositoryMockRecorder) FindByFilter(ctx, filter any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByFilter", reflect.TypeOf((*MockTaskRepository)(nil).FindByFilter), ctx, filter)
+}
+
+// FindByID mocks base method.
+func (m *MockTaskRepository) FindByID(ctx *appcontext.AppContext, taskID string) (*domain.Task, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByID", ctx, taskID)
+	ret0, _ := ret[0].(*domain.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByID indicates an expected call of FindByID.
+func (mr *MockTaskRepositoryMockRecorder) FindByID(ctx, taskID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockTaskRepository)(nil).FindByID), ctx, taskID)
 }
 
 // Update mocks base method.

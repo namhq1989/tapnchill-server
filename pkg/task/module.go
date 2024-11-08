@@ -6,6 +6,7 @@ import (
 	"github.com/namhq1989/tapnchill-server/pkg/task/application"
 	"github.com/namhq1989/tapnchill-server/pkg/task/infrastructure"
 	"github.com/namhq1989/tapnchill-server/pkg/task/rest"
+	"github.com/namhq1989/tapnchill-server/pkg/task/shared"
 )
 
 type Module struct{}
@@ -17,11 +18,16 @@ func (Module) Name() string {
 func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error {
 	var (
 		// dependencies
+		taskRepository = infrastructure.NewTaskRepository(mono.Database())
 		goalRepository = infrastructure.NewGoalRepository(mono.Database())
+
+		service = shared.NewService(taskRepository, goalRepository)
 
 		// app
 		app = application.New(
+			taskRepository,
 			goalRepository,
+			service,
 		)
 	)
 

@@ -16,27 +16,27 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-type updateGoalTestSuite struct {
+type updateTaskTestSuite struct {
 	suite.Suite
-	handler            command.UpdateGoalHandler
+	handler            command.UpdateTaskHandler
 	mockCtrl           *gomock.Controller
-	mockGoalRepository *mocktask.MockGoalRepository
+	mockTaskRepository *mocktask.MockTaskRepository
 	mockService        *mocktask.MockService
 }
 
-func (s *updateGoalTestSuite) SetupSuite() {
+func (s *updateTaskTestSuite) SetupSuite() {
 	s.setupApplication()
 }
 
-func (s *updateGoalTestSuite) setupApplication() {
+func (s *updateTaskTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
-	s.mockGoalRepository = mocktask.NewMockGoalRepository(s.mockCtrl)
+	s.mockTaskRepository = mocktask.NewMockTaskRepository(s.mockCtrl)
 	s.mockService = mocktask.NewMockService(s.mockCtrl)
 
-	s.handler = command.NewUpdateGoalHandler(s.mockGoalRepository, s.mockService)
+	s.handler = command.NewUpdateTaskHandler(s.mockTaskRepository, s.mockService)
 }
 
-func (s *updateGoalTestSuite) TearDownTest() {
+func (s *updateTaskTestSuite) TearDownTest() {
 	s.mockCtrl.Finish()
 }
 
@@ -44,52 +44,52 @@ func (s *updateGoalTestSuite) TearDownTest() {
 // CASES
 //
 
-func (s *updateGoalTestSuite) Test_1_Success() {
+func (s *updateTaskTestSuite) Test_1_Success() {
 	// mock data
 	var (
 		performerID = database.NewStringID()
 	)
 
 	s.mockService.EXPECT().
-		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
-		Return(&domain.Goal{
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(&domain.Task{
 			ID:     database.NewStringID(),
 			UserID: performerID,
 		}, nil)
 
-	s.mockGoalRepository.EXPECT().
+	s.mockTaskRepository.EXPECT().
 		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.UpdateGoal(ctx, performerID, database.NewStringID(), dto.UpdateGoalRequest{
-		Name:        "goal name",
-		Description: "goal description",
+	resp, err := s.handler.UpdateTask(ctx, performerID, database.NewStringID(), dto.UpdateTaskRequest{
+		Name:        "task name",
+		Description: "task description",
 	})
 
 	assert.Nil(s.T(), err)
 	assert.NotNil(s.T(), resp)
 }
 
-func (s *updateGoalTestSuite) Test_2_Fail_InvalidName() {
+func (s *updateTaskTestSuite) Test_2_Fail_InvalidName() {
 	// mock data
 	var (
 		performerID = database.NewStringID()
 	)
 
 	s.mockService.EXPECT().
-		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
-		Return(&domain.Goal{
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(&domain.Task{
 			ID:     database.NewStringID(),
 			UserID: performerID,
 		}, nil)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.UpdateGoal(ctx, performerID, database.NewStringID(), dto.UpdateGoalRequest{
+	resp, err := s.handler.UpdateTask(ctx, performerID, database.NewStringID(), dto.UpdateTaskRequest{
 		Name:        "",
-		Description: "goal description",
+		Description: "task description",
 	})
 
 	assert.NotNil(s.T(), err)
@@ -97,17 +97,17 @@ func (s *updateGoalTestSuite) Test_2_Fail_InvalidName() {
 	assert.Equal(s.T(), apperrors.Common.InvalidName, err)
 }
 
-func (s *updateGoalTestSuite) Test_2_Fail_NotFound() {
+func (s *updateTaskTestSuite) Test_2_Fail_NotFound() {
 	// mock data
 	s.mockService.EXPECT().
-		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil, apperrors.Common.NotFound)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.UpdateGoal(ctx, database.NewStringID(), database.NewStringID(), dto.UpdateGoalRequest{
-		Name:        "goal name",
-		Description: "goal description",
+	resp, err := s.handler.UpdateTask(ctx, database.NewStringID(), database.NewStringID(), dto.UpdateTaskRequest{
+		Name:        "task name",
+		Description: "task description",
 	})
 
 	assert.NotNil(s.T(), err)
@@ -115,17 +115,17 @@ func (s *updateGoalTestSuite) Test_2_Fail_NotFound() {
 	assert.Equal(s.T(), apperrors.Common.NotFound, err)
 }
 
-func (s *updateGoalTestSuite) Test_2_Fail_NotOwner() {
+func (s *updateTaskTestSuite) Test_2_Fail_NotOwner() {
 	// mock data
 	s.mockService.EXPECT().
-		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil, apperrors.Common.NotFound)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.UpdateGoal(ctx, database.NewStringID(), database.NewStringID(), dto.UpdateGoalRequest{
-		Name:        "goal name",
-		Description: "goal description",
+	resp, err := s.handler.UpdateTask(ctx, database.NewStringID(), database.NewStringID(), dto.UpdateTaskRequest{
+		Name:        "task name",
+		Description: "task description",
 	})
 
 	assert.NotNil(s.T(), err)
@@ -137,6 +137,6 @@ func (s *updateGoalTestSuite) Test_2_Fail_NotOwner() {
 // END OF CASES
 //
 
-func TestUpdateGoalTestSuite(t *testing.T) {
-	suite.Run(t, new(updateGoalTestSuite))
+func TestUpdateTaskTestSuite(t *testing.T) {
+	suite.Run(t, new(updateTaskTestSuite))
 }

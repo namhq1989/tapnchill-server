@@ -16,27 +16,29 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-type deleteGoalTestSuite struct {
+type deleteTaskTestSuite struct {
 	suite.Suite
-	handler            command.DeleteGoalHandler
+	handler            command.DeleteTaskHandler
 	mockCtrl           *gomock.Controller
+	mockTaskRepository *mocktask.MockTaskRepository
 	mockGoalRepository *mocktask.MockGoalRepository
 	mockService        *mocktask.MockService
 }
 
-func (s *deleteGoalTestSuite) SetupSuite() {
+func (s *deleteTaskTestSuite) SetupSuite() {
 	s.setupApplication()
 }
 
-func (s *deleteGoalTestSuite) setupApplication() {
+func (s *deleteTaskTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
+	s.mockTaskRepository = mocktask.NewMockTaskRepository(s.mockCtrl)
 	s.mockGoalRepository = mocktask.NewMockGoalRepository(s.mockCtrl)
 	s.mockService = mocktask.NewMockService(s.mockCtrl)
 
-	s.handler = command.NewDeleteGoalHandler(s.mockGoalRepository, s.mockService)
+	s.handler = command.NewDeleteTaskHandler(s.mockTaskRepository, s.mockGoalRepository, s.mockService)
 }
 
-func (s *deleteGoalTestSuite) TearDownTest() {
+func (s *deleteTaskTestSuite) TearDownTest() {
 	s.mockCtrl.Finish()
 }
 
@@ -44,11 +46,18 @@ func (s *deleteGoalTestSuite) TearDownTest() {
 // CASES
 //
 
-func (s *deleteGoalTestSuite) Test_1_Success() {
+func (s *deleteTaskTestSuite) Test_1_Success() {
 	// mock data
 	var (
 		performerID = database.NewStringID()
 	)
+
+	s.mockService.EXPECT().
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(&domain.Task{
+			ID:     database.NewStringID(),
+			UserID: performerID,
+		}, nil)
 
 	s.mockService.EXPECT().
 		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
@@ -57,77 +66,56 @@ func (s *deleteGoalTestSuite) Test_1_Success() {
 			UserID: performerID,
 		}, nil)
 
-	s.mockGoalRepository.EXPECT().
+	s.mockTaskRepository.EXPECT().
 		Delete(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	s.mockGoalRepository.EXPECT().
+		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.DeleteGoal(ctx, performerID, database.NewStringID(), dto.DeleteGoalRequest{})
+	resp, err := s.handler.DeleteTask(ctx, performerID, database.NewStringID(), dto.DeleteTaskRequest{})
 
 	assert.Nil(s.T(), err)
 	assert.NotNil(s.T(), resp)
 }
 
-func (s *deleteGoalTestSuite) Test_2_Fail_NotFound() {
+func (s *deleteTaskTestSuite) Test_2_Fail_NotFound() {
 	// mock data
 	s.mockService.EXPECT().
-		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil, apperrors.Common.NotFound)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.DeleteGoal(ctx, database.NewStringID(), database.NewStringID(), dto.DeleteGoalRequest{})
+	resp, err := s.handler.DeleteTask(ctx, database.NewStringID(), database.NewStringID(), dto.DeleteTaskRequest{})
 
 	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), resp)
 	assert.Equal(s.T(), apperrors.Common.NotFound, err)
 }
 
-func (s *deleteGoalTestSuite) Test_2_Fail_NotOwner() {
+func (s *deleteTaskTestSuite) Test_2_Fail_NotOwner() {
 	// mock data
 	s.mockService.EXPECT().
-		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil, apperrors.Common.NotFound)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.DeleteGoal(ctx, database.NewStringID(), database.NewStringID(), dto.DeleteGoalRequest{})
+	resp, err := s.handler.DeleteTask(ctx, database.NewStringID(), database.NewStringID(), dto.DeleteTaskRequest{})
 
 	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), resp)
 	assert.Equal(s.T(), apperrors.Common.NotFound, err)
-}
-
-func (s *deleteGoalTestSuite) Test_2_Fail_StillHasTasksRemaining() {
-	// mock data
-	var (
-		performerID = database.NewStringID()
-	)
-
-	s.mockService.EXPECT().
-		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
-		Return(&domain.Goal{
-			ID:     database.NewStringID(),
-			UserID: performerID,
-			Stats: domain.GoalStats{
-				TotalTask: 2,
-			},
-		}, nil)
-
-	// call
-	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.DeleteGoal(ctx, performerID, database.NewStringID(), dto.DeleteGoalRequest{})
-
-	assert.NotNil(s.T(), err)
-	assert.Nil(s.T(), resp)
-	assert.Equal(s.T(), apperrors.Task.GoalDeleteErrorTasksRemaining, err)
 }
 
 //
 // END OF CASES
 //
 
-func TestDeleteGoalTestSuite(t *testing.T) {
-	suite.Run(t, new(deleteGoalTestSuite))
+func TestDeleteTaskTestSuite(t *testing.T) {
+	suite.Run(t, new(deleteTaskTestSuite))
 }

@@ -2,11 +2,13 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/pkg/task/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/task/infrastructure/dbmodel"
 	"go.mongodb.org/mongo-driver/bson"
@@ -73,6 +75,35 @@ func (r TaskRepository) Update(ctx *appcontext.AppContext, task domain.Task) err
 	return err
 }
 
+func (r TaskRepository) Delete(ctx *appcontext.AppContext, taskID string) error {
+	tid, err := database.ObjectIDFromString(taskID)
+	if err != nil {
+		return apperrors.Task.InvalidGoalID
+	}
+
+	_, err = r.collection().DeleteOne(ctx.Context(), bson.M{"_id": tid})
+	return err
+}
+
+func (r TaskRepository) FindByID(ctx *appcontext.AppContext, taskID string) (*domain.Task, error) {
+	tid, err := database.ObjectIDFromString(taskID)
+	if err != nil {
+		return nil, apperrors.Task.InvalidTaskID
+	}
+
+	var doc dbmodel.Task
+	if err = r.collection().FindOne(ctx.Context(), bson.M{
+		"_id": tid,
+	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	} else if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, nil
+	}
+
+	result := doc.ToDomain()
+	return &result, nil
+}
+
 func (r TaskRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.TaskFilter) ([]domain.Task, error) {
 	var (
 		condition = bson.M{
@@ -88,11 +119,17 @@ func (r TaskRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.T
 		condition["goalId"] = filter.GoalID
 	}
 
+	if filter.Status.IsValid() {
+		condition["status"] = filter.Status
+	}
+
 	if filter.Keyword != "" {
 		condition["searchString"] = bson.M{"$text": bson.M{"$search": filter.Keyword}}
 	}
 
-	cursor, err := r.collection().Find(ctx.Context(), condition, nil)
+	cursor, err := r.collection().Find(ctx.Context(), condition, &options.FindOptions{
+		Sort: bson.M{"createdAt": -1},
+	})
 	if err != nil {
 		return result, err
 	}

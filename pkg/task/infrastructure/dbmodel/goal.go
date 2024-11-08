@@ -46,7 +46,7 @@ func (g Goal) ToDomain() domain.Goal {
 func (Goal) FromDomain(goal domain.Goal) (*Goal, error) {
 	id, err := database.ObjectIDFromString(goal.ID)
 	if err != nil {
-		return nil, apperrors.Common.InvalidGoal
+		return nil, apperrors.Task.InvalidGoalID
 	}
 
 	uid, err := database.ObjectIDFromString(goal.UserID)

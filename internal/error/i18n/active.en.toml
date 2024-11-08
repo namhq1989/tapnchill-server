@@ -17,8 +17,6 @@ invalid_code = "Invalid code"
 invalid_status = "Invalid status"
 invalid_feedback = "Invalid feedback"
 invalid_quote = "Invalid quote"
-invalid_goal = "Invalid goal"
-invalid_task = "Invalid task"
 
 # auth
 auth_invalid_auth_token = "Invalid auth token"
@@ -30,3 +28,11 @@ auth_not_allowed = "Not allowed"
 user_invalid_id = "Invalid user id"
 user_not_found = "User not found"
 user_invalid_source_id = "Invalid source id"
+
+# task
+task_invalid_goal_id = "Invalid goal id"
+task_goal_not_found = "Goal not found"
+task_goal_delete_error_tasks_remaining = "Please delete all tasks under this goal before deleting it"
+
+task_invalid_task_id = "Invalid task id"
+task_not_found = "Task not found"

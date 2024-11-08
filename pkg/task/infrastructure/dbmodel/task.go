@@ -40,7 +40,7 @@ func (t Task) ToDomain() domain.Task {
 func (Task) FromDomain(task domain.Task) (*Task, error) {
 	id, err := database.ObjectIDFromString(task.ID)
 	if err != nil {
-		return nil, apperrors.Common.InvalidTask
+		return nil, apperrors.Task.InvalidTaskID
 	}
 
 	uid, err := database.ObjectIDFromString(task.UserID)
@@ -50,7 +50,7 @@ func (Task) FromDomain(task domain.Task) (*Task, error) {
 
 	gid, err := database.ObjectIDFromString(task.GoalID)
 	if err != nil {
-		return nil, apperrors.Common.InvalidGoal
+		return nil, apperrors.Task.InvalidGoalID
 	}
 
 	return &Task{

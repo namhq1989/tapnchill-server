@@ -70,6 +70,11 @@ func (r GoalRepository) Update(ctx *appcontext.AppContext, goal domain.Goal) err
 	return err
 }
 
+func (r GoalRepository) Delete(ctx *appcontext.AppContext, goalID string) error {
+	_, err := r.collection().DeleteOne(ctx.Context(), bson.M{"_id": goalID})
+	return err
+}
+
 func (r GoalRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.GoalFilter) ([]domain.Goal, error) {
 	var (
 		condition = bson.M{
@@ -105,7 +110,7 @@ func (r GoalRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.G
 func (r GoalRepository) FindByID(ctx *appcontext.AppContext, goalID string) (*domain.Goal, error) {
 	gid, err := database.ObjectIDFromString(goalID)
 	if err != nil {
-		return nil, apperrors.Common.InvalidGoal
+		return nil, apperrors.Task.InvalidGoalID
 	}
 
 	var doc dbmodel.Goal

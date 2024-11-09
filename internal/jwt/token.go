@@ -12,27 +12,25 @@ import (
 
 var unauthorizedError = errors.New("unauthorized")
 
-func (j JWT) GenerateAccessToken(ctx *appcontext.AppContext, userID, clientID, timezone string) (string, error) {
-	if userID == "" || clientID == "" {
-		ctx.Logger().Error("invalid user id or platform id", nil, appcontext.Fields{"userID": userID, "clientID": clientID})
+func (j JWT) GenerateAccessToken(ctx *appcontext.AppContext, userID string) (string, error) {
+	if userID == "" {
+		ctx.Logger().Error("invalid user id or platform id", nil, appcontext.Fields{"userID": userID})
 		return "", apperrors.Common.InvalidID
 	}
 
-	accessToken, _, err := j.generateAccessToken(userID, clientID, timezone)
+	accessToken, _, err := j.generateAccessToken(userID)
 	if err != nil {
-		ctx.Logger().Error("failed to generate access token", err, appcontext.Fields{"userID": userID, "clientID": clientID})
+		ctx.Logger().Error("failed to generate access token", err, appcontext.Fields{"userID": userID})
 		return "", err
 	}
 
 	return accessToken, nil
 }
 
-func (j JWT) generateAccessToken(userID, clientID, timezone string) (string, time.Time, error) {
+func (j JWT) generateAccessToken(userID string) (string, time.Time, error) {
 	exp := time.Now().Add(j.accessTokenTTL)
 	claims := &Claims{
-		UserID:   userID,
-		ClientID: clientID,
-		Timezone: timezone,
+		UserID: userID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: exp.Unix(),
 		},

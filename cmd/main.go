@@ -19,6 +19,7 @@ import (
 	"github.com/namhq1989/tapnchill-server/internal/utils/waiter"
 	"github.com/namhq1989/tapnchill-server/pkg/common"
 	"github.com/namhq1989/tapnchill-server/pkg/task"
+	"github.com/namhq1989/tapnchill-server/pkg/user"
 )
 
 func main() {
@@ -77,6 +78,7 @@ func main() {
 	a.modules = []monolith.Module{
 		&common.Module{},
 		&task.Module{},
+		&user.Module{},
 	}
 
 	// start

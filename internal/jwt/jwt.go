@@ -11,12 +11,12 @@ import (
 type Operations interface {
 	RequireLoggedIn(next echo.HandlerFunc) echo.HandlerFunc
 
-	GenerateAccessToken(ctx *appcontext.AppContext, userID, clientID, timezone string) (string, error)
+	GenerateAccessToken(ctx *appcontext.AppContext, userID string) (string, error)
 	ParseAccessToken(ctx *appcontext.AppContext, token string) (*Claims, error)
 }
 
 const (
-	defaultAccessTokenTTL = time.Minute * 15 // 15 minutes
+	defaultAccessTokenTTL = time.Hour * 26298 // 3 years
 )
 
 type JWT struct {
@@ -25,9 +25,7 @@ type JWT struct {
 }
 
 type Claims struct {
-	UserID   string `json:"userId"`
-	ClientID string `json:"clientId"`
-	Timezone string `json:"timezone"`
+	UserID string `json:"userId"`
 	jwt.StandardClaims
 }
 

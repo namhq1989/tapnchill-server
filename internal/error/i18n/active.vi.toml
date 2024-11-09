@@ -29,12 +29,12 @@ auth_not_allowed = "Không được phép"
 # user
 user_invalid_id = "ID người dùng không hợp lệ"
 user_not_found = "Không tìm thấy người dùng"
-user_invalid_source_id = "ID nguồn không hợp lệ"
+user_invalid_client_id = "ID khách không hợp lệ"
 
 # task
 task_invalid_goal_id = "ID mục tiêu không hợp lệ"
 task_goal_not_found = "Mục tiêu không tìm thấy"
-task_goal_delete_error_tasks_remaining = "Vui lòng xóa tất cả các công việc thuộc mục tiêu này trước khi xóa mục tiêu"
+task_goal_delete_error_tasks_remaining = "Vui lòng xóa tất cả các công việc trước khi xóa mục tiêu"
 
 task_invalid_task_id = "ID công việc không hợp lệ"
 task_not_found = "Công việc không tìm thấy"

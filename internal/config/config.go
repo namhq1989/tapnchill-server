@@ -14,8 +14,9 @@ type (
 		IsEnvRelease bool
 
 		// Authentication
-		AccessTokenSecret string
-		AccessTokenTTL    int
+		AnonymousUserChecksumSecret string
+		AccessTokenSecret           string
+		AccessTokenTTL              int
 
 		// Mongo
 		MongoURL    string
@@ -46,8 +47,9 @@ func Init() Server {
 		AppName:     getEnvStr("APP_NAME"),
 		Environment: getEnvStr("ENVIRONMENT"),
 
-		AccessTokenSecret: getEnvStr("ACCESS_TOKEN_SECRET"),
-		AccessTokenTTL:    getEnvInt("ACCESS_TOKEN_TTL"),
+		AnonymousUserChecksumSecret: getEnvStr("ANONYMOUS_USER_CHECKSUM_SECRET"),
+		AccessTokenSecret:           getEnvStr("ACCESS_TOKEN_SECRET"),
+		AccessTokenTTL:              getEnvInt("ACCESS_TOKEN_TTL"),
 
 		MongoURL:    getEnvStr("MONGO_URL"),
 		MongoDBName: getEnvStr("MONGO_DB_NAME"),

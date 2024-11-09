@@ -11,7 +11,7 @@ import (
 func (s server) registerUserRoutes() {
 	g := s.echo.Group("/api/user")
 
-	g.POST("/anonymous-sign-up", func(c echo.Context) error {
+	g.POST("/sign-up/anonymous", func(c echo.Context) error {
 		var (
 			ctx = c.Get("ctx").(*appcontext.AppContext)
 			req = c.Get("req").(dto.AnonymousSignUpRequest)

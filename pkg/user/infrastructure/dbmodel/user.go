@@ -9,7 +9,6 @@ import (
 
 type User struct {
 	ID            primitive.ObjectID `bson:"_id"`
-	ClientID      string             `bson:"clientId"`
 	Name          string             `bson:"name"`
 	Plan          string             `bson:"plan"`
 	AuthProviders []AuthProvider     `bson:"authProviders"`
@@ -20,7 +19,6 @@ type User struct {
 func (u User) ToDomain() domain.User {
 	user := domain.User{
 		ID:            u.ID.Hex(),
-		ClientID:      u.ClientID,
 		Name:          u.Name,
 		Plan:          domain.ToPlan(u.Plan),
 		AuthProviders: make([]domain.AuthProvider, 0),
@@ -48,7 +46,6 @@ func (User) FromDomain(user domain.User) (*User, error) {
 
 	return &User{
 		ID:            id,
-		ClientID:      user.ClientID,
 		Name:          user.Name,
 		Plan:          user.Plan.String(),
 		AuthProviders: authProviders,

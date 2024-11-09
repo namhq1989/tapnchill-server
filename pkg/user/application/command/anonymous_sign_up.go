@@ -20,7 +20,7 @@ func NewAnonymousSignUpHandler(userRepository domain.UserRepository, jwtReposito
 }
 
 func (h AnonymousSignUpHandler) AnonymousSignUp(ctx *appcontext.AppContext, req dto.AnonymousSignUpRequest) (*dto.AnonymousSignUpResponse, error) {
-	ctx.Logger().Info("new anonymous sign up request", appcontext.Fields{"clientID": req.ClientID, "checksum": req.Checksum})
+	ctx.Logger().Info("new anonymous sign up request", appcontext.Fields{"clientID": req.ClientID, "source": req.Source, "checksum": req.Checksum})
 
 	if !h.userRepository.ValidateAnonymousChecksum(ctx, req.ClientID, req.Checksum) {
 		ctx.Logger().Text("invalid checksum, respond")
@@ -28,7 +28,7 @@ func (h AnonymousSignUpHandler) AnonymousSignUp(ctx *appcontext.AppContext, req 
 	}
 
 	ctx.Logger().Text("checksum is valid, create new user model")
-	user, err := domain.NewUser(req.ClientID)
+	user, err := domain.NewUser(req.ClientID, req.Source)
 	if err != nil {
 		ctx.Logger().Error("failed to create new user model", err, appcontext.Fields{})
 		return nil, err

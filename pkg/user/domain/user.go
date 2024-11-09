@@ -19,7 +19,6 @@ type UserRepository interface {
 
 type User struct {
 	ID            string
-	ClientID      string
 	Name          string
 	Plan          Plan
 	AuthProviders []AuthProvider
@@ -27,17 +26,27 @@ type User struct {
 	UpdatedAt     time.Time
 }
 
-func NewUser(clientID string) (*User, error) {
+func NewUser(clientID, source string) (*User, error) {
 	if clientID == "" {
 		return nil, apperrors.User.InvalidClientID
 	}
 
+	authProviders := make([]AuthProvider, 0)
+	if source == "" || source == AuthProviderExtension {
+		source = AuthProviderExtension
+		authProviders = append(authProviders, AuthProvider{
+			Provider: source,
+			ID:       clientID,
+			Name:     clientID,
+			Email:    "",
+		})
+	}
+
 	return &User{
 		ID:            database.NewStringID(),
-		ClientID:      clientID,
 		Name:          clientID,
 		Plan:          PlanFree,
-		AuthProviders: make([]AuthProvider, 0),
+		AuthProviders: authProviders,
 		CreatedAt:     time.Now(),
 		UpdatedAt:     time.Now(),
 	}, nil

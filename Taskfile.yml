@@ -41,6 +41,9 @@ tasks:
       - mockgen -source=pkg/task/domain/task.go -destination=internal/mock/task/task.go -package=mocktask
       - mockgen -source=pkg/task/domain/service.go -destination=internal/mock/task/service.go -package=mocktask
 
+      # user
+      - mockgen -source=pkg/user/domain/user.go -destination=internal/mock/user/user.go -package=mockuser
+
   # test
   test:
     dotenv: ['.env.test']

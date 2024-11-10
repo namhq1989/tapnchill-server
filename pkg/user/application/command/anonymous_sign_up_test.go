@@ -16,10 +16,11 @@ import (
 
 type anonymousSignUpTestSuite struct {
 	suite.Suite
-	handler            command.AnonymousSignUpHandler
-	mockCtrl           *gomock.Controller
-	mockUserRepository *mockuser.MockUserRepository
-	mockJwtRepository  *mockuser.MockJwtRepository
+	handler             command.AnonymousSignUpHandler
+	mockCtrl            *gomock.Controller
+	mockUserRepository  *mockuser.MockUserRepository
+	mockJwtRepository   *mockuser.MockJwtRepository
+	mockQueueRepository *mockuser.MockQueueRepository
 }
 
 func (s *anonymousSignUpTestSuite) SetupSuite() {
@@ -30,8 +31,9 @@ func (s *anonymousSignUpTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockUserRepository = mockuser.NewMockUserRepository(s.mockCtrl)
 	s.mockJwtRepository = mockuser.NewMockJwtRepository(s.mockCtrl)
+	s.mockQueueRepository = mockuser.NewMockQueueRepository(s.mockCtrl)
 
-	s.handler = command.NewAnonymousSignUpHandler(s.mockUserRepository, s.mockJwtRepository)
+	s.handler = command.NewAnonymousSignUpHandler(s.mockUserRepository, s.mockJwtRepository, s.mockQueueRepository)
 }
 
 func (s *anonymousSignUpTestSuite) TearDownTest() {
@@ -57,6 +59,10 @@ func (s *anonymousSignUpTestSuite) Test_1_Success() {
 	s.mockJwtRepository.EXPECT().
 		GenerateAccessToken(gomock.Any(), gomock.Any()).
 		Return(token, nil)
+
+	s.mockQueueRepository.EXPECT().
+		CreateUserDefaultGoal(gomock.Any(), gomock.Any()).
+		Return(nil)
 
 	// call
 	ctx := appcontext.NewRest(context.Background())

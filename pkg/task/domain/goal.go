@@ -35,6 +35,11 @@ type GoalStats struct {
 	TotalDoneTask int
 }
 
+const (
+	DefaultGoalName        = "Basecamp"
+	DefaultGoalDescription = "The starting point for your journey, where you set your sights and prepare for each step ahead"
+)
+
 func NewGoal(userID, name, description string) (*Goal, error) {
 	if !database.IsValidObjectID(userID) {
 		return nil, apperrors.User.InvalidUserID

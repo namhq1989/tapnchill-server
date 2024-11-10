@@ -1,7 +1,11 @@
 package queue
 
 var TypeNames = struct {
+	CreateUserDefaultGoal string
+
 	GetRandomQuote string
 }{
-	GetRandomQuote: "common.GetRandomQuote",
+	CreateUserDefaultGoal: "task.createUserDefaultGoal",
+
+	GetRandomQuote: "common.getRandomQuote",
 }

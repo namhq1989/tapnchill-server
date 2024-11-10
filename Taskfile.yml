@@ -44,6 +44,7 @@ tasks:
       # user
       - mockgen -source=pkg/user/domain/user.go -destination=internal/mock/user/user.go -package=mockuser
       - mockgen -source=pkg/user/domain/jwt.go -destination=internal/mock/user/jwt.go -package=mockuser
+      - mockgen -source=pkg/user/domain/queue.go -destination=internal/mock/user/queue.go -package=mockuser
 
   # test
   test:

@@ -20,11 +20,11 @@ func NewGetTasksHandler(taskRepository domain.TaskRepository) GetTasksHandler {
 func (h GetTasksHandler) GetTasks(ctx *appcontext.AppContext, performerID string, req dto.GetTasksRequest) (*dto.GetTasksResponse, error) {
 	ctx.Logger().Info("new get tasks request", appcontext.Fields{
 		"performerID": performerID, "goalId": req.GoalID,
-		"keyword": req.Keyword, "status": req.Status, "pageToken": req.PageToken,
+		"keyword": req.Keyword, "status": req.Status, "pageToken": req.PageToken, "limit": req.Limit,
 	})
 
 	ctx.Logger().Text("create filter")
-	filter, err := domain.NewTaskFilter(performerID, req.GoalID, req.Status, req.Keyword, req.PageToken)
+	filter, err := domain.NewTaskFilter(performerID, req.GoalID, req.Status, req.Keyword, req.PageToken, req.Limit)
 	if err != nil {
 		ctx.Logger().Error("failed to create filter", err, appcontext.Fields{})
 		return nil, err

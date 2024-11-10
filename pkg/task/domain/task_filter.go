@@ -18,7 +18,7 @@ type TaskFilter struct {
 	Limit     int64
 }
 
-func NewTaskFilter(userID, goalID, status, keyword, pt string) (*TaskFilter, error) {
+func NewTaskFilter(userID, goalID, status, keyword, pt string, limit int64) (*TaskFilter, error) {
 	uid, err := database.ObjectIDFromString(userID)
 	if err != nil {
 		return nil, apperrors.User.InvalidUserID
@@ -44,6 +44,10 @@ func NewTaskFilter(userID, goalID, status, keyword, pt string) (*TaskFilter, err
 	dStatus := ToTaskStatus(status)
 	if dStatus.IsValid() {
 		filter.Status = dStatus
+	}
+
+	if limit > 0 && limit < 20 {
+		filter.Limit = limit
 	}
 
 	return filter, nil

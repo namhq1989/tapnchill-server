@@ -8,14 +8,20 @@ import (
 )
 
 type AnonymousSignUpHandler struct {
-	userRepository domain.UserRepository
-	jwtRepository  domain.JwtRepository
+	userRepository  domain.UserRepository
+	jwtRepository   domain.JwtRepository
+	queueRepository domain.QueueRepository
 }
 
-func NewAnonymousSignUpHandler(userRepository domain.UserRepository, jwtRepository domain.JwtRepository) AnonymousSignUpHandler {
+func NewAnonymousSignUpHandler(
+	userRepository domain.UserRepository,
+	jwtRepository domain.JwtRepository,
+	queueRepository domain.QueueRepository,
+) AnonymousSignUpHandler {
 	return AnonymousSignUpHandler{
-		userRepository: userRepository,
-		jwtRepository:  jwtRepository,
+		userRepository:  userRepository,
+		jwtRepository:   jwtRepository,
+		queueRepository: queueRepository,
 	}
 }
 
@@ -47,8 +53,24 @@ func (h AnonymousSignUpHandler) AnonymousSignUp(ctx *appcontext.AppContext, req 
 		return nil, err
 	}
 
+	ctx.Logger().Text("enqueue tasks")
+	if err = h.enqueueTasks(ctx, *user); err != nil {
+		ctx.Logger().Error("failed to enqueue tasks", err, appcontext.Fields{})
+	}
+
 	ctx.Logger().Text("return anonymous sign up response")
 	return &dto.AnonymousSignUpResponse{
 		AccessToken: token,
 	}, nil
+}
+
+func (h AnonymousSignUpHandler) enqueueTasks(ctx *appcontext.AppContext, user domain.User) error {
+	ctx.Logger().Text("add task create user default Goal")
+	if err := h.queueRepository.CreateUserDefaultGoal(ctx, domain.QueueCreateUserDefaultGoalPayload{
+		UserID: user.ID,
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }

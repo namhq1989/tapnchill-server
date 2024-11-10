@@ -28,10 +28,11 @@ var _ Instance = (*Application)(nil)
 func New(
 	userRepository domain.UserRepository,
 	jwtRepository domain.JwtRepository,
+	queueRepository domain.QueueRepository,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			AnonymousSignUpHandler: command.NewAnonymousSignUpHandler(userRepository, jwtRepository),
+			AnonymousSignUpHandler: command.NewAnonymousSignUpHandler(userRepository, jwtRepository, queueRepository),
 		},
 	}
 }

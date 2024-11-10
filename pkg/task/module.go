@@ -7,6 +7,7 @@ import (
 	"github.com/namhq1989/tapnchill-server/pkg/task/infrastructure"
 	"github.com/namhq1989/tapnchill-server/pkg/task/rest"
 	"github.com/namhq1989/tapnchill-server/pkg/task/shared"
+	"github.com/namhq1989/tapnchill-server/pkg/task/worker"
 )
 
 type Module struct{}
@@ -35,6 +36,12 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 	if err := rest.RegisterServer(ctx, app, mono.Rest(), mono.JWT(), mono.Config().IsEnvRelease); err != nil {
 		return err
 	}
+
+	w := worker.New(
+		mono.Queue(),
+		goalRepository,
+	)
+	w.Start()
 
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 
 type Task struct {
 	ID          string                    `json:"id"`
+	GoalID      string                    `json:"goalId"`
 	Name        string                    `json:"name"`
 	Description string                    `json:"description"`
 	DueDate     *httprespond.TimeResponse `json:"dueDate"`
@@ -20,6 +21,7 @@ type Task struct {
 func (Task) FromDomain(task domain.Task) Task {
 	t := Task{
 		ID:          task.ID,
+		GoalID:      task.GoalID,
 		Name:        task.Name,
 		Description: task.Description,
 		Status:      task.Status.String(),

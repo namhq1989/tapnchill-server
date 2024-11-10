@@ -5,6 +5,7 @@ type GetTasksRequest struct {
 	Keyword   string `query:"keyword"`
 	Status    string `query:"status"`
 	PageToken string `query:"pageToken"`
+	Limit     int64  `query:"limit"`
 }
 
 type GetTasksResponse struct {

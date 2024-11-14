@@ -6,6 +6,7 @@ import (
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
+	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 )
 
 type FeedbackRepository interface {
@@ -36,6 +37,6 @@ func NewFeedback(userID, email, feedback, ip string) (*Feedback, error) {
 		Email:     email,
 		Feedback:  feedback,
 		Ip:        ip,
-		CreatedAt: time.Now(),
+		CreatedAt: manipulation.NowUTC(),
 	}, nil
 }

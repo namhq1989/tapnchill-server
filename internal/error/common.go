@@ -15,6 +15,9 @@ var Common = struct {
 	InvalidDescription  error
 	InvalidEmail        error
 	InvalidCode         error
+	InvalidGoal         error
+	InvalidDaysOfWeek   error
+	InvalidIcon         error
 	InvalidStatus       error
 	InvalidFeedback     error
 	InvalidQuote        error
@@ -31,6 +34,9 @@ var Common = struct {
 	InvalidDescription:  errors.New("invalid_description"),
 	InvalidEmail:        errors.New("invalid_email"),
 	InvalidCode:         errors.New("invalid_code"),
+	InvalidGoal:         errors.New("invalid_goal"),
+	InvalidDaysOfWeek:   errors.New("invalid_days_of_week"),
+	InvalidIcon:         errors.New("invalid_icon"),
 	InvalidStatus:       errors.New("invalid_status"),
 	InvalidFeedback:     errors.New("invalid_feedback"),
 	InvalidQuote:        errors.New("invalid_quote"),

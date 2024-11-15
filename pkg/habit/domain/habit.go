@@ -3,10 +3,19 @@ package domain
 import (
 	"time"
 
+	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 )
+
+type HabitRepository interface {
+	Create(ctx *appcontext.AppContext, habit Habit) error
+	Update(ctx *appcontext.AppContext, habit Habit) error
+	Delete(ctx *appcontext.AppContext, habitID string) error
+	FindByID(ctx *appcontext.AppContext, habitID string) (*Habit, error)
+	FindByFilter(ctx *appcontext.AppContext, filter HabitFilter) ([]Habit, error)
+}
 
 type Habit struct {
 	ID                    string
@@ -87,4 +96,18 @@ func (h *Habit) SetIcon(icon string) error {
 
 	h.Icon = icon
 	return nil
+}
+
+type HabitFilter struct {
+	UserID string
+}
+
+func NewHabitFilter(userID string) (*HabitFilter, error) {
+	if !database.IsValidObjectID(userID) {
+		return nil, apperrors.User.InvalidUserID
+	}
+
+	return &HabitFilter{
+		UserID: userID,
+	}, nil
 }

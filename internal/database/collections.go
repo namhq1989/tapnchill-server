@@ -10,6 +10,10 @@ var Collections = struct {
 
 	Goal string
 	Task string
+
+	Habit           string
+	HabitCompletion string
+	HabitDailyStats string
 }{
 	User: "user.users",
 
@@ -18,6 +22,10 @@ var Collections = struct {
 
 	Goal: "task.goals",
 	Task: "task.tasks",
+
+	Habit:           "habit.habits",
+	HabitCompletion: "habit.completions",
+	HabitDailyStats: "habit.dailyStats",
 }
 
 func (db Database) GetCollection(table string) *mongo.Collection {

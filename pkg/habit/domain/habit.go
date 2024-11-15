@@ -15,6 +15,7 @@ type HabitRepository interface {
 	Delete(ctx *appcontext.AppContext, habitID string) error
 	FindByID(ctx *appcontext.AppContext, habitID string) (*Habit, error)
 	FindByFilter(ctx *appcontext.AppContext, filter HabitFilter) ([]Habit, error)
+	CountScheduledHabits(ctx *appcontext.AppContext, userID string, date time.Time) (int64, error)
 }
 
 type Habit struct {
@@ -96,6 +97,36 @@ func (h *Habit) SetIcon(icon string) error {
 
 	h.Icon = icon
 	return nil
+}
+
+func (h *Habit) SetStatus(status HabitStatus) {
+	h.Status = status
+}
+
+func (h *Habit) SetSortOrder(order int) {
+	h.SortOrder = order
+}
+
+func (h *Habit) OnCompleted() {
+	h.LastCompletedAt = manipulation.NowUTC()
+	h.StatsTotalCompletions++
+
+	if h.isInStreak() {
+		h.StatsCurrentStreak++
+	} else {
+		h.StatsCurrentStreak = 1
+	}
+
+	if h.StatsCurrentStreak > h.StatsLongestStreak {
+		h.StatsLongestStreak = h.StatsCurrentStreak
+	}
+}
+
+func (h *Habit) isInStreak() bool {
+	now := manipulation.NowUTC()
+	startOfYesterday := time.Date(now.Year(), now.Month(), now.Day()-1, 0, 0, 0, 0, time.UTC)
+	endOfYesterday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	return h.LastCompletedAt.After(startOfYesterday) && h.LastCompletedAt.Before(endOfYesterday)
 }
 
 type HabitFilter struct {

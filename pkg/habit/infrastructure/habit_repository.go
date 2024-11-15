@@ -125,3 +125,15 @@ func (r HabitRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.
 	}
 	return result, nil
 }
+
+func (r HabitRepository) CountScheduledHabits(ctx *appcontext.AppContext, userID string, date time.Time) (int64, error) {
+	var (
+		condition = bson.M{
+			"userId":     userID,
+			"status":     domain.HabitStatusActive.String(),
+			"daysOfWeek": int(date.Weekday()),
+		}
+	)
+
+	return r.collection().CountDocuments(ctx.Context(), condition)
+}

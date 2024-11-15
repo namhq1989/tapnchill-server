@@ -16,7 +16,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-type ChangeTaskStatusTestSuite struct {
+type changeTaskStatusTestSuite struct {
 	suite.Suite
 	handler            command.ChangeTaskStatusHandler
 	mockCtrl           *gomock.Controller
@@ -25,11 +25,11 @@ type ChangeTaskStatusTestSuite struct {
 	mockService        *mocktask.MockService
 }
 
-func (s *ChangeTaskStatusTestSuite) SetupSuite() {
+func (s *changeTaskStatusTestSuite) SetupSuite() {
 	s.setupApplication()
 }
 
-func (s *ChangeTaskStatusTestSuite) setupApplication() {
+func (s *changeTaskStatusTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockTaskRepository = mocktask.NewMockTaskRepository(s.mockCtrl)
 	s.mockGoalRepository = mocktask.NewMockGoalRepository(s.mockCtrl)
@@ -38,7 +38,7 @@ func (s *ChangeTaskStatusTestSuite) setupApplication() {
 	s.handler = command.NewChangeTaskStatusHandler(s.mockTaskRepository, s.mockGoalRepository, s.mockService)
 }
 
-func (s *ChangeTaskStatusTestSuite) TearDownTest() {
+func (s *changeTaskStatusTestSuite) TearDownTest() {
 	s.mockCtrl.Finish()
 }
 
@@ -46,7 +46,7 @@ func (s *ChangeTaskStatusTestSuite) TearDownTest() {
 // CASES
 //
 
-func (s *ChangeTaskStatusTestSuite) Test_1_Success() {
+func (s *changeTaskStatusTestSuite) Test_1_Success() {
 	// mock data
 	var (
 		performerID = database.NewStringID()
@@ -84,7 +84,7 @@ func (s *ChangeTaskStatusTestSuite) Test_1_Success() {
 	assert.NotNil(s.T(), resp)
 }
 
-func (s *ChangeTaskStatusTestSuite) Test_2_Fail_NotFound() {
+func (s *changeTaskStatusTestSuite) Test_2_Fail_NotFound() {
 	// mock data
 	s.mockService.EXPECT().
 		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
@@ -101,7 +101,7 @@ func (s *ChangeTaskStatusTestSuite) Test_2_Fail_NotFound() {
 	assert.Equal(s.T(), apperrors.Common.NotFound, err)
 }
 
-func (s *ChangeTaskStatusTestSuite) Test_2_Fail_NotOwner() {
+func (s *changeTaskStatusTestSuite) Test_2_Fail_NotOwner() {
 	// mock data
 	s.mockService.EXPECT().
 		GetTaskByID(gomock.Any(), gomock.Any(), gomock.Any()).
@@ -118,7 +118,7 @@ func (s *ChangeTaskStatusTestSuite) Test_2_Fail_NotOwner() {
 	assert.Equal(s.T(), apperrors.Common.NotFound, err)
 }
 
-func (s *ChangeTaskStatusTestSuite) Test_2_Fail_InvalidStatus() {
+func (s *changeTaskStatusTestSuite) Test_2_Fail_InvalidStatus() {
 	// call
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.ChangeTaskStatus(ctx, database.NewStringID(), database.NewStringID(), dto.ChangeTaskStatusRequest{
@@ -135,5 +135,5 @@ func (s *ChangeTaskStatusTestSuite) Test_2_Fail_InvalidStatus() {
 //
 
 func TestChangeTaskStatusTestSuite(t *testing.T) {
-	suite.Run(t, new(ChangeTaskStatusTestSuite))
+	suite.Run(t, new(changeTaskStatusTestSuite))
 }

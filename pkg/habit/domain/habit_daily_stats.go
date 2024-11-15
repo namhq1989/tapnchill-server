@@ -12,6 +12,7 @@ type HabitDailyStatsRepository interface {
 	Create(ctx *appcontext.AppContext, stats HabitDailyStats) error
 	Update(ctx *appcontext.AppContext, stats HabitDailyStats) error
 	FindByID(ctx *appcontext.AppContext, statsID string) (*HabitDailyStats, error)
+	FindByDate(ctx *appcontext.AppContext, habitID string, date time.Time) (*HabitDailyStats, error)
 	FindByFilter(ctx *appcontext.AppContext, filter HabitDailyStatsFilter) ([]HabitDailyStats, error)
 }
 
@@ -39,15 +40,13 @@ func NewHabitDailyStats(habitID string, date time.Time) (*HabitDailyStats, error
 	}, nil
 }
 
-func (s *HabitDailyStats) SetScheduledCount(count int) error {
+func (s *HabitDailyStats) SetScheduledCount(count int) {
 	s.ScheduledCount = count
-	return nil
 }
 
-func (s *HabitDailyStats) HabitCompleted(habitID string) error {
+func (s *HabitDailyStats) HabitCompleted(habitID string) {
 	s.CompletedCount += 1
 	s.CompletedIDs = append(s.CompletedIDs, habitID)
-	return nil
 }
 
 type HabitDailyStatsFilter struct {

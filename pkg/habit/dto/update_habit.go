@@ -5,6 +5,7 @@ type UpdateHabitRequest struct {
 	Goal       string `json:"goal" validate:"required" message:"invalid_goal"`
 	DayOfWeeks []int  `json:"dayOfWeeks" validate:"required" message:"invalid_days_of_week"`
 	Icon       string `json:"icon" validate:"required" message:"invalid_icon"`
+	SortOrder  int    `json:"sortOrder"`
 }
 
 type UpdateHabitResponse struct {

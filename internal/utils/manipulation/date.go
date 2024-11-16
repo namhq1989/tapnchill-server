@@ -34,3 +34,13 @@ func StartOfDay(t time.Time) time.Time {
 func EndOfDay(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 59, int(time.Nanosecond*999999999), t.Location())
 }
+
+func GetStartOfDayWithClientDate(date string) (*time.Time, error) {
+	clientTime, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		return nil, fmt.Errorf("invalid client date: %w", err)
+	}
+
+	s := StartOfDay(clientTime)
+	return &s, nil
+}

@@ -24,7 +24,7 @@ type HabitDailyStatsRepository struct {
 func NewHabitDailyStatsRepository(db *database.Database) HabitDailyStatsRepository {
 	r := HabitDailyStatsRepository{
 		db:             db,
-		collectionName: database.Collections.Habit,
+		collectionName: database.Collections.HabitDailyStats,
 	}
 	r.ensureIndexes()
 	return r
@@ -89,12 +89,32 @@ func (r HabitDailyStatsRepository) FindByID(ctx *appcontext.AppContext, statsID 
 	return &result, nil
 }
 
+func (r HabitDailyStatsRepository) FindByDate(ctx *appcontext.AppContext, habitID string, date time.Time) (*domain.HabitDailyStats, error) {
+	hid, err := database.ObjectIDFromString(habitID)
+	if err != nil {
+		return nil, apperrors.Habit.InvalidID
+	}
+
+	var doc dbmodel.HabitDailyStats
+	if err = r.collection().FindOne(ctx.Context(), bson.M{
+		"habitId": hid,
+		"date":    date,
+	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	} else if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, nil
+	}
+
+	result := doc.ToDomain()
+	return &result, nil
+}
+
 func (r HabitDailyStatsRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.HabitDailyStatsFilter) ([]domain.HabitDailyStats, error) {
 	var (
 		condition = bson.M{
-			"habitId": filter.HabitID,
-			"createdAt": bson.M{
-				"$gt": filter.FromDate,
+			"userId": filter.UserID,
+			"date": bson.M{
+				"$gte": filter.FromDate,
 			},
 		}
 		result = make([]domain.HabitDailyStats, 0)

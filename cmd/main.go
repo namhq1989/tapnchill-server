@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/namhq1989/tapnchill-server/pkg/habit"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/namhq1989/go-utilities/logger"
@@ -79,6 +81,7 @@ func main() {
 		&common.Module{},
 		&task.Module{},
 		&user.Module{},
+		&habit.Module{},
 	}
 
 	// start

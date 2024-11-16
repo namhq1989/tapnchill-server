@@ -11,7 +11,7 @@ import (
 
 type HabitDailyStats struct {
 	ID             primitive.ObjectID `bson:"_id"`
-	HabitID        primitive.ObjectID `bson:"habitId"`
+	UserID         primitive.ObjectID `bson:"userId"`
 	Date           time.Time          `bson:"date"`
 	ScheduledCount int                `bson:"scheduledCount"`
 	CompletedCount int                `bson:"completedCount"`
@@ -21,7 +21,7 @@ type HabitDailyStats struct {
 func (s HabitDailyStats) ToDomain() domain.HabitDailyStats {
 	return domain.HabitDailyStats{
 		ID:             s.ID.Hex(),
-		HabitID:        s.HabitID.Hex(),
+		UserID:         s.UserID.Hex(),
 		Date:           s.Date,
 		ScheduledCount: s.ScheduledCount,
 		CompletedCount: s.CompletedCount,
@@ -35,14 +35,14 @@ func (HabitDailyStats) FromDomain(stats domain.HabitDailyStats) (*HabitDailyStat
 		return nil, apperrors.Common.InvalidID
 	}
 
-	hid, err := database.ObjectIDFromString(stats.HabitID)
+	uid, err := database.ObjectIDFromString(stats.UserID)
 	if err != nil {
-		return nil, apperrors.Habit.InvalidID
+		return nil, apperrors.User.InvalidUserID
 	}
 
 	return &HabitDailyStats{
 		ID:             id,
-		HabitID:        hid,
+		UserID:         uid,
 		Date:           stats.Date,
 		ScheduledCount: stats.ScheduledCount,
 		CompletedCount: stats.CompletedCount,

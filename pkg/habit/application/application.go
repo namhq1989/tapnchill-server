@@ -16,8 +16,8 @@ type (
 		CompleteHabit(ctx *appcontext.AppContext, performerID, habitID string, _ dto.CompleteHabitRequest) (*dto.CompleteHabitResponse, error)
 	}
 	Queries interface {
-		GetHabits(_ *appcontext.AppContext, performerID string, _ dto.GetHabitsRequest) (*dto.GetHabitsResponse, error)
-		GetTodayHabits(_ *appcontext.AppContext, performerID string, _ dto.GetTodayHabitsRequest) (*dto.GetTodayHabitsResponse, error)
+		GetHabits(ctx *appcontext.AppContext, performerID string, _ dto.GetHabitsRequest) (*dto.GetHabitsResponse, error)
+		GetStats(ctx *appcontext.AppContext, performerID string, req dto.GetStatsRequest) (*dto.GetStatsResponse, error)
 	}
 	Instance interface {
 		Commands
@@ -32,7 +32,7 @@ type (
 	}
 	queryHandlers struct {
 		query.GetHabitsHandler
-		query.GetTodayHabitsHandler
+		query.GetStatsHandler
 	}
 	Application struct {
 		commandHandlers
@@ -46,18 +46,19 @@ func New(
 	habitRepository domain.HabitRepository,
 	habitCompletionRepository domain.HabitCompletionRepository,
 	habitDailyStatsRepository domain.HabitDailyStatsRepository,
+	cachingRepository domain.CachingRepository,
 	service domain.Service,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			CreateHabitHandler:       command.NewCreateHabitHandler(habitRepository),
-			UpdateHabitHandler:       command.NewUpdateHabitHandler(habitRepository, service),
-			ChangeHabitStatusHandler: command.NewChangeHabitStatusHandler(habitRepository, service),
-			CompleteHabitHandler:     command.NewCompleteHabitHandler(habitRepository, habitCompletionRepository, habitDailyStatsRepository, service),
+			CreateHabitHandler:       command.NewCreateHabitHandler(habitRepository, cachingRepository),
+			UpdateHabitHandler:       command.NewUpdateHabitHandler(habitRepository, cachingRepository, service),
+			ChangeHabitStatusHandler: command.NewChangeHabitStatusHandler(habitRepository, cachingRepository, service),
+			CompleteHabitHandler:     command.NewCompleteHabitHandler(habitRepository, habitCompletionRepository, habitDailyStatsRepository, cachingRepository, service),
 		},
 		queryHandlers: queryHandlers{
-			GetHabitsHandler:      query.NewGetHabitsHandler(habitRepository),
-			GetTodayHabitsHandler: query.NewGetTodayHabitsHandler(habitRepository),
+			GetHabitsHandler: query.NewGetHabitsHandler(service),
+			GetStatsHandler:  query.NewGetStatsHandler(service),
 		},
 	}
 }

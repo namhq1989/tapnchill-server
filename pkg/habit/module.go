@@ -21,14 +21,16 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 		habitRepository           = infrastructure.NewHabitRepository(mono.Database())
 		habitCompletionRepository = infrastructure.NewHabitCompletionRepository(mono.Database())
 		habitDailyStatsRepository = infrastructure.NewHabitDailyStatsRepository(mono.Database())
+		cachingRepository         = infrastructure.NewCachingRepository(mono.Caching())
 
-		service = shared.NewService(habitRepository)
+		service = shared.NewService(habitRepository, habitDailyStatsRepository, cachingRepository)
 
 		// app
 		app = application.New(
 			habitRepository,
 			habitCompletionRepository,
 			habitDailyStatsRepository,
+			cachingRepository,
 			service,
 		)
 	)

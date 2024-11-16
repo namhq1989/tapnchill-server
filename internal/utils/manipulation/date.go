@@ -41,11 +41,6 @@ func GetStartOfDayWithClientDate(date string) (*time.Time, error) {
 		return nil, fmt.Errorf("invalid client date: %w", err)
 	}
 
-	startOfClientDay := time.Date(
-		clientTime.Year(), clientTime.Month(), clientTime.Day(),
-		0, 0, 0, 0, clientTime.Location(),
-	)
-
-	startOfClientDayUTC := startOfClientDay.UTC()
-	return &startOfClientDayUTC, nil
+	s := StartOfDay(clientTime)
+	return &s, nil
 }

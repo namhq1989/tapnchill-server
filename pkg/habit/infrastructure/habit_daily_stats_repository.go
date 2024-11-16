@@ -112,9 +112,9 @@ func (r HabitDailyStatsRepository) FindByDate(ctx *appcontext.AppContext, habitI
 func (r HabitDailyStatsRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.HabitDailyStatsFilter) ([]domain.HabitDailyStats, error) {
 	var (
 		condition = bson.M{
-			"habitId": filter.HabitID,
-			"createdAt": bson.M{
-				"$gt": filter.FromDate,
+			"userId": filter.UserID,
+			"date": bson.M{
+				"$gte": filter.FromDate,
 			},
 		}
 		result = make([]domain.HabitDailyStats, 0)

@@ -3,6 +3,8 @@ package domain
 import (
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
@@ -130,15 +132,16 @@ func (h *Habit) isInStreak() bool {
 }
 
 type HabitFilter struct {
-	UserID string
+	UserID primitive.ObjectID
 }
 
 func NewHabitFilter(userID string) (*HabitFilter, error) {
-	if !database.IsValidObjectID(userID) {
+	uid, err := database.ObjectIDFromString(userID)
+	if err != nil {
 		return nil, apperrors.User.InvalidUserID
 	}
 
 	return &HabitFilter{
-		UserID: userID,
+		UserID: uid,
 	}, nil
 }

@@ -45,6 +45,7 @@ tasks:
       - mockgen -source=pkg/habit/domain/habit.go -destination=internal/mock/habit/habit.go -package=mockhabit
       - mockgen -source=pkg/habit/domain/habit_completion.go -destination=internal/mock/habit/habit_completion.go -package=mockhabit
       - mockgen -source=pkg/habit/domain/habit_daily_stats.go -destination=internal/mock/habit/habit_daily_stats.go -package=mockhabit
+      - mockgen -source=pkg/habit/domain/caching.go -destination=internal/mock/habit/caching.go -package=mockhabit
       - mockgen -source=pkg/habit/domain/service.go -destination=internal/mock/habit/service.go -package=mockhabit
 
       # user

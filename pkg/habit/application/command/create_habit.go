@@ -7,12 +7,14 @@ import (
 )
 
 type CreateHabitHandler struct {
-	habitRepository domain.HabitRepository
+	habitRepository   domain.HabitRepository
+	cachingRepository domain.CachingRepository
 }
 
-func NewCreateHabitHandler(habitRepository domain.HabitRepository) CreateHabitHandler {
+func NewCreateHabitHandler(habitRepository domain.HabitRepository, cachingRepository domain.CachingRepository) CreateHabitHandler {
 	return CreateHabitHandler{
-		habitRepository: habitRepository,
+		habitRepository:   habitRepository,
+		cachingRepository: cachingRepository,
 	}
 }
 
@@ -33,6 +35,11 @@ func (h CreateHabitHandler) CreateHabit(ctx *appcontext.AppContext, performerID 
 	if err = h.habitRepository.Create(ctx, *habit); err != nil {
 		ctx.Logger().Error("failed to persist habit in db", err, appcontext.Fields{})
 		return nil, err
+	}
+
+	ctx.Logger().Text("delete in caching")
+	if err = h.cachingRepository.DeleteUserHabits(ctx, performerID); err != nil {
+		ctx.Logger().Error("failed to delete in caching", err, appcontext.Fields{})
 	}
 
 	ctx.Logger().Text("done create habit request")

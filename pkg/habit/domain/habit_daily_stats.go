@@ -6,6 +6,7 @@ import (
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type HabitDailyStatsRepository interface {
@@ -16,23 +17,27 @@ type HabitDailyStatsRepository interface {
 	FindByFilter(ctx *appcontext.AppContext, filter HabitDailyStatsFilter) ([]HabitDailyStats, error)
 }
 
+const (
+	StatsDefaultPreviousDays = 5
+)
+
 type HabitDailyStats struct {
 	ID             string
-	HabitID        string
+	UserID         string
 	Date           time.Time
 	ScheduledCount int
 	CompletedCount int
 	CompletedIDs   []string
 }
 
-func NewHabitDailyStats(habitID string, date time.Time) (*HabitDailyStats, error) {
-	if !database.IsValidObjectID(habitID) {
-		return nil, apperrors.Habit.InvalidID
+func NewHabitDailyStats(userID string, date time.Time) (*HabitDailyStats, error) {
+	if !database.IsValidObjectID(userID) {
+		return nil, apperrors.User.InvalidUserID
 	}
 
 	return &HabitDailyStats{
 		ID:             database.NewStringID(),
-		HabitID:        habitID,
+		UserID:         userID,
 		Date:           date,
 		ScheduledCount: 0,
 		CompletedCount: 0,
@@ -50,17 +55,18 @@ func (s *HabitDailyStats) HabitCompleted(habitID string) {
 }
 
 type HabitDailyStatsFilter struct {
-	HabitID  string
+	UserID   primitive.ObjectID
 	FromDate time.Time
 }
 
-func NewHabitDailyStatsFilter(habitID string, fromDate time.Time) (*HabitDailyStatsFilter, error) {
-	if !database.IsValidObjectID(habitID) {
-		return nil, apperrors.Habit.InvalidID
+func NewHabitDailyStatsFilter(userID string, fromDate time.Time) (*HabitDailyStatsFilter, error) {
+	uid, err := database.ObjectIDFromString(userID)
+	if err != nil {
+		return nil, apperrors.User.InvalidUserID
 	}
 
 	return &HabitDailyStatsFilter{
-		HabitID:  habitID,
-		FromDate: fromDate,
+		UserID:   uid,
+		FromDate: fromDate.UTC(),
 	}, nil
 }

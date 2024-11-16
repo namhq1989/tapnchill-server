@@ -23,6 +23,7 @@ type completeHabitTestSuite struct {
 	mockHabitRepository           *mockhabit.MockHabitRepository
 	mockHabitCompletionRepository *mockhabit.MockHabitCompletionRepository
 	mockHabitDailyStatsRepository *mockhabit.MockHabitDailyStatsRepository
+	mockCachingRepository         *mockhabit.MockCachingRepository
 	mockService                   *mockhabit.MockService
 }
 
@@ -35,9 +36,16 @@ func (s *completeHabitTestSuite) setupApplication() {
 	s.mockHabitRepository = mockhabit.NewMockHabitRepository(s.mockCtrl)
 	s.mockHabitCompletionRepository = mockhabit.NewMockHabitCompletionRepository(s.mockCtrl)
 	s.mockHabitDailyStatsRepository = mockhabit.NewMockHabitDailyStatsRepository(s.mockCtrl)
+	s.mockCachingRepository = mockhabit.NewMockCachingRepository(s.mockCtrl)
 	s.mockService = mockhabit.NewMockService(s.mockCtrl)
 
-	s.handler = command.NewCompleteHabitHandler(s.mockHabitRepository, s.mockHabitCompletionRepository, s.mockHabitDailyStatsRepository, s.mockService)
+	s.handler = command.NewCompleteHabitHandler(
+		s.mockHabitRepository,
+		s.mockHabitCompletionRepository,
+		s.mockHabitDailyStatsRepository,
+		s.mockCachingRepository,
+		s.mockService,
+	)
 }
 
 func (s *completeHabitTestSuite) TearDownTest() {
@@ -86,6 +94,14 @@ func (s *completeHabitTestSuite) Test_1_Success_FirstCompletion() {
 		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
+	s.mockCachingRepository.EXPECT().
+		DeleteUserHabits(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	s.mockCachingRepository.EXPECT().
+		DeleteUserStats(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil)
+
 	// call
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.CompleteHabit(ctx, performerID, database.NewStringID(), dto.CompleteHabitRequest{
@@ -113,8 +129,8 @@ func (s *completeHabitTestSuite) Test_1_Success_NotFirstCompletion() {
 		EXPECT().
 		FindByDate(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(&domain.HabitDailyStats{
-			ID:      database.NewStringID(),
-			HabitID: database.NewStringID(),
+			ID:     database.NewStringID(),
+			UserID: database.NewStringID(),
 		}, nil)
 
 	s.mockHabitCompletionRepository.EXPECT().
@@ -127,6 +143,14 @@ func (s *completeHabitTestSuite) Test_1_Success_NotFirstCompletion() {
 
 	s.mockHabitRepository.EXPECT().
 		Update(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	s.mockCachingRepository.EXPECT().
+		DeleteUserHabits(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	s.mockCachingRepository.EXPECT().
+		DeleteUserStats(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	// call

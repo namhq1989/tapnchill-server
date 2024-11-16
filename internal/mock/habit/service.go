@@ -54,3 +54,33 @@ func (mr *MockServiceMockRecorder) GetHabitByID(ctx, habitID, userID any) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHabitByID", reflect.TypeOf((*MockService)(nil).GetHabitByID), ctx, habitID, userID)
 }
+
+// GetUserHabits mocks base method.
+func (m *MockService) GetUserHabits(ctx *appcontext.AppContext, userID string) ([]domain.Habit, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserHabits", ctx, userID)
+	ret0, _ := ret[0].([]domain.Habit)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserHabits indicates an expected call of GetUserHabits.
+func (mr *MockServiceMockRecorder) GetUserHabits(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserHabits", reflect.TypeOf((*MockService)(nil).GetUserHabits), ctx, userID)
+}
+
+// GetUserStats mocks base method.
+func (m *MockService) GetUserStats(ctx *appcontext.AppContext, userID, date string, days int) ([]domain.HabitDailyStats, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserStats", ctx, userID, date, days)
+	ret0, _ := ret[0].([]domain.HabitDailyStats)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserStats indicates an expected call of GetUserStats.
+func (mr *MockServiceMockRecorder) GetUserStats(ctx, userID, date, days any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserStats", reflect.TypeOf((*MockService)(nil).GetUserStats), ctx, userID, date, days)
+}

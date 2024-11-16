@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"slices"
 
 	"github.com/namhq1989/go-utilities/appcontext"
@@ -13,6 +14,7 @@ type CompleteHabitHandler struct {
 	habitRepository           domain.HabitRepository
 	habitCompletionRepository domain.HabitCompletionRepository
 	habitDailyStatsRepository domain.HabitDailyStatsRepository
+	cachingRepository         domain.CachingRepository
 	service                   domain.Service
 }
 
@@ -20,12 +22,14 @@ func NewCompleteHabitHandler(
 	habitRepository domain.HabitRepository,
 	habitCompletionRepository domain.HabitCompletionRepository,
 	habitDailyStatsRepository domain.HabitDailyStatsRepository,
+	cachingRepository domain.CachingRepository,
 	service domain.Service,
 ) CompleteHabitHandler {
 	return CompleteHabitHandler{
 		habitRepository:           habitRepository,
 		habitCompletionRepository: habitCompletionRepository,
 		habitDailyStatsRepository: habitDailyStatsRepository,
+		cachingRepository:         cachingRepository,
 		service:                   service,
 	}
 }
@@ -54,7 +58,7 @@ func (h CompleteHabitHandler) CompleteHabit(ctx *appcontext.AppContext, performe
 
 	if stats == nil {
 		ctx.Logger().Text("not found, create new daily stats model")
-		stats, err = domain.NewHabitDailyStats(habitID, *startOfDay)
+		stats, err = domain.NewHabitDailyStats(performerID, *startOfDay)
 		if err != nil {
 			ctx.Logger().Error("failed to create new daily stats model", err, appcontext.Fields{})
 			return nil, err
@@ -107,6 +111,17 @@ func (h CompleteHabitHandler) CompleteHabit(ctx *appcontext.AppContext, performe
 	if err = h.habitRepository.Update(ctx, *habit); err != nil {
 		ctx.Logger().Error("failed to update habit in db", err, appcontext.Fields{})
 		return nil, err
+	}
+
+	ctx.Logger().Text("delete habits caching")
+	if err = h.cachingRepository.DeleteUserHabits(ctx, performerID); err != nil {
+		ctx.Logger().Error("failed to delete in caching", err, appcontext.Fields{})
+	}
+
+	ctx.Logger().Text("delete stats caching")
+	dateDDMM := fmt.Sprintf("%02d%02d", startOfDay.Day(), int(startOfDay.Month()))
+	if err = h.cachingRepository.DeleteUserStats(ctx, performerID, dateDDMM); err != nil {
+		ctx.Logger().Error("failed to delete in caching", err, appcontext.Fields{})
 	}
 
 	ctx.Logger().Text("done complete habit request")

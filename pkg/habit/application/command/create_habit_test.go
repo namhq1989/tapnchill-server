@@ -52,7 +52,7 @@ func (s *createHabitTestSuite) Test_1_Success() {
 	resp, err := s.handler.CreateHabit(ctx, database.NewStringID(), dto.CreateHabitRequest{
 		Name:       "habit name",
 		Goal:       "habit goal",
-		DayOfWeeks: []int{1, 2, 3},
+		DaysOfWeek: []int{1, 2, 3},
 		Icon:       "icon.png",
 	})
 
@@ -66,7 +66,7 @@ func (s *createHabitTestSuite) Test_2_Fail_InvalidName() {
 	resp, err := s.handler.CreateHabit(ctx, database.NewStringID(), dto.CreateHabitRequest{
 		Name:       "",
 		Goal:       "habit goal",
-		DayOfWeeks: []int{1, 2, 3},
+		DaysOfWeek: []int{1, 2, 3},
 		Icon:       "icon.png",
 	})
 

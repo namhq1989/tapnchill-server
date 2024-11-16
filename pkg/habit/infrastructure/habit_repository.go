@@ -127,9 +127,14 @@ func (r HabitRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.
 }
 
 func (r HabitRepository) CountScheduledHabits(ctx *appcontext.AppContext, userID string, date time.Time) (int64, error) {
+	uid, err := database.ObjectIDFromString(userID)
+	if err != nil {
+		return 0, apperrors.User.InvalidUserID
+	}
+
 	var (
 		condition = bson.M{
-			"userId":     userID,
+			"userId":     uid,
 			"status":     domain.HabitStatusActive.String(),
 			"daysOfWeek": int(date.Weekday()),
 		}

@@ -19,11 +19,11 @@ func NewCreateHabitHandler(habitRepository domain.HabitRepository) CreateHabitHa
 func (h CreateHabitHandler) CreateHabit(ctx *appcontext.AppContext, performerID string, req dto.CreateHabitRequest) (*dto.CreateHabitResponse, error) {
 	ctx.Logger().Info("new create habit request", appcontext.Fields{
 		"performerID": performerID, "name": req.Name, "goal": req.Goal,
-		"daysOfWeek": req.DayOfWeeks, "icon": req.Icon, "sortOrder": req.SortOrder,
+		"daysOfWeek": req.DaysOfWeek, "icon": req.Icon, "sortOrder": req.SortOrder,
 	})
 
 	ctx.Logger().Text("create new habit model")
-	habit, err := domain.NewHabit(performerID, req.Name, req.Goal, req.DayOfWeeks, req.Icon, req.SortOrder)
+	habit, err := domain.NewHabit(performerID, req.Name, req.Goal, req.DaysOfWeek, req.Icon, req.SortOrder)
 	if err != nil {
 		ctx.Logger().Error("failed to create new habit model", err, appcontext.Fields{})
 		return nil, err

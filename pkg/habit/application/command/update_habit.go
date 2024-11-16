@@ -21,7 +21,7 @@ func NewUpdateHabitHandler(habitRepository domain.HabitRepository, service domai
 func (h UpdateHabitHandler) UpdateHabit(ctx *appcontext.AppContext, performerID, habitID string, req dto.UpdateHabitRequest) (*dto.UpdateHabitResponse, error) {
 	ctx.Logger().Info("new update habit request", appcontext.Fields{
 		"performerID": performerID, "name": req.Name, "goal": req.Goal,
-		"daysOfWeek": req.DayOfWeeks, "icon": req.Icon, "sortOrder": req.SortOrder,
+		"daysOfWeek": req.DaysOfWeek, "icon": req.Icon, "sortOrder": req.SortOrder,
 	})
 
 	habit, err := h.service.GetHabitByID(ctx, habitID, performerID)
@@ -38,7 +38,7 @@ func (h UpdateHabitHandler) UpdateHabit(ctx *appcontext.AppContext, performerID,
 		ctx.Logger().Error("failed to set habit goal", err, appcontext.Fields{})
 		return nil, err
 	}
-	if err = habit.SetDaysOfWeek(req.DayOfWeeks); err != nil {
+	if err = habit.SetDaysOfWeek(req.DaysOfWeek); err != nil {
 		ctx.Logger().Error("failed to set habit days of week", err, appcontext.Fields{})
 		return nil, err
 	}

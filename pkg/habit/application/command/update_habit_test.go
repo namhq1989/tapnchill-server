@@ -67,7 +67,7 @@ func (s *updateHabitTestSuite) Test_1_Success() {
 	resp, err := s.handler.UpdateHabit(ctx, performerID, database.NewStringID(), dto.UpdateHabitRequest{
 		Name:       "habit name",
 		Goal:       "habit goal",
-		DayOfWeeks: []int{1, 2, 3},
+		DaysOfWeek: []int{1, 2, 3},
 		Icon:       "icon.png",
 	})
 
@@ -86,7 +86,7 @@ func (s *updateHabitTestSuite) Test_2_Fail_NotFound() {
 	resp, err := s.handler.UpdateHabit(ctx, database.NewStringID(), database.NewStringID(), dto.UpdateHabitRequest{
 		Name:       "habit name",
 		Goal:       "habit goal",
-		DayOfWeeks: []int{1, 2, 3},
+		DaysOfWeek: []int{1, 2, 3},
 		Icon:       "icon.png",
 	})
 
@@ -106,7 +106,7 @@ func (s *updateHabitTestSuite) Test_2_Fail_NotOwner() {
 	resp, err := s.handler.UpdateHabit(ctx, database.NewStringID(), database.NewStringID(), dto.UpdateHabitRequest{
 		Name:       "habit name",
 		Goal:       "habit goal",
-		DayOfWeeks: []int{1, 2, 3},
+		DaysOfWeek: []int{1, 2, 3},
 		Icon:       "icon.png",
 	})
 

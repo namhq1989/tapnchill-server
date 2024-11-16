@@ -24,7 +24,7 @@ type HabitDailyStatsRepository struct {
 func NewHabitDailyStatsRepository(db *database.Database) HabitDailyStatsRepository {
 	r := HabitDailyStatsRepository{
 		db:             db,
-		collectionName: database.Collections.Habit,
+		collectionName: database.Collections.HabitDailyStats,
 	}
 	r.ensureIndexes()
 	return r

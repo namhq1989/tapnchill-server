@@ -97,7 +97,7 @@ func (s Service) generateDefaultStatsIfMissing(ctx *appcontext.AppContext, stats
 	return stats
 }
 
-func (s Service) getScheduledCountForDay(ctx *appcontext.AppContext, date time.Time, habits []domain.Habit) int {
+func (Service) getScheduledCountForDay(ctx *appcontext.AppContext, date time.Time, habits []domain.Habit) int {
 	ctx.Logger().Text("calculating scheduled count")
 
 	dayOfWeek := int(date.Weekday())

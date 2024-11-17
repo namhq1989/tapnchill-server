@@ -8,22 +8,20 @@ import (
 )
 
 type ChangeHabitStatusHandler struct {
-	habitRepository   domain.HabitRepository
-	cachingRepository domain.CachingRepository
-	service           domain.Service
+	habitRepository domain.HabitRepository
+	service         domain.Service
 }
 
-func NewChangeHabitStatusHandler(habitRepository domain.HabitRepository, cachingRepository domain.CachingRepository, service domain.Service) ChangeHabitStatusHandler {
+func NewChangeHabitStatusHandler(habitRepository domain.HabitRepository, service domain.Service) ChangeHabitStatusHandler {
 	return ChangeHabitStatusHandler{
-		habitRepository:   habitRepository,
-		cachingRepository: cachingRepository,
-		service:           service,
+		habitRepository: habitRepository,
+		service:         service,
 	}
 }
 
 func (h ChangeHabitStatusHandler) ChangeHabitStatus(ctx *appcontext.AppContext, performerID, habitID string, req dto.ChangeHabitStatusRequest) (*dto.ChangeHabitStatusResponse, error) {
 	ctx.Logger().Info("new change habit status request", appcontext.Fields{
-		"performerID": performerID, "status": req.Status,
+		"performerID": performerID, "date": req.Date, "status": req.Status,
 	})
 
 	ctx.Logger().Text("check status")
@@ -52,10 +50,7 @@ func (h ChangeHabitStatusHandler) ChangeHabitStatus(ctx *appcontext.AppContext, 
 		return nil, err
 	}
 
-	ctx.Logger().Text("delete in caching")
-	if err = h.cachingRepository.DeleteUserHabits(ctx, performerID); err != nil {
-		ctx.Logger().Error("failed to delete in caching", err, appcontext.Fields{})
-	}
+	_ = h.service.DeleteUserCaching(ctx, performerID, req.Date)
 
 	ctx.Logger().Text("done change habit status request")
 	return &dto.ChangeHabitStatusResponse{}, nil

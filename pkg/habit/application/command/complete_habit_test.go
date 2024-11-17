@@ -23,7 +23,6 @@ type completeHabitTestSuite struct {
 	mockHabitRepository           *mockhabit.MockHabitRepository
 	mockHabitCompletionRepository *mockhabit.MockHabitCompletionRepository
 	mockHabitDailyStatsRepository *mockhabit.MockHabitDailyStatsRepository
-	mockCachingRepository         *mockhabit.MockCachingRepository
 	mockService                   *mockhabit.MockService
 }
 
@@ -36,14 +35,12 @@ func (s *completeHabitTestSuite) setupApplication() {
 	s.mockHabitRepository = mockhabit.NewMockHabitRepository(s.mockCtrl)
 	s.mockHabitCompletionRepository = mockhabit.NewMockHabitCompletionRepository(s.mockCtrl)
 	s.mockHabitDailyStatsRepository = mockhabit.NewMockHabitDailyStatsRepository(s.mockCtrl)
-	s.mockCachingRepository = mockhabit.NewMockCachingRepository(s.mockCtrl)
 	s.mockService = mockhabit.NewMockService(s.mockCtrl)
 
 	s.handler = command.NewCompleteHabitHandler(
 		s.mockHabitRepository,
 		s.mockHabitCompletionRepository,
 		s.mockHabitDailyStatsRepository,
-		s.mockCachingRepository,
 		s.mockService,
 	)
 }
@@ -94,12 +91,8 @@ func (s *completeHabitTestSuite) Test_1_Success_FirstCompletion() {
 		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
-	s.mockCachingRepository.EXPECT().
-		DeleteUserHabits(gomock.Any(), gomock.Any()).
-		Return(nil)
-
-	s.mockCachingRepository.EXPECT().
-		DeleteUserStats(gomock.Any(), gomock.Any(), gomock.Any()).
+	s.mockService.EXPECT().
+		DeleteUserCaching(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	// call
@@ -145,12 +138,8 @@ func (s *completeHabitTestSuite) Test_1_Success_NotFirstCompletion() {
 		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
-	s.mockCachingRepository.EXPECT().
-		DeleteUserHabits(gomock.Any(), gomock.Any()).
-		Return(nil)
-
-	s.mockCachingRepository.EXPECT().
-		DeleteUserStats(gomock.Any(), gomock.Any(), gomock.Any()).
+	s.mockService.EXPECT().
+		DeleteUserCaching(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	// call

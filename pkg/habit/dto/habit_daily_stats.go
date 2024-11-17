@@ -10,7 +10,7 @@ type HabitDailyStats struct {
 	Date           *httprespond.TimeResponse `json:"date"`
 	ScheduledCount int                       `json:"scheduledCount"`
 	CompletedCount int                       `json:"completedCount"`
-	CompletedIDs   []string                  `json:"completedIDs"`
+	CompletedIDs   []string                  `json:"completedIds"`
 }
 
 func (HabitDailyStats) FromDomain(stats domain.HabitDailyStats) HabitDailyStats {

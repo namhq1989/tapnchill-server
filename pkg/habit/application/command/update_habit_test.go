@@ -18,11 +18,10 @@ import (
 
 type updateHabitTestSuite struct {
 	suite.Suite
-	handler               command.UpdateHabitHandler
-	mockCtrl              *gomock.Controller
-	mockHabitRepository   *mockhabit.MockHabitRepository
-	mockCachingRepository *mockhabit.MockCachingRepository
-	mockService           *mockhabit.MockService
+	handler             command.UpdateHabitHandler
+	mockCtrl            *gomock.Controller
+	mockHabitRepository *mockhabit.MockHabitRepository
+	mockService         *mockhabit.MockService
 }
 
 func (s *updateHabitTestSuite) SetupSuite() {
@@ -32,10 +31,9 @@ func (s *updateHabitTestSuite) SetupSuite() {
 func (s *updateHabitTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockHabitRepository = mockhabit.NewMockHabitRepository(s.mockCtrl)
-	s.mockCachingRepository = mockhabit.NewMockCachingRepository(s.mockCtrl)
 	s.mockService = mockhabit.NewMockService(s.mockCtrl)
 
-	s.handler = command.NewUpdateHabitHandler(s.mockHabitRepository, s.mockCachingRepository, s.mockService)
+	s.handler = command.NewUpdateHabitHandler(s.mockHabitRepository, s.mockService)
 }
 
 func (s *updateHabitTestSuite) TearDownTest() {
@@ -63,8 +61,8 @@ func (s *updateHabitTestSuite) Test_1_Success() {
 		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
-	s.mockCachingRepository.EXPECT().
-		DeleteUserHabits(gomock.Any(), gomock.Any()).
+	s.mockService.EXPECT().
+		DeleteUserCaching(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	// call

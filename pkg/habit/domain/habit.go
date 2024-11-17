@@ -3,12 +3,11 @@ package domain
 import (
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type HabitRepository interface {

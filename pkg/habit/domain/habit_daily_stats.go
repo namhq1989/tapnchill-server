@@ -67,6 +67,6 @@ func NewHabitDailyStatsFilter(userID string, fromDate time.Time) (*HabitDailySta
 
 	return &HabitDailyStatsFilter{
 		UserID:   uid,
-		FromDate: fromDate.UTC(),
+		FromDate: fromDate,
 	}, nil
 }

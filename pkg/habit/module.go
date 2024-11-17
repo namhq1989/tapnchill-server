@@ -30,7 +30,6 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 			habitRepository,
 			habitCompletionRepository,
 			habitDailyStatsRepository,
-			cachingRepository,
 			service,
 		)
 	)

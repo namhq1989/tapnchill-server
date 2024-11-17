@@ -7,20 +7,20 @@ import (
 )
 
 type CreateHabitHandler struct {
-	habitRepository   domain.HabitRepository
-	cachingRepository domain.CachingRepository
+	habitRepository domain.HabitRepository
+	service         domain.Service
 }
 
-func NewCreateHabitHandler(habitRepository domain.HabitRepository, cachingRepository domain.CachingRepository) CreateHabitHandler {
+func NewCreateHabitHandler(habitRepository domain.HabitRepository, service domain.Service) CreateHabitHandler {
 	return CreateHabitHandler{
-		habitRepository:   habitRepository,
-		cachingRepository: cachingRepository,
+		habitRepository: habitRepository,
+		service:         service,
 	}
 }
 
 func (h CreateHabitHandler) CreateHabit(ctx *appcontext.AppContext, performerID string, req dto.CreateHabitRequest) (*dto.CreateHabitResponse, error) {
 	ctx.Logger().Info("new create habit request", appcontext.Fields{
-		"performerID": performerID, "name": req.Name, "goal": req.Goal,
+		"performerID": performerID, "date": req.Date, "name": req.Name, "goal": req.Goal,
 		"daysOfWeek": req.DaysOfWeek, "icon": req.Icon, "sortOrder": req.SortOrder,
 	})
 
@@ -37,10 +37,7 @@ func (h CreateHabitHandler) CreateHabit(ctx *appcontext.AppContext, performerID 
 		return nil, err
 	}
 
-	ctx.Logger().Text("delete in caching")
-	if err = h.cachingRepository.DeleteUserHabits(ctx, performerID); err != nil {
-		ctx.Logger().Error("failed to delete in caching", err, appcontext.Fields{})
-	}
+	_ = h.service.DeleteUserCaching(ctx, performerID, req.Date)
 
 	ctx.Logger().Text("done create habit request")
 	return &dto.CreateHabitResponse{

@@ -7,16 +7,14 @@ import (
 )
 
 type UpdateHabitHandler struct {
-	habitRepository   domain.HabitRepository
-	cachingRepository domain.CachingRepository
-	service           domain.Service
+	habitRepository domain.HabitRepository
+	service         domain.Service
 }
 
-func NewUpdateHabitHandler(habitRepository domain.HabitRepository, cachingRepository domain.CachingRepository, service domain.Service) UpdateHabitHandler {
+func NewUpdateHabitHandler(habitRepository domain.HabitRepository, service domain.Service) UpdateHabitHandler {
 	return UpdateHabitHandler{
-		habitRepository:   habitRepository,
-		cachingRepository: cachingRepository,
-		service:           service,
+		habitRepository: habitRepository,
+		service:         service,
 	}
 }
 
@@ -56,10 +54,7 @@ func (h UpdateHabitHandler) UpdateHabit(ctx *appcontext.AppContext, performerID,
 		return nil, err
 	}
 
-	ctx.Logger().Text("delete in caching")
-	if err = h.cachingRepository.DeleteUserHabits(ctx, performerID); err != nil {
-		ctx.Logger().Error("failed to delete in caching", err, appcontext.Fields{})
-	}
+	_ = h.service.DeleteUserCaching(ctx, performerID, req.Date)
 
 	ctx.Logger().Text("done update habit request")
 	return &dto.UpdateHabitResponse{

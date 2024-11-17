@@ -1,6 +1,7 @@
 package dto
 
 type CreateHabitRequest struct {
+	Date       string `json:"date" validate:"required" message:"invalid_date"`
 	Name       string `json:"name" validate:"required" message:"invalid_name"`
 	Goal       string `json:"goal" validate:"required" message:"invalid_goal"`
 	DaysOfWeek []int  `json:"daysOfWeek" validate:"required" message:"invalid_days_of_week"`

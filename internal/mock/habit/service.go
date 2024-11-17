@@ -40,6 +40,20 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// DeleteUserCaching mocks base method.
+func (m *MockService) DeleteUserCaching(ctx *appcontext.AppContext, userID, date string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUserCaching", ctx, userID, date)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteUserCaching indicates an expected call of DeleteUserCaching.
+func (mr *MockServiceMockRecorder) DeleteUserCaching(ctx, userID, date any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserCaching", reflect.TypeOf((*MockService)(nil).DeleteUserCaching), ctx, userID, date)
+}
+
 // GetHabitByID mocks base method.
 func (m *MockService) GetHabitByID(ctx *appcontext.AppContext, habitID, userID string) (*domain.Habit, error) {
 	m.ctrl.T.Helper()

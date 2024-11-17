@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"slices"
 
 	"github.com/namhq1989/go-utilities/appcontext"
@@ -14,7 +13,6 @@ type CompleteHabitHandler struct {
 	habitRepository           domain.HabitRepository
 	habitCompletionRepository domain.HabitCompletionRepository
 	habitDailyStatsRepository domain.HabitDailyStatsRepository
-	cachingRepository         domain.CachingRepository
 	service                   domain.Service
 }
 
@@ -22,14 +20,12 @@ func NewCompleteHabitHandler(
 	habitRepository domain.HabitRepository,
 	habitCompletionRepository domain.HabitCompletionRepository,
 	habitDailyStatsRepository domain.HabitDailyStatsRepository,
-	cachingRepository domain.CachingRepository,
 	service domain.Service,
 ) CompleteHabitHandler {
 	return CompleteHabitHandler{
 		habitRepository:           habitRepository,
 		habitCompletionRepository: habitCompletionRepository,
 		habitDailyStatsRepository: habitDailyStatsRepository,
-		cachingRepository:         cachingRepository,
 		service:                   service,
 	}
 }
@@ -113,16 +109,7 @@ func (h CompleteHabitHandler) CompleteHabit(ctx *appcontext.AppContext, performe
 		return nil, err
 	}
 
-	ctx.Logger().Text("delete habits caching")
-	if err = h.cachingRepository.DeleteUserHabits(ctx, performerID); err != nil {
-		ctx.Logger().Error("failed to delete in caching", err, appcontext.Fields{})
-	}
-
-	ctx.Logger().Text("delete stats caching")
-	dateDDMM := fmt.Sprintf("%02d%02d", startOfDay.Day(), int(startOfDay.Month()))
-	if err = h.cachingRepository.DeleteUserStats(ctx, performerID, dateDDMM); err != nil {
-		ctx.Logger().Error("failed to delete in caching", err, appcontext.Fields{})
-	}
+	_ = h.service.DeleteUserCaching(ctx, performerID, req.Date)
 
 	ctx.Logger().Text("done complete habit request")
 	return &dto.CompleteHabitResponse{}, nil

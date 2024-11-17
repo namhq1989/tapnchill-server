@@ -46,15 +46,14 @@ func New(
 	habitRepository domain.HabitRepository,
 	habitCompletionRepository domain.HabitCompletionRepository,
 	habitDailyStatsRepository domain.HabitDailyStatsRepository,
-	cachingRepository domain.CachingRepository,
 	service domain.Service,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			CreateHabitHandler:       command.NewCreateHabitHandler(habitRepository, cachingRepository),
-			UpdateHabitHandler:       command.NewUpdateHabitHandler(habitRepository, cachingRepository, service),
-			ChangeHabitStatusHandler: command.NewChangeHabitStatusHandler(habitRepository, cachingRepository, service),
-			CompleteHabitHandler:     command.NewCompleteHabitHandler(habitRepository, habitCompletionRepository, habitDailyStatsRepository, cachingRepository, service),
+			CreateHabitHandler:       command.NewCreateHabitHandler(habitRepository, service),
+			UpdateHabitHandler:       command.NewUpdateHabitHandler(habitRepository, service),
+			ChangeHabitStatusHandler: command.NewChangeHabitStatusHandler(habitRepository, service),
+			CompleteHabitHandler:     command.NewCompleteHabitHandler(habitRepository, habitCompletionRepository, habitDailyStatsRepository, service),
 		},
 		queryHandlers: queryHandlers{
 			GetHabitsHandler: query.NewGetHabitsHandler(service),

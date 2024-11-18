@@ -46,7 +46,7 @@ func (h CompleteHabitHandler) CompleteHabit(ctx *appcontext.AppContext, performe
 	}
 
 	ctx.Logger().Text("find daily stats in db")
-	stats, err := h.habitDailyStatsRepository.FindByDate(ctx, habitID, *startOfDay)
+	stats, err := h.habitDailyStatsRepository.FindByDate(ctx, performerID, *startOfDay)
 	if err != nil {
 		ctx.Logger().Error("failed to find daily stats in db", err, appcontext.Fields{})
 		return nil, err

@@ -109,9 +109,6 @@ func (h *Habit) SetSortOrder(order int) {
 }
 
 func (h *Habit) OnCompleted() {
-	h.LastCompletedAt = manipulation.NowUTC()
-	h.StatsTotalCompletions++
-
 	if h.isInStreak() {
 		h.StatsCurrentStreak++
 	} else {
@@ -121,6 +118,9 @@ func (h *Habit) OnCompleted() {
 	if h.StatsCurrentStreak > h.StatsLongestStreak {
 		h.StatsLongestStreak = h.StatsCurrentStreak
 	}
+
+	h.StatsTotalCompletions++
+	h.LastCompletedAt = manipulation.NowUTC()
 }
 
 func (h *Habit) isInStreak() bool {

@@ -89,16 +89,16 @@ func (r HabitDailyStatsRepository) FindByID(ctx *appcontext.AppContext, statsID 
 	return &result, nil
 }
 
-func (r HabitDailyStatsRepository) FindByDate(ctx *appcontext.AppContext, habitID string, date time.Time) (*domain.HabitDailyStats, error) {
-	hid, err := database.ObjectIDFromString(habitID)
+func (r HabitDailyStatsRepository) FindByDate(ctx *appcontext.AppContext, userID string, date time.Time) (*domain.HabitDailyStats, error) {
+	uid, err := database.ObjectIDFromString(userID)
 	if err != nil {
-		return nil, apperrors.Habit.InvalidID
+		return nil, apperrors.User.InvalidUserID
 	}
 
 	var doc dbmodel.HabitDailyStats
 	if err = r.collection().FindOne(ctx.Context(), bson.M{
-		"habitId": hid,
-		"date":    date,
+		"userId": uid,
+		"date":   date,
 	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, err
 	} else if errors.Is(err, mongo.ErrNoDocuments) {

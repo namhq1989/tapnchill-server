@@ -130,6 +130,14 @@ func (h *Habit) isInStreak() bool {
 	return h.LastCompletedAt.After(startOfYesterday) && h.LastCompletedAt.Before(endOfYesterday)
 }
 
+func (h *Habit) IsActive() bool {
+	return h.Status == HabitStatusActive
+}
+
+func (h *Habit) IsInactive() bool {
+	return h.Status == HabitStatusInactive
+}
+
 type HabitFilter struct {
 	UserID primitive.ObjectID
 }

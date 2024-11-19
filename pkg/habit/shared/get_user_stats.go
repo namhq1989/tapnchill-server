@@ -105,7 +105,7 @@ func (Service) getScheduledCountForDay(ctx *appcontext.AppContext, date time.Tim
 	scheduledCount := 0
 	for _, habit := range habits {
 		for _, scheduledDay := range habit.DaysOfWeek {
-			if scheduledDay == dayOfWeek {
+			if scheduledDay == dayOfWeek && habit.IsActive() {
 				scheduledCount++
 				break
 			}

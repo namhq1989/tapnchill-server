@@ -56,7 +56,7 @@ func (s Service) GetUserStats(ctx *appcontext.AppContext, userID, date string, d
 		}
 
 		ctx.Logger().Text("generating default stats for missing dates")
-		stats = s.generateDefaultStatsIfMissing(ctx, stats, fromDate, *startOfDay, habits)
+		stats = s.generateDefaultStatsIfMissing(ctx, stats, fromDate, startOfDay.UTC(), habits)
 	}
 
 	sort.Slice(stats, func(i, j int) bool {

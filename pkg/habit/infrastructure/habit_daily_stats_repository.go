@@ -36,7 +36,8 @@ func (r HabitDailyStatsRepository) ensureIndexes() {
 		opts    = options.CreateIndexes().SetMaxTime(time.Minute * 30)
 		indexes = []mongo.IndexModel{
 			{
-				Keys: bson.D{{Key: "habitId", Value: 1}, {Key: "createdAt", Value: -1}},
+				Keys:    bson.D{{Key: "userId", Value: 1}, {Key: "date", Value: -1}},
+				Options: options.Index().SetUnique(true),
 			},
 		}
 	)

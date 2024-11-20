@@ -33,6 +33,7 @@ type Habit struct {
 	StatsTotalCompletions int
 	CreatedAt             time.Time
 	LastCompletedAt       time.Time
+	LastActivatedAt       time.Time
 }
 
 func NewHabit(userID, name, goal string, daysOfWeek []int, icon string, sortOrder int) (*Habit, error) {
@@ -41,11 +42,12 @@ func NewHabit(userID, name, goal string, daysOfWeek []int, icon string, sortOrde
 	}
 
 	habit := Habit{
-		ID:        database.NewStringID(),
-		UserID:    userID,
-		SortOrder: sortOrder,
-		Status:    HabitStatusActive,
-		CreatedAt: manipulation.NowUTC(),
+		ID:              database.NewStringID(),
+		UserID:          userID,
+		SortOrder:       sortOrder,
+		Status:          HabitStatusActive,
+		CreatedAt:       manipulation.NowUTC(),
+		LastActivatedAt: manipulation.NowUTC(),
 	}
 
 	if err := habit.SetName(name); err != nil {
@@ -102,6 +104,10 @@ func (h *Habit) SetIcon(icon string) error {
 
 func (h *Habit) SetStatus(status HabitStatus) {
 	h.Status = status
+
+	if h.IsActive() {
+		h.LastActivatedAt = manipulation.NowUTC()
+	}
 }
 
 func (h *Habit) SetSortOrder(order int) {

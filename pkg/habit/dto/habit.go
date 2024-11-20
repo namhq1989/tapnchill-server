@@ -18,6 +18,7 @@ type Habit struct {
 	StatsTotalCompletions int                       `json:"statsTotalCompletions"`
 	CreatedAt             *httprespond.TimeResponse `json:"createdAt"`
 	LastCompletedAt       *httprespond.TimeResponse `json:"lastCompletedAt"`
+	LastActivatedAt       *httprespond.TimeResponse `json:"LastActivatedAt"`
 }
 
 func (Habit) FromDomain(habit domain.Habit) Habit {
@@ -34,5 +35,6 @@ func (Habit) FromDomain(habit domain.Habit) Habit {
 		StatsTotalCompletions: habit.StatsTotalCompletions,
 		CreatedAt:             httprespond.NewTimeResponse(habit.CreatedAt),
 		LastCompletedAt:       httprespond.NewTimeResponse(habit.LastCompletedAt),
+		LastActivatedAt:       httprespond.NewTimeResponse(habit.LastActivatedAt),
 	}
 }

@@ -23,6 +23,7 @@ type Habit struct {
 	StatsTotalCompletions int                `bson:"statsTotalCompletions"`
 	CreatedAt             time.Time          `bson:"createdAt"`
 	LastCompletedAt       time.Time          `bson:"lastCompletedAt"`
+	LastActivatedAt       time.Time          `bson:"lastActivatedAt"`
 }
 
 func (h Habit) ToDomain() domain.Habit {
@@ -40,6 +41,7 @@ func (h Habit) ToDomain() domain.Habit {
 		StatsTotalCompletions: h.StatsTotalCompletions,
 		CreatedAt:             h.CreatedAt,
 		LastCompletedAt:       h.LastCompletedAt,
+		LastActivatedAt:       h.LastActivatedAt,
 	}
 }
 
@@ -68,5 +70,6 @@ func (Habit) FromDomain(habit domain.Habit) (*Habit, error) {
 		StatsTotalCompletions: habit.StatsTotalCompletions,
 		CreatedAt:             habit.CreatedAt,
 		LastCompletedAt:       habit.LastCompletedAt,
+		LastActivatedAt:       habit.LastActivatedAt,
 	}, nil
 }

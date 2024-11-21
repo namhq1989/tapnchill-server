@@ -9,14 +9,16 @@ import (
 
 type (
 	Commands interface {
-		AnonymousSignIn(ctx *appcontext.AppContext, req dto.AnonymousSignInRequest) (*dto.AnonymousSignInResponse, error)
+		ExtensionSignIn(ctx *appcontext.AppContext, req dto.ExtensionSignInRequest) (*dto.ExtensionSignInResponse, error)
+		GoogleSignIn(ctx *appcontext.AppContext, req dto.GoogleSignInRequest) (*dto.GoogleSignInResponse, error)
 	}
 	Instance interface {
 		Commands
 	}
 
 	commandHandlers struct {
-		command.AnonymousSignInHandler
+		command.ExtensionSignInHandler
+		command.GoogleSignInHandler
 	}
 	Application struct {
 		commandHandlers
@@ -28,11 +30,13 @@ var _ Instance = (*Application)(nil)
 func New(
 	userRepository domain.UserRepository,
 	jwtRepository domain.JwtRepository,
+	ssoRepository domain.SSORepository,
 	queueRepository domain.QueueRepository,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			AnonymousSignInHandler: command.NewAnonymousSignInHandler(userRepository, jwtRepository, queueRepository),
+			ExtensionSignInHandler: command.NewExtensionSignInHandler(userRepository, jwtRepository, queueRepository),
+			GoogleSignInHandler:    command.NewGoogleSignInHandler(userRepository, ssoRepository, jwtRepository),
 		},
 	}
 }

@@ -14,29 +14,29 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-type anonymousSignInTestSuite struct {
+type extensionSignInTestSuite struct {
 	suite.Suite
-	handler             command.AnonymousSignInHandler
+	handler             command.ExtensionSignInHandler
 	mockCtrl            *gomock.Controller
 	mockUserRepository  *mockuser.MockUserRepository
 	mockJwtRepository   *mockuser.MockJwtRepository
 	mockQueueRepository *mockuser.MockQueueRepository
 }
 
-func (s *anonymousSignInTestSuite) SetupSuite() {
+func (s *extensionSignInTestSuite) SetupSuite() {
 	s.setupApplication()
 }
 
-func (s *anonymousSignInTestSuite) setupApplication() {
+func (s *extensionSignInTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockUserRepository = mockuser.NewMockUserRepository(s.mockCtrl)
 	s.mockJwtRepository = mockuser.NewMockJwtRepository(s.mockCtrl)
 	s.mockQueueRepository = mockuser.NewMockQueueRepository(s.mockCtrl)
 
-	s.handler = command.NewAnonymousSignInHandler(s.mockUserRepository, s.mockJwtRepository, s.mockQueueRepository)
+	s.handler = command.NewExtensionSignInHandler(s.mockUserRepository, s.mockJwtRepository, s.mockQueueRepository)
 }
 
-func (s *anonymousSignInTestSuite) TearDownTest() {
+func (s *extensionSignInTestSuite) TearDownTest() {
 	s.mockCtrl.Finish()
 }
 
@@ -44,7 +44,7 @@ func (s *anonymousSignInTestSuite) TearDownTest() {
 // CASES
 //
 
-func (s *anonymousSignInTestSuite) Test_1_Success() {
+func (s *extensionSignInTestSuite) Test_1_Success() {
 	// mock data
 	var token = "access-token"
 
@@ -66,7 +66,7 @@ func (s *anonymousSignInTestSuite) Test_1_Success() {
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.AnonymousSignIn(ctx, dto.AnonymousSignInRequest{
+	resp, err := s.handler.ExtensionSignIn(ctx, dto.ExtensionSignInRequest{
 		ClientID: "client-id",
 		Checksum: "checksum",
 	})
@@ -76,14 +76,14 @@ func (s *anonymousSignInTestSuite) Test_1_Success() {
 	assert.Equal(s.T(), token, resp.AccessToken)
 }
 
-func (s *anonymousSignInTestSuite) Test_2_Fail_InvalidChecksum() {
+func (s *extensionSignInTestSuite) Test_2_Fail_InvalidChecksum() {
 	// call
 	s.mockUserRepository.EXPECT().
 		ValidateAnonymousChecksum(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(false)
 
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.AnonymousSignIn(ctx, dto.AnonymousSignInRequest{
+	resp, err := s.handler.ExtensionSignIn(ctx, dto.ExtensionSignInRequest{
 		ClientID: "",
 		Checksum: "",
 	})
@@ -93,14 +93,14 @@ func (s *anonymousSignInTestSuite) Test_2_Fail_InvalidChecksum() {
 	assert.Equal(s.T(), apperrors.Common.BadRequest, err)
 }
 
-func (s *anonymousSignInTestSuite) Test_2_Fail_InvalidClientID() {
+func (s *extensionSignInTestSuite) Test_2_Fail_InvalidClientID() {
 	// call
 	s.mockUserRepository.EXPECT().
 		ValidateAnonymousChecksum(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(true)
 
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.AnonymousSignIn(ctx, dto.AnonymousSignInRequest{
+	resp, err := s.handler.ExtensionSignIn(ctx, dto.ExtensionSignInRequest{
 		ClientID: "",
 		Checksum: "checksum",
 	})
@@ -114,6 +114,6 @@ func (s *anonymousSignInTestSuite) Test_2_Fail_InvalidClientID() {
 // END OF CASES
 //
 
-func TestAnonymousSignInTestSuite(t *testing.T) {
-	suite.Run(t, new(anonymousSignInTestSuite))
+func TestExtensionSignInTestSuite(t *testing.T) {
+	suite.Run(t, new(extensionSignInTestSuite))
 }

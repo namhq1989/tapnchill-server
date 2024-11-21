@@ -10,20 +10,18 @@ import (
 	"google.golang.org/api/option"
 )
 
-// FOR GOOGLE ONLY
-
 type Operations interface {
-	VerifyToken(ctx *appcontext.AppContext, idToken string) (*UserInfo, error)
+	VerifyGoogleToken(ctx *appcontext.AppContext, idToken string) (*UserInfo, error)
 }
 
 type SSO struct {
 	firebase *auth.Client
 }
 
-func NewSSOClient(serviceAccountEncoded string) *SSO {
+func NewSSOClient(firebaseSAEncoded string) *SSO {
 	ctx := context.Background()
 
-	sa, err := decodeBase64(serviceAccountEncoded)
+	sa, err := decodeBase64(firebaseSAEncoded)
 	if err != nil {
 		panic(err)
 	}

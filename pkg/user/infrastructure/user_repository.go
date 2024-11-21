@@ -41,7 +41,12 @@ func (r UserRepository) ensureIndexes() {
 		opts    = options.CreateIndexes().SetMaxTime(time.Minute * 30)
 		indexes = []mongo.IndexModel{
 			{
-				Keys: bson.D{{Key: "clientId", Value: 1}, {Key: "authProviders.id", Value: 1}},
+				Keys:    bson.D{{Key: "authProviders.provider", Value: 1}, {Key: "authProviders.id", Value: 1}},
+				Options: options.Index().SetUnique(true).SetSparse(true),
+			},
+			{
+				Keys:    bson.D{{Key: "authProviders.email", Value: 1}},
+				Options: options.Index().SetSparse(true),
 			},
 		}
 	)
@@ -94,6 +99,20 @@ func (r UserRepository) FindByID(ctx *appcontext.AppContext, userID string) (*do
 	var doc dbmodel.User
 	if err = r.collection().FindOne(ctx.Context(), bson.M{
 		"_id": uid,
+	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	} else if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, nil
+	}
+
+	result := doc.ToDomain()
+	return &result, nil
+}
+
+func (r UserRepository) FindByEmail(ctx *appcontext.AppContext, email string) (*domain.User, error) {
+	var doc dbmodel.User
+	if err := r.collection().FindOne(ctx.Context(), bson.M{
+		"authProviders.email": email,
 	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, err
 	} else if errors.Is(err, mongo.ErrNoDocuments) {

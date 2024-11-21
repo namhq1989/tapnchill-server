@@ -14,6 +14,7 @@ type UserRepository interface {
 	Update(ctx *appcontext.AppContext, user User) error
 	Delete(ctx *appcontext.AppContext, userID string) error
 	FindByID(ctx *appcontext.AppContext, userID string) (*User, error)
+	FindByEmail(ctx *appcontext.AppContext, email string) (*User, error)
 	ValidateAnonymousChecksum(_ *appcontext.AppContext, clientID, checksum string) bool
 }
 
@@ -26,29 +27,51 @@ type User struct {
 	UpdatedAt     time.Time
 }
 
-func NewUser(clientID, source string) (*User, error) {
+func NewExtensionUser(clientID string) (*User, error) {
 	if clientID == "" {
 		return nil, apperrors.User.InvalidClientID
 	}
 
-	authProviders := make([]AuthProvider, 0)
-	if source == "" || source == AuthProviderExtension {
-		source = AuthProviderExtension
-		authProviders = append(authProviders, AuthProvider{
-			Provider: source,
-			ID:       clientID,
-			Name:     clientID,
-			Email:    "",
-		})
+	return &User{
+		ID:   database.NewStringID(),
+		Name: clientID,
+		Plan: PlanFree,
+		AuthProviders: []AuthProvider{
+			{
+				Provider: AuthProviderExtension,
+				ID:       clientID,
+				Name:     clientID,
+				Email:    "",
+			},
+		},
+		CreatedAt: manipulation.NowUTC(),
+		UpdatedAt: manipulation.NowUTC(),
+	}, nil
+}
+
+func NewGoogleUser(id, email, name string) (*User, error) {
+	if id == "" {
+		return nil, apperrors.Auth.InvalidGoogleToken
+	}
+
+	if name == "" {
+		name = id
 	}
 
 	return &User{
-		ID:            database.NewStringID(),
-		Name:          clientID,
-		Plan:          PlanFree,
-		AuthProviders: authProviders,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
+		ID:   database.NewStringID(),
+		Name: name,
+		Plan: PlanFree,
+		AuthProviders: []AuthProvider{
+			{
+				Provider: AuthProviderGoogle,
+				ID:       id,
+				Name:     name,
+				Email:    email,
+			},
+		},
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}, nil
 }
 

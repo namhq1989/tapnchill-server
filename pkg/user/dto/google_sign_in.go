@@ -1,9 +1,9 @@
 package dto
 
-type SignInWithGoogleRequest struct {
+type GoogleSignInRequest struct {
 	Token string `json:"token" validate:"required" message:"auth_invalid_google_token"`
 }
 
-type SignInWithGoogleResponse struct {
+type GoogleSignInResponse struct {
 	AccessToken string `json:"accessToken"`
 }

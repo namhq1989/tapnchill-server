@@ -7,26 +7,26 @@ import (
 	"github.com/namhq1989/tapnchill-server/pkg/user/dto"
 )
 
-type AnonymousSignUpHandler struct {
+type AnonymousSignInHandler struct {
 	userRepository  domain.UserRepository
 	jwtRepository   domain.JwtRepository
 	queueRepository domain.QueueRepository
 }
 
-func NewAnonymousSignUpHandler(
+func NewAnonymousSignInHandler(
 	userRepository domain.UserRepository,
 	jwtRepository domain.JwtRepository,
 	queueRepository domain.QueueRepository,
-) AnonymousSignUpHandler {
-	return AnonymousSignUpHandler{
+) AnonymousSignInHandler {
+	return AnonymousSignInHandler{
 		userRepository:  userRepository,
 		jwtRepository:   jwtRepository,
 		queueRepository: queueRepository,
 	}
 }
 
-func (h AnonymousSignUpHandler) AnonymousSignUp(ctx *appcontext.AppContext, req dto.AnonymousSignUpRequest) (*dto.AnonymousSignUpResponse, error) {
-	ctx.Logger().Info("new anonymous sign up request", appcontext.Fields{"clientID": req.ClientID, "source": req.Source, "checksum": req.Checksum})
+func (h AnonymousSignInHandler) AnonymousSignIn(ctx *appcontext.AppContext, req dto.AnonymousSignInRequest) (*dto.AnonymousSignInResponse, error) {
+	ctx.Logger().Info("new anonymous sign in request", appcontext.Fields{"clientID": req.ClientID, "source": req.Source, "checksum": req.Checksum})
 
 	if !h.userRepository.ValidateAnonymousChecksum(ctx, req.ClientID, req.Checksum) {
 		ctx.Logger().Text("invalid checksum, respond")
@@ -58,13 +58,13 @@ func (h AnonymousSignUpHandler) AnonymousSignUp(ctx *appcontext.AppContext, req 
 		ctx.Logger().Error("failed to enqueue tasks", err, appcontext.Fields{})
 	}
 
-	ctx.Logger().Text("return anonymous sign up response")
-	return &dto.AnonymousSignUpResponse{
+	ctx.Logger().Text("return anonymous sign in response")
+	return &dto.AnonymousSignInResponse{
 		AccessToken: token,
 	}, nil
 }
 
-func (h AnonymousSignUpHandler) enqueueTasks(ctx *appcontext.AppContext, user domain.User) error {
+func (h AnonymousSignInHandler) enqueueTasks(ctx *appcontext.AppContext, user domain.User) error {
 	ctx.Logger().Text("add task create user default Goal")
 	if err := h.queueRepository.CreateUserDefaultGoal(ctx, domain.QueueCreateUserDefaultGoalPayload{
 		UserID: user.ID,

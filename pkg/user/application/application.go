@@ -9,14 +9,14 @@ import (
 
 type (
 	Commands interface {
-		AnonymousSignUp(ctx *appcontext.AppContext, req dto.AnonymousSignUpRequest) (*dto.AnonymousSignUpResponse, error)
+		AnonymousSignIn(ctx *appcontext.AppContext, req dto.AnonymousSignInRequest) (*dto.AnonymousSignInResponse, error)
 	}
 	Instance interface {
 		Commands
 	}
 
 	commandHandlers struct {
-		command.AnonymousSignUpHandler
+		command.AnonymousSignInHandler
 	}
 	Application struct {
 		commandHandlers
@@ -32,7 +32,7 @@ func New(
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			AnonymousSignUpHandler: command.NewAnonymousSignUpHandler(userRepository, jwtRepository, queueRepository),
+			AnonymousSignInHandler: command.NewAnonymousSignInHandler(userRepository, jwtRepository, queueRepository),
 		},
 	}
 }

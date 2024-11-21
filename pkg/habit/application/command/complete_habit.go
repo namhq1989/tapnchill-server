@@ -53,20 +53,27 @@ func (h CompleteHabitHandler) CompleteHabit(ctx *appcontext.AppContext, performe
 	}
 
 	if stats == nil {
-		ctx.Logger().Text("not found, create new daily stats model")
-		stats, err = domain.NewHabitDailyStats(performerID, *startOfDay)
+		ctx.Logger().Text("not found, find user habits to create a new daily stats")
+		habits, hErr := h.service.GetUserHabits(ctx, performerID)
+		if hErr != nil {
+			ctx.Logger().Error("failed to find user habits to create a new daily stats", hErr, appcontext.Fields{})
+			return nil, hErr
+		}
+
+		ctx.Logger().Text("find scheduled habits of today")
+		scheduledIDs := make([]string, 0)
+		for _, hb := range habits {
+			if hb.IsActive() && hb.CreatedAt.Before(*startOfDay) && slices.Contains(hb.DaysOfWeek, int(startOfDay.Weekday())) {
+				scheduledIDs = append(scheduledIDs, hb.ID)
+			}
+		}
+
+		ctx.Logger().Text("create new daily stats model")
+		stats, err = domain.NewHabitDailyStats(performerID, scheduledIDs, *startOfDay)
 		if err != nil {
 			ctx.Logger().Error("failed to create new daily stats model", err, appcontext.Fields{})
 			return nil, err
 		}
-
-		ctx.Logger().Text("count scheduled habits of today in db")
-		count, cErr := h.habitRepository.CountScheduledHabits(ctx, performerID, *startOfDay)
-		if cErr != nil {
-			ctx.Logger().Error("failed to count scheduled habits of today in db", err, appcontext.Fields{})
-			return nil, err
-		}
-		stats.SetScheduledCount(int(count))
 
 		ctx.Logger().Text("persist daily stats in db")
 		if err = h.habitDailyStatsRepository.Create(ctx, *stats); err != nil {
@@ -79,7 +86,7 @@ func (h CompleteHabitHandler) CompleteHabit(ctx *appcontext.AppContext, performe
 	}
 
 	ctx.Logger().Text("create new habit completion model")
-	completion, err := domain.NewHabitCompletion(habitID)
+	completion, err := domain.NewHabitCompletion(habitID, *startOfDay)
 	if err != nil {
 		ctx.Logger().Error("failed to create new habit completion model", err, appcontext.Fields{})
 		return nil, err
@@ -101,7 +108,7 @@ func (h CompleteHabitHandler) CompleteHabit(ctx *appcontext.AppContext, performe
 	}
 
 	ctx.Logger().Text("update habit stats")
-	habit.OnCompleted()
+	habit.OnCompleted(*startOfDay)
 
 	ctx.Logger().Text("update habit in db")
 	if err = h.habitRepository.Update(ctx, *habit); err != nil {
@@ -109,7 +116,7 @@ func (h CompleteHabitHandler) CompleteHabit(ctx *appcontext.AppContext, performe
 		return nil, err
 	}
 
-	_ = h.service.DeleteUserCaching(ctx, performerID, req.Date)
+	_ = h.service.DeleteUserCaching(ctx, performerID, manipulation.NowUTC())
 
 	ctx.Logger().Text("done complete habit request")
 	return &dto.CompleteHabitResponse{}, nil

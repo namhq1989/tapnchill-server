@@ -60,7 +60,7 @@ func (r CachingRepository) DeleteUserHabits(ctx *appcontext.AppContext, userID s
 }
 
 func (r CachingRepository) generateUserHabitsKey(userID string) string {
-	return r.caching.GenerateKey(r.domain, fmt.Sprintf("user:%s", userID))
+	return r.caching.GenerateKey(r.domain, fmt.Sprintf("user:%s:habits", userID))
 }
 
 // USER STATS
@@ -97,5 +97,5 @@ func (r CachingRepository) DeleteUserStats(ctx *appcontext.AppContext, userID, d
 }
 
 func (r CachingRepository) generateUserStatsKey(userID, date string) string {
-	return r.caching.GenerateKey(r.domain, fmt.Sprintf("user:%s:%s:stats", userID, date))
+	return r.caching.GenerateKey(r.domain, fmt.Sprintf("user:%s:stats:%s", userID, date))
 }

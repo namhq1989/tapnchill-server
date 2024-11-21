@@ -11,7 +11,6 @@ package mockhabit
 
 import (
 	reflect "reflect"
-	time "time"
 
 	appcontext "github.com/namhq1989/go-utilities/appcontext"
 	domain "github.com/namhq1989/tapnchill-server/pkg/habit/domain"
@@ -39,21 +38,6 @@ func NewMockHabitRepository(ctrl *gomock.Controller) *MockHabitRepository {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockHabitRepository) EXPECT() *MockHabitRepositoryMockRecorder {
 	return m.recorder
-}
-
-// CountScheduledHabits mocks base method.
-func (m *MockHabitRepository) CountScheduledHabits(ctx *appcontext.AppContext, userID string, date time.Time) (int64, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CountScheduledHabits", ctx, userID, date)
-	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CountScheduledHabits indicates an expected call of CountScheduledHabits.
-func (mr *MockHabitRepositoryMockRecorder) CountScheduledHabits(ctx, userID, date any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountScheduledHabits", reflect.TypeOf((*MockHabitRepository)(nil).CountScheduledHabits), ctx, userID, date)
 }
 
 // Create mocks base method.

@@ -5,7 +5,6 @@ import (
 
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
-	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 )
 
 type HabitCompletionRepository interface {
@@ -18,10 +17,10 @@ type HabitCompletion struct {
 	CompletedAt time.Time
 }
 
-func NewHabitCompletion(habitID string) (*HabitCompletion, error) {
+func NewHabitCompletion(habitID string, date time.Time) (*HabitCompletion, error) {
 	return &HabitCompletion{
 		ID:          database.NewStringID(),
 		HabitID:     habitID,
-		CompletedAt: manipulation.NowUTC(),
+		CompletedAt: date,
 	}, nil
 }

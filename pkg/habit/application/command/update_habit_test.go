@@ -3,6 +3,7 @@ package command_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
@@ -72,6 +73,7 @@ func (s *updateHabitTestSuite) Test_1_Success() {
 		Goal:       "habit goal",
 		DaysOfWeek: []int{1, 2, 3},
 		Icon:       "icon.png",
+		Date:       time.Now().Format(time.RFC3339),
 	})
 
 	assert.Nil(s.T(), err)
@@ -91,6 +93,7 @@ func (s *updateHabitTestSuite) Test_2_Fail_NotFound() {
 		Goal:       "habit goal",
 		DaysOfWeek: []int{1, 2, 3},
 		Icon:       "icon.png",
+		Date:       time.Now().Format(time.RFC3339),
 	})
 
 	assert.NotNil(s.T(), err)
@@ -111,6 +114,7 @@ func (s *updateHabitTestSuite) Test_2_Fail_NotOwner() {
 		Goal:       "habit goal",
 		DaysOfWeek: []int{1, 2, 3},
 		Icon:       "icon.png",
+		Date:       time.Now().Format(time.RFC3339),
 	})
 
 	assert.NotNil(s.T(), err)

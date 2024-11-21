@@ -122,7 +122,7 @@ func (r HabitDailyStatsRepository) FindByFilter(ctx *appcontext.AppContext, filt
 	)
 
 	cursor, err := r.collection().Find(ctx.Context(), condition, &options.FindOptions{
-		Sort: bson.M{"createdAt": -1},
+		Sort: bson.M{"date": -1},
 	})
 	if err != nil {
 		return result, err

@@ -11,6 +11,7 @@ package mockhabit
 
 import (
 	reflect "reflect"
+	time "time"
 
 	appcontext "github.com/namhq1989/go-utilities/appcontext"
 	domain "github.com/namhq1989/tapnchill-server/pkg/habit/domain"
@@ -41,7 +42,7 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // DeleteUserCaching mocks base method.
-func (m *MockService) DeleteUserCaching(ctx *appcontext.AppContext, userID, date string) error {
+func (m *MockService) DeleteUserCaching(ctx *appcontext.AppContext, userID string, date time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteUserCaching", ctx, userID, date)
 	ret0, _ := ret[0].(error)

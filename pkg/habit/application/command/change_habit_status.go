@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
+	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 	"github.com/namhq1989/tapnchill-server/pkg/habit/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/habit/dto"
 )
@@ -50,7 +51,7 @@ func (h ChangeHabitStatusHandler) ChangeHabitStatus(ctx *appcontext.AppContext, 
 		return nil, err
 	}
 
-	_ = h.service.DeleteUserCaching(ctx, performerID, req.Date)
+	_ = h.service.DeleteUserCaching(ctx, performerID, manipulation.NowUTC())
 
 	ctx.Logger().Text("done change habit status request")
 	return &dto.ChangeHabitStatusResponse{}, nil

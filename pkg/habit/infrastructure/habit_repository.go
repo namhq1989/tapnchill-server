@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
-
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
@@ -128,24 +126,4 @@ func (r HabitRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.
 		result = append(result, doc.ToDomain())
 	}
 	return result, nil
-}
-
-func (r HabitRepository) CountScheduledHabits(ctx *appcontext.AppContext, userID string, date time.Time) (int64, error) {
-	uid, err := database.ObjectIDFromString(userID)
-	if err != nil {
-		return 0, apperrors.User.InvalidUserID
-	}
-
-	var (
-		condition = bson.M{
-			"userId":     uid,
-			"status":     domain.HabitStatusActive.String(),
-			"daysOfWeek": int(date.Weekday()),
-			"createdAt": bson.M{
-				"$lt": manipulation.StartOfDay(time.Now()),
-			},
-		}
-	)
-
-	return r.collection().CountDocuments(ctx.Context(), condition)
 }

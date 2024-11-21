@@ -22,7 +22,7 @@ type Habit struct {
 	StatsCurrentStreak    int                `bson:"statsCurrentStreak"`
 	StatsTotalCompletions int                `bson:"statsTotalCompletions"`
 	CreatedAt             time.Time          `bson:"createdAt"`
-	LastCompletedAt       time.Time          `bson:"lastCompletedAt"`
+	LastCompletedAt       *time.Time         `bson:"lastCompletedAt"`
 	LastActivatedAt       time.Time          `bson:"lastActivatedAt"`
 }
 

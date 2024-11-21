@@ -17,6 +17,7 @@ import (
 	appjwt "github.com/namhq1989/tapnchill-server/internal/jwt"
 	"github.com/namhq1989/tapnchill-server/internal/monolith"
 	"github.com/namhq1989/tapnchill-server/internal/queue"
+	"github.com/namhq1989/tapnchill-server/internal/sso"
 	"github.com/namhq1989/tapnchill-server/internal/utils/waiter"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
@@ -29,6 +30,7 @@ type app struct {
 	jwt         *appjwt.JWT
 	queue       *queue.Queue
 	externalApi *externalapi.ExternalApi
+	sso         *sso.SSO
 	rest        *echo.Echo
 	rpc         *grpc.Server
 	waiter      waiter.Waiter
@@ -69,6 +71,10 @@ func (a *app) Queue() *queue.Queue {
 
 func (a *app) ExternalApi() *externalapi.ExternalApi {
 	return a.externalApi
+}
+
+func (a *app) SSO() *sso.SSO {
+	return a.sso
 }
 
 func (a *app) startupModules() error {

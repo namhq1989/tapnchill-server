@@ -71,9 +71,11 @@ func (s *completeHabitTestSuite) Test_1_Success_FirstCompletion() {
 		FindByDate(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil, nil)
 
-	s.mockHabitRepository.EXPECT().
-		CountScheduledHabits(gomock.Any(), gomock.Any(), gomock.Any()).
-		Return(int64(5), nil)
+	s.mockService.EXPECT().
+		GetUserHabits(gomock.Any(), gomock.Any()).
+		Return([]domain.Habit{
+			{ID: database.NewStringID()},
+		}, nil)
 
 	s.mockHabitDailyStatsRepository.EXPECT().
 		Create(gomock.Any(), gomock.Any()).

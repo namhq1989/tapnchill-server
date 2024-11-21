@@ -3,6 +3,7 @@ package command_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
@@ -69,6 +70,7 @@ func (s *changeHabitStatusTestSuite) Test_1_Success() {
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.ChangeHabitStatus(ctx, performerID, database.NewStringID(), dto.ChangeHabitStatusRequest{
 		Status: domain.HabitStatusActive.String(),
+		Date:   time.Now().Format(time.RFC3339),
 	})
 
 	assert.Nil(s.T(), err)
@@ -85,6 +87,7 @@ func (s *changeHabitStatusTestSuite) Test_2_Fail_NotFound() {
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.ChangeHabitStatus(ctx, database.NewStringID(), database.NewStringID(), dto.ChangeHabitStatusRequest{
 		Status: domain.HabitStatusActive.String(),
+		Date:   time.Now().Format(time.RFC3339),
 	})
 
 	assert.NotNil(s.T(), err)
@@ -102,6 +105,7 @@ func (s *changeHabitStatusTestSuite) Test_2_Fail_NotOwner() {
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.ChangeHabitStatus(ctx, database.NewStringID(), database.NewStringID(), dto.ChangeHabitStatusRequest{
 		Status: domain.HabitStatusActive.String(),
+		Date:   time.Now().Format(time.RFC3339),
 	})
 
 	assert.NotNil(s.T(), err)
@@ -114,6 +118,7 @@ func (s *changeHabitStatusTestSuite) Test_2_Fail_InvalidStatus() {
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.ChangeHabitStatus(ctx, database.NewStringID(), database.NewStringID(), dto.ChangeHabitStatusRequest{
 		Status: "invalid status",
+		Date:   time.Now().Format(time.RFC3339),
 	})
 
 	assert.NotNil(s.T(), err)

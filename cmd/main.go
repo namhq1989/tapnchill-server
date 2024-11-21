@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/namhq1989/tapnchill-server/pkg/habit"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/namhq1989/go-utilities/logger"
@@ -18,8 +16,10 @@ import (
 	appjwt "github.com/namhq1989/tapnchill-server/internal/jwt"
 	"github.com/namhq1989/tapnchill-server/internal/monolith"
 	"github.com/namhq1989/tapnchill-server/internal/queue"
+	"github.com/namhq1989/tapnchill-server/internal/sso"
 	"github.com/namhq1989/tapnchill-server/internal/utils/waiter"
 	"github.com/namhq1989/tapnchill-server/pkg/common"
+	"github.com/namhq1989/tapnchill-server/pkg/habit"
 	"github.com/namhq1989/tapnchill-server/pkg/task"
 	"github.com/namhq1989/tapnchill-server/pkg/user"
 )
@@ -60,6 +60,9 @@ func main() {
 
 	// external api
 	a.externalApi = externalapi.NewExternalAPIClient(cfg.VisualCrossingToken, cfg.IpInfoToken)
+
+	// sso
+	a.sso = sso.NewSSOClient(cfg.FirebaseServiceAccount)
 
 	// queue
 	a.queue = queue.Init(cfg.QueueRedisURL, cfg.QueueConcurrency)

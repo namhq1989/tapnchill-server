@@ -20,12 +20,14 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 		userRepository = infrastructure.NewUserRepository(mono.Database(), mono.Config().AnonymousUserChecksumSecret)
 
 		jwtRepository   = infrastructure.NewJwtRepository(mono.JWT())
+		ssoRepository   = infrastructure.NewSSORepository(mono.SSO())
 		queueRepository = infrastructure.NewQueueRepository(mono.Queue())
 
 		// app
 		app = application.New(
 			userRepository,
 			jwtRepository,
+			ssoRepository,
 			queueRepository,
 		)
 	)

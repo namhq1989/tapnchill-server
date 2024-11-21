@@ -27,6 +27,21 @@ func NowUTC() time.Time {
 	return time.Now().UTC()
 }
 
+func IsToday(t time.Time) bool {
+	nowUTC := NowUTC()
+	tUTC := t.UTC()
+
+	return tUTC.Year() == nowUTC.Year() && tUTC.Month() == nowUTC.Month() && tUTC.Day() == nowUTC.Day()
+}
+
+func IsYesterday(t time.Time) bool {
+	nowUTC := NowUTC()
+	yesterdayUTC := nowUTC.AddDate(0, 0, -1)
+	tUTC := t.UTC()
+
+	return tUTC.Year() == yesterdayUTC.Year() && tUTC.Month() == yesterdayUTC.Month() && tUTC.Day() == yesterdayUTC.Day()
+}
+
 func StartOfDay(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
 }

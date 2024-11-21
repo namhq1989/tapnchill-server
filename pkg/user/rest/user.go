@@ -11,19 +11,35 @@ import (
 func (s server) registerUserRoutes() {
 	g := s.echo.Group("/api/user")
 
-	g.POST("/sign-up/anonymous", func(c echo.Context) error {
+	g.POST("/sign-in/extension", func(c echo.Context) error {
 		var (
 			ctx = c.Get("ctx").(*appcontext.AppContext)
-			req = c.Get("req").(dto.AnonymousSignUpRequest)
+			req = c.Get("req").(dto.ExtensionSignInRequest)
 		)
 
-		resp, err := s.app.AnonymousSignUp(ctx, req)
+		resp, err := s.app.ExtensionSignIn(ctx, req)
 		if err != nil {
 			return httprespond.R400(c, err, nil)
 		}
 
 		return httprespond.R200(c, resp)
 	}, func(next echo.HandlerFunc) echo.HandlerFunc {
-		return validation.ValidateHTTPPayload[dto.AnonymousSignUpRequest](next)
+		return validation.ValidateHTTPPayload[dto.ExtensionSignInRequest](next)
+	})
+
+	g.POST("/sign-in/google", func(c echo.Context) error {
+		var (
+			ctx = c.Get("ctx").(*appcontext.AppContext)
+			req = c.Get("req").(dto.GoogleSignInRequest)
+		)
+
+		resp, err := s.app.GoogleSignIn(ctx, req)
+		if err != nil {
+			return httprespond.R400(c, err, nil)
+		}
+
+		return httprespond.R200(c, resp)
+	}, func(next echo.HandlerFunc) echo.HandlerFunc {
+		return validation.ValidateHTTPPayload[dto.GoogleSignInRequest](next)
 	})
 }

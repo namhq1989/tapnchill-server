@@ -22,36 +22,35 @@ const (
 )
 
 type HabitDailyStats struct {
-	ID             string
-	UserID         string
-	Date           time.Time
-	ScheduledCount int
-	CompletedCount int
-	CompletedIDs   []string
+	ID           string
+	UserID       string
+	Date         time.Time
+	IsCompleted  bool
+	ScheduledIDs []string
+	CompletedIDs []string
 }
 
-func NewHabitDailyStats(userID string, date time.Time) (*HabitDailyStats, error) {
+func NewHabitDailyStats(userID string, scheduledIDs []string, date time.Time) (*HabitDailyStats, error) {
 	if !database.IsValidObjectID(userID) {
 		return nil, apperrors.User.InvalidUserID
 	}
 
 	return &HabitDailyStats{
-		ID:             database.NewStringID(),
-		UserID:         userID,
-		Date:           date,
-		ScheduledCount: 0,
-		CompletedCount: 0,
-		CompletedIDs:   make([]string, 0),
+		ID:           database.NewStringID(),
+		UserID:       userID,
+		Date:         date,
+		IsCompleted:  false,
+		ScheduledIDs: scheduledIDs,
+		CompletedIDs: make([]string, 0),
 	}, nil
 }
 
-func (s *HabitDailyStats) SetScheduledCount(count int) {
-	s.ScheduledCount = count
-}
-
 func (s *HabitDailyStats) HabitCompleted(habitID string) {
-	s.CompletedCount += 1
 	s.CompletedIDs = append(s.CompletedIDs, habitID)
+
+	if len(s.CompletedIDs) == len(s.ScheduledIDs) {
+		s.IsCompleted = true
+	}
 }
 
 type HabitDailyStatsFilter struct {

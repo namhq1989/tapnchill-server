@@ -10,22 +10,22 @@ import (
 )
 
 type HabitDailyStats struct {
-	ID             primitive.ObjectID `bson:"_id"`
-	UserID         primitive.ObjectID `bson:"userId"`
-	Date           time.Time          `bson:"date"`
-	ScheduledCount int                `bson:"scheduledCount"`
-	CompletedCount int                `bson:"completedCount"`
-	CompletedIDs   []string           `bson:"completedIds"`
+	ID           primitive.ObjectID `bson:"_id"`
+	UserID       primitive.ObjectID `bson:"userId"`
+	Date         time.Time          `bson:"date"`
+	IsCompleted  bool               `bson:"isCompleted"`
+	ScheduledIDs []string           `bson:"scheduledIds"`
+	CompletedIDs []string           `bson:"completedIds"`
 }
 
 func (s HabitDailyStats) ToDomain() domain.HabitDailyStats {
 	return domain.HabitDailyStats{
-		ID:             s.ID.Hex(),
-		UserID:         s.UserID.Hex(),
-		Date:           s.Date,
-		ScheduledCount: s.ScheduledCount,
-		CompletedCount: s.CompletedCount,
-		CompletedIDs:   s.CompletedIDs,
+		ID:           s.ID.Hex(),
+		UserID:       s.UserID.Hex(),
+		Date:         s.Date,
+		IsCompleted:  s.IsCompleted,
+		ScheduledIDs: s.ScheduledIDs,
+		CompletedIDs: s.CompletedIDs,
 	}
 }
 
@@ -41,11 +41,11 @@ func (HabitDailyStats) FromDomain(stats domain.HabitDailyStats) (*HabitDailyStat
 	}
 
 	return &HabitDailyStats{
-		ID:             id,
-		UserID:         uid,
-		Date:           stats.Date,
-		ScheduledCount: stats.ScheduledCount,
-		CompletedCount: stats.CompletedCount,
-		CompletedIDs:   stats.CompletedIDs,
+		ID:           id,
+		UserID:       uid,
+		Date:         stats.Date,
+		IsCompleted:  stats.IsCompleted,
+		ScheduledIDs: stats.ScheduledIDs,
+		CompletedIDs: stats.CompletedIDs,
 	}, nil
 }

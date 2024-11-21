@@ -40,14 +40,14 @@ func (s Service) GetUserStats(ctx *appcontext.AppContext, userID, date string, d
 		return nil, err
 	}
 
-	ctx.Logger().Text("find in db")
+	ctx.Logger().Info("find in db", appcontext.Fields{"filter": filter})
 	stats, err = s.habitDailyStatsRepository.FindByFilter(ctx, *filter)
 	if err != nil {
 		ctx.Logger().Error("failed to find in db", err, appcontext.Fields{})
 		return nil, err
 	}
 
-	if len(stats) < days {
+	if len(stats) < days+1 { // +1 because we need to count today's stats in
 		ctx.Logger().Text("fetching user habits")
 		habits, hErr := s.GetUserHabits(ctx, userID)
 		if hErr != nil {
@@ -86,32 +86,32 @@ func (s Service) generateDefaultStatsIfMissing(ctx *appcontext.AppContext, stats
 		}
 
 		stats = append(stats, domain.HabitDailyStats{
-			ID:             database.NewStringID(),
-			Date:           d,
-			ScheduledCount: s.getScheduledCountForDay(ctx, d, habits),
-			CompletedCount: 0,
-			CompletedIDs:   []string{},
+			ID:           database.NewStringID(),
+			Date:         d,
+			IsCompleted:  false,
+			ScheduledIDs: s.getScheduledIDsForDay(ctx, d, habits),
+			CompletedIDs: []string{},
 		})
 	}
 
 	return stats
 }
 
-func (Service) getScheduledCountForDay(ctx *appcontext.AppContext, date time.Time, habits []domain.Habit) int {
+func (Service) getScheduledIDsForDay(ctx *appcontext.AppContext, date time.Time, habits []domain.Habit) []string {
 	ctx.Logger().Text("calculating scheduled count")
 
 	dayOfWeek := int(date.Weekday())
 
-	scheduledCount := 0
+	ids := make([]string, 0)
 	for _, habit := range habits {
 		for _, scheduledDay := range habit.DaysOfWeek {
 			if scheduledDay == dayOfWeek && habit.IsActive() {
-				scheduledCount++
+				ids = append(ids, habit.ID)
 				break
 			}
 		}
 	}
 
-	ctx.Logger().Info("scheduled count calculated", appcontext.Fields{"scheduledCount": scheduledCount})
-	return scheduledCount
+	ctx.Logger().Info("scheduled ids calculated", appcontext.Fields{"ids": ids})
+	return ids
 }

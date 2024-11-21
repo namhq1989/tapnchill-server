@@ -16,7 +16,6 @@ type HabitRepository interface {
 	Delete(ctx *appcontext.AppContext, habitID string) error
 	FindByID(ctx *appcontext.AppContext, habitID string) (*Habit, error)
 	FindByFilter(ctx *appcontext.AppContext, filter HabitFilter) ([]Habit, error)
-	CountScheduledHabits(ctx *appcontext.AppContext, userID string, date time.Time) (int64, error)
 }
 
 type Habit struct {
@@ -32,7 +31,7 @@ type Habit struct {
 	StatsCurrentStreak    int
 	StatsTotalCompletions int
 	CreatedAt             time.Time
-	LastCompletedAt       time.Time
+	LastCompletedAt       *time.Time
 	LastActivatedAt       time.Time
 }
 
@@ -114,22 +113,33 @@ func (h *Habit) SetSortOrder(order int) {
 	h.SortOrder = order
 }
 
-func (h *Habit) OnCompleted() {
-	if h.isInStreak() {
-		h.StatsCurrentStreak++
-	} else {
-		h.StatsCurrentStreak = 1
+func (h *Habit) OnCompleted(date time.Time) {
+	now := manipulation.NowUTC()
+	h.StatsTotalCompletions++
+
+	if manipulation.IsToday(date) {
+		if h.LastCompletedAt == nil || manipulation.IsYesterday(*h.LastCompletedAt) {
+			h.StatsCurrentStreak++
+			h.LastCompletedAt = &now
+		} else {
+			h.StatsCurrentStreak = 1
+		}
+	}
+
+	if h.LastCompletedAt == nil || h.LastCompletedAt.Before(date) {
+		h.LastCompletedAt = &date
 	}
 
 	if h.StatsCurrentStreak > h.StatsLongestStreak {
 		h.StatsLongestStreak = h.StatsCurrentStreak
 	}
-
-	h.StatsTotalCompletions++
-	h.LastCompletedAt = manipulation.NowUTC()
 }
 
-func (h *Habit) isInStreak() bool {
+func (h *Habit) isInStreak(date time.Time) bool {
+	if !manipulation.IsToday(date) {
+		return false
+	}
+
 	now := manipulation.NowUTC()
 	startOfYesterday := time.Date(now.Year(), now.Month(), now.Day()-1, 0, 0, 0, 0, time.UTC)
 	endOfYesterday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)

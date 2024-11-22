@@ -6,5 +6,7 @@ type ExtensionSignInRequest struct {
 }
 
 type ExtensionSignInResponse struct {
+	UserID      string `json:"userId"`
+	Provider    string `json:"provider"`
 	AccessToken string `json:"accessToken"`
 }

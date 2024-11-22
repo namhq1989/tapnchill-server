@@ -14,7 +14,7 @@ type UserRepository interface {
 	Update(ctx *appcontext.AppContext, user User) error
 	Delete(ctx *appcontext.AppContext, userID string) error
 	FindByID(ctx *appcontext.AppContext, userID string) (*User, error)
-	FindByEmail(ctx *appcontext.AppContext, email string) (*User, error)
+	FindByAuthProviderID(ctx *appcontext.AppContext, id string) (*User, error)
 	ValidateAnonymousChecksum(_ *appcontext.AppContext, clientID, checksum string) bool
 }
 

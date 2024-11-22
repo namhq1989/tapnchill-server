@@ -60,6 +60,8 @@ func (h ExtensionSignInHandler) ExtensionSignIn(ctx *appcontext.AppContext, req 
 
 	ctx.Logger().Text("return Extension sign in response")
 	return &dto.ExtensionSignInResponse{
+		UserID:      user.ID,
+		Provider:    domain.AuthProviderExtension,
 		AccessToken: token,
 	}, nil
 }

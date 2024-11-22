@@ -10,7 +10,7 @@ import (
 type (
 	Commands interface {
 		ExtensionSignIn(ctx *appcontext.AppContext, req dto.ExtensionSignInRequest) (*dto.ExtensionSignInResponse, error)
-		GoogleSignIn(ctx *appcontext.AppContext, req dto.GoogleSignInRequest) (*dto.GoogleSignInResponse, error)
+		GoogleSignIn(ctx *appcontext.AppContext, performerID string, req dto.GoogleSignInRequest) (*dto.GoogleSignInResponse, error)
 	}
 	Instance interface {
 		Commands

@@ -68,19 +68,19 @@ func (mr *MockUserRepositoryMockRecorder) Delete(ctx, userID any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUserRepository)(nil).Delete), ctx, userID)
 }
 
-// FindByEmail mocks base method.
-func (m *MockUserRepository) FindByEmail(ctx *appcontext.AppContext, email string) (*domain.User, error) {
+// FindByAuthProviderID mocks base method.
+func (m *MockUserRepository) FindByAuthProviderID(ctx *appcontext.AppContext, id string) (*domain.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByEmail", ctx, email)
+	ret := m.ctrl.Call(m, "FindByAuthProviderID", ctx, id)
 	ret0, _ := ret[0].(*domain.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindByEmail indicates an expected call of FindByEmail.
-func (mr *MockUserRepositoryMockRecorder) FindByEmail(ctx, email any) *gomock.Call {
+// FindByAuthProviderID indicates an expected call of FindByAuthProviderID.
+func (mr *MockUserRepositoryMockRecorder) FindByAuthProviderID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockUserRepository)(nil).FindByEmail), ctx, email)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByAuthProviderID", reflect.TypeOf((*MockUserRepository)(nil).FindByAuthProviderID), ctx, id)
 }
 
 // FindByID mocks base method.

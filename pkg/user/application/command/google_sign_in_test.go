@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/namhq1989/go-utilities/appcontext"
+	"github.com/namhq1989/tapnchill-server/internal/database"
 	mockuser "github.com/namhq1989/tapnchill-server/internal/mock/user"
 	"github.com/namhq1989/tapnchill-server/pkg/user/application/command"
 	"github.com/namhq1989/tapnchill-server/pkg/user/domain"
@@ -48,6 +49,13 @@ func (s *googleSignInTestSuite) Test_1_Success() {
 	// mock data
 	var token = "access-token"
 
+	s.mockUserRepository.EXPECT().
+		FindByID(gomock.Any(), gomock.Any()).
+		Return(&domain.User{
+			ID:            database.NewStringID(),
+			AuthProviders: make([]domain.AuthProvider, 0),
+		}, nil)
+
 	s.mockSSORepository.EXPECT().
 		VerifyGoogleToken(gomock.Any(), gomock.Any()).
 		Return(&domain.SSOGoogleUser{
@@ -57,11 +65,11 @@ func (s *googleSignInTestSuite) Test_1_Success() {
 		}, nil)
 
 	s.mockUserRepository.EXPECT().
-		FindByEmail(gomock.Any(), gomock.Any()).
+		FindByAuthProviderID(gomock.Any(), gomock.Any()).
 		Return(nil, nil)
 
 	s.mockUserRepository.EXPECT().
-		Create(gomock.Any(), gomock.Any()).
+		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	s.mockJwtRepository.EXPECT().
@@ -70,7 +78,7 @@ func (s *googleSignInTestSuite) Test_1_Success() {
 
 	// call
 	ctx := appcontext.NewRest(context.Background())
-	resp, err := s.handler.GoogleSignIn(ctx, dto.GoogleSignInRequest{
+	resp, err := s.handler.GoogleSignIn(ctx, database.NewStringID(), dto.GoogleSignInRequest{
 		Token: "google token",
 	})
 

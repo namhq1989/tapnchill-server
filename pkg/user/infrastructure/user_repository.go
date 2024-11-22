@@ -109,10 +109,10 @@ func (r UserRepository) FindByID(ctx *appcontext.AppContext, userID string) (*do
 	return &result, nil
 }
 
-func (r UserRepository) FindByEmail(ctx *appcontext.AppContext, email string) (*domain.User, error) {
+func (r UserRepository) FindByAuthProviderID(ctx *appcontext.AppContext, id string) (*domain.User, error) {
 	var doc dbmodel.User
 	if err := r.collection().FindOne(ctx.Context(), bson.M{
-		"authProviders.email": email,
+		"authProviders.id": id,
 	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, err
 	} else if errors.Is(err, mongo.ErrNoDocuments) {

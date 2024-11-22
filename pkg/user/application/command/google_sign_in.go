@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/pkg/user/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/user/dto"
 )
@@ -20,39 +21,59 @@ func NewGoogleSignInHandler(userRepository domain.UserRepository, ssoRepository 
 	}
 }
 
-func (h GoogleSignInHandler) GoogleSignIn(ctx *appcontext.AppContext, req dto.GoogleSignInRequest) (*dto.GoogleSignInResponse, error) {
-	ctx.Logger().Info("new Google sign in request", appcontext.Fields{"token": req.Token})
+func (h GoogleSignInHandler) GoogleSignIn(ctx *appcontext.AppContext, performerID string, req dto.GoogleSignInRequest) (*dto.GoogleSignInResponse, error) {
+	ctx.Logger().Info("new Google sign in request", appcontext.Fields{"performerID": performerID, "token": req.Token})
+
+	ctx.Logger().Text("find current user")
+	currentUser, err := h.userRepository.FindByID(ctx, performerID)
+	if err != nil {
+		ctx.Logger().Error("failed to find current user", err, appcontext.Fields{})
+		return nil, err
+	}
+	if currentUser == nil {
+		ctx.Logger().ErrorText("current user not found, respond")
+		return nil, apperrors.Common.NotFound
+	}
 
 	ctx.Logger().Text("get user's data with Google token")
-	googleUser, err := h.ssoRepository.VerifyGoogleToken(ctx, req.Token)
+	ssoUser, err := h.ssoRepository.VerifyGoogleToken(ctx, req.Token)
 	if err != nil {
 		ctx.Logger().Error("failed to get staff data with Google token", err, appcontext.Fields{})
 		return nil, err
 	}
 
-	ctx.Logger().Info("Google's user found, find application's user with email via grpc", appcontext.Fields{"email": googleUser.Email})
-	user, err := h.userRepository.FindByEmail(ctx, googleUser.Email)
+	ctx.Logger().Info("Google's user found, find user with provider id", appcontext.Fields{"id": ssoUser.UID})
+	googleUser, err := h.userRepository.FindByAuthProviderID(ctx, ssoUser.UID)
 	if err != nil {
 		ctx.Logger().Error("failed to find user by email via grpc", err, appcontext.Fields{})
 		return nil, err
 	}
-	if user == nil {
-		ctx.Logger().ErrorText("user not found, create new one")
-		user, err = domain.NewGoogleUser(googleUser.UID, googleUser.Name, googleUser.Email)
-		if err != nil {
-			ctx.Logger().Error("failed to create new user", err, appcontext.Fields{})
-			return nil, err
-		}
+	if googleUser == nil {
+		ctx.Logger().Text("user not found, add new provider to current user")
+		currentUser.AddAuthProvider(domain.AuthProvider{
+			Provider: domain.AuthProviderGoogle,
+			ID:       ssoUser.UID,
+			Name:     ssoUser.Name,
+			Email:    ssoUser.Email,
+		})
 
-		ctx.Logger().Text("persist user in db")
-		if err = h.userRepository.Create(ctx, *user); err != nil {
+		ctx.Logger().Text("update user in db")
+		if err = h.userRepository.Update(ctx, *currentUser); err != nil {
 			ctx.Logger().Error("failed to persist user in db", err, appcontext.Fields{})
 			return nil, err
 		}
+	} else {
+		ctx.Logger().Text("user found, check current user & google user")
+		if currentUser.ID != googleUser.ID {
+			ctx.Logger().Text("google user is different from current user, set current user to the older one")
+			if currentUser.CreatedAt.After(googleUser.CreatedAt) {
+				currentUser = googleUser
+			}
+		}
 	}
 
-	ctx.Logger().Info("user found, generate access token", appcontext.Fields{"userID": user.ID})
-	accessToken, err := h.jwtRepository.GenerateAccessToken(ctx, user.ID)
+	ctx.Logger().Info("user found, generate access token", appcontext.Fields{"userID": currentUser.ID})
+	accessToken, err := h.jwtRepository.GenerateAccessToken(ctx, currentUser.ID)
 	if err != nil {
 		ctx.Logger().Error("failed to generate access token", err, appcontext.Fields{})
 		return nil, err
@@ -60,6 +81,8 @@ func (h GoogleSignInHandler) GoogleSignIn(ctx *appcontext.AppContext, req dto.Go
 
 	ctx.Logger().Text("done Google sign in request")
 	return &dto.GoogleSignInResponse{
+		UserID:      currentUser.ID,
+		Provider:    domain.AuthProviderGoogle,
 		AccessToken: accessToken,
 	}, nil
 }

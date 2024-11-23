@@ -6,6 +6,7 @@ import (
 	"github.com/namhq1989/tapnchill-server/pkg/user/application"
 	"github.com/namhq1989/tapnchill-server/pkg/user/infrastructure"
 	"github.com/namhq1989/tapnchill-server/pkg/user/rest"
+	"github.com/namhq1989/tapnchill-server/pkg/user/shared"
 )
 
 type Module struct{}
@@ -19,9 +20,12 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 		// dependencies
 		userRepository = infrastructure.NewUserRepository(mono.Database(), mono.Config().AnonymousUserChecksumSecret)
 
-		jwtRepository   = infrastructure.NewJwtRepository(mono.JWT())
-		ssoRepository   = infrastructure.NewSSORepository(mono.SSO())
-		queueRepository = infrastructure.NewQueueRepository(mono.Queue())
+		jwtRepository     = infrastructure.NewJwtRepository(mono.JWT())
+		ssoRepository     = infrastructure.NewSSORepository(mono.SSO())
+		queueRepository   = infrastructure.NewQueueRepository(mono.Queue())
+		cachingRepository = infrastructure.NewCachingRepository(mono.Caching())
+
+		service = shared.NewService(userRepository, cachingRepository)
 
 		// app
 		app = application.New(
@@ -29,6 +33,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 			jwtRepository,
 			ssoRepository,
 			queueRepository,
+			service,
 		)
 	)
 

@@ -10,7 +10,7 @@ import (
 type User struct {
 	ID            primitive.ObjectID `bson:"_id"`
 	Name          string             `bson:"name"`
-	Plan          string             `bson:"plan"`
+	Subscription  Subscription       `bson:"subscription"`
 	AuthProviders []AuthProvider     `bson:"authProviders"`
 	CreatedAt     time.Time          `bson:"createdAt"`
 	UpdatedAt     time.Time          `bson:"updatedAt"`
@@ -20,7 +20,7 @@ func (u User) ToDomain() domain.User {
 	user := domain.User{
 		ID:            u.ID.Hex(),
 		Name:          u.Name,
-		Plan:          domain.ToPlan(u.Plan),
+		Subscription:  u.Subscription.ToDomain(),
 		AuthProviders: make([]domain.AuthProvider, 0),
 		CreatedAt:     u.CreatedAt,
 		UpdatedAt:     u.UpdatedAt,
@@ -47,7 +47,7 @@ func (User) FromDomain(user domain.User) (*User, error) {
 	return &User{
 		ID:            id,
 		Name:          user.Name,
-		Plan:          user.Plan.String(),
+		Subscription:  Subscription{}.FromDomain(user.Subscription),
 		AuthProviders: authProviders,
 		CreatedAt:     user.CreatedAt,
 		UpdatedAt:     user.UpdatedAt,

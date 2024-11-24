@@ -22,6 +22,7 @@ type createHabitTestSuite struct {
 	mockCtrl            *gomock.Controller
 	mockHabitRepository *mockhabit.MockHabitRepository
 	mockService         *mockhabit.MockService
+	mockUserHub         *mockhabit.MockUserHub
 }
 
 func (s *createHabitTestSuite) SetupSuite() {
@@ -32,8 +33,9 @@ func (s *createHabitTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockHabitRepository = mockhabit.NewMockHabitRepository(s.mockCtrl)
 	s.mockService = mockhabit.NewMockService(s.mockCtrl)
+	s.mockUserHub = mockhabit.NewMockUserHub(s.mockCtrl)
 
-	s.handler = command.NewCreateHabitHandler(s.mockHabitRepository, s.mockService)
+	s.handler = command.NewCreateHabitHandler(s.mockHabitRepository, s.mockService, s.mockUserHub)
 }
 
 func (s *createHabitTestSuite) TearDownTest() {
@@ -46,6 +48,14 @@ func (s *createHabitTestSuite) TearDownTest() {
 
 func (s *createHabitTestSuite) Test_1_Success() {
 	// mock data
+	s.mockUserHub.EXPECT().
+		GetHabitQuota(gomock.Any(), gomock.Any()).
+		Return(int64(5), nil)
+
+	s.mockHabitRepository.EXPECT().
+		CountByUserID(gomock.Any(), gomock.Any()).
+		Return(int64(0), nil)
+
 	s.mockHabitRepository.EXPECT().
 		Create(gomock.Any(), gomock.Any()).
 		Return(nil)
@@ -69,6 +79,15 @@ func (s *createHabitTestSuite) Test_1_Success() {
 }
 
 func (s *createHabitTestSuite) Test_2_Fail_InvalidName() {
+	// mock
+	s.mockUserHub.EXPECT().
+		GetHabitQuota(gomock.Any(), gomock.Any()).
+		Return(int64(5), nil)
+
+	s.mockHabitRepository.EXPECT().
+		CountByUserID(gomock.Any(), gomock.Any()).
+		Return(int64(0), nil)
+
 	// call
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.CreateHabit(ctx, database.NewStringID(), dto.CreateHabitRequest{
@@ -82,6 +101,31 @@ func (s *createHabitTestSuite) Test_2_Fail_InvalidName() {
 	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), resp)
 	assert.Equal(s.T(), apperrors.Common.InvalidName, err)
+}
+
+func (s *createHabitTestSuite) Test_2_Fail_ResourceLimitReached() {
+	// mock
+	s.mockUserHub.EXPECT().
+		GetHabitQuota(gomock.Any(), gomock.Any()).
+		Return(int64(5), nil)
+
+	s.mockHabitRepository.EXPECT().
+		CountByUserID(gomock.Any(), gomock.Any()).
+		Return(int64(10), nil)
+
+	// call
+	ctx := appcontext.NewRest(context.Background())
+	resp, err := s.handler.CreateHabit(ctx, database.NewStringID(), dto.CreateHabitRequest{
+		Name:       "habit name",
+		Goal:       "habit goal",
+		DaysOfWeek: []int{1, 2, 3},
+		Icon:       "icon.png",
+		Date:       time.Now().Format(time.RFC3339),
+	})
+
+	assert.NotNil(s.T(), err)
+	assert.Nil(s.T(), resp)
+	assert.Equal(s.T(), apperrors.User.ResourceLimitReached, err)
 }
 
 //

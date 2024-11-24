@@ -80,6 +80,15 @@ func (r GoalRepository) Delete(ctx *appcontext.AppContext, goalID string) error 
 	return err
 }
 
+func (r GoalRepository) CountByUserID(ctx *appcontext.AppContext, userID string) (int64, error) {
+	uid, err := database.ObjectIDFromString(userID)
+	if err != nil {
+		return 0, apperrors.User.InvalidUserID
+	}
+
+	return r.collection().CountDocuments(ctx.Context(), bson.M{"userId": uid})
+}
+
 func (r GoalRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.GoalFilter) ([]domain.Goal, error) {
 	var (
 		condition = bson.M{

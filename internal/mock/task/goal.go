@@ -40,6 +40,21 @@ func (m *MockGoalRepository) EXPECT() *MockGoalRepositoryMockRecorder {
 	return m.recorder
 }
 
+// CountByUserID mocks base method.
+func (m *MockGoalRepository) CountByUserID(ctx *appcontext.AppContext, userID string) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountByUserID", ctx, userID)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountByUserID indicates an expected call of CountByUserID.
+func (mr *MockGoalRepositoryMockRecorder) CountByUserID(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountByUserID", reflect.TypeOf((*MockGoalRepository)(nil).CountByUserID), ctx, userID)
+}
+
 // Create mocks base method.
 func (m *MockGoalRepository) Create(ctx *appcontext.AppContext, goal domain.Goal) error {
 	m.ctrl.T.Helper()

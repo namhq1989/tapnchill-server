@@ -14,6 +14,7 @@ type TaskRepository interface {
 	Create(ctx *appcontext.AppContext, task Task) error
 	Update(ctx *appcontext.AppContext, task Task) error
 	Delete(ctx *appcontext.AppContext, taskID string) error
+	CountByGoalID(ctx *appcontext.AppContext, goalID string) (int64, error)
 	FindByFilter(ctx *appcontext.AppContext, filter TaskFilter) ([]Task, error)
 	FindByID(ctx *appcontext.AppContext, taskID string) (*Task, error)
 }

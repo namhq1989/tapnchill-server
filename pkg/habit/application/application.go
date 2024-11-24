@@ -47,10 +47,11 @@ func New(
 	habitCompletionRepository domain.HabitCompletionRepository,
 	habitDailyStatsRepository domain.HabitDailyStatsRepository,
 	service domain.Service,
+	userHub domain.UserHub,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			CreateHabitHandler:       command.NewCreateHabitHandler(habitRepository, service),
+			CreateHabitHandler:       command.NewCreateHabitHandler(habitRepository, service, userHub),
 			UpdateHabitHandler:       command.NewUpdateHabitHandler(habitRepository, service),
 			ChangeHabitStatusHandler: command.NewChangeHabitStatusHandler(habitRepository, service),
 			CompleteHabitHandler:     command.NewCompleteHabitHandler(habitRepository, habitCompletionRepository, habitDailyStatsRepository, service),

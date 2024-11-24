@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package userpb;
+
+service UserService {
+  rpc GetHabitQuota(GetHabitQuotaRequest) returns (GetHabitQuotaResponse) {}
+  rpc GetGoalQuota(GetGoalQuotaRequest) returns (GetGoalQuotaResponse) {}
+  rpc GetTaskQuota(GetTaskQuotaRequest) returns (GetTaskQuotaResponse) {}
+}
+
+// GET HABIT QUOTA
+
+message GetHabitQuotaRequest {
+  string traceId = 1;
+  string userId = 2;
+}
+
+message GetHabitQuotaResponse {
+  int64 limit = 1;
+}
+
+// GET GOAL QUOTA
+
+message GetGoalQuotaRequest {
+  string traceId = 1;
+  string userId = 2;
+}
+
+message GetGoalQuotaResponse {
+  int64 limit = 1;
+}
+
+// GET TASK QUOTA
+
+message GetTaskQuotaRequest {
+  string traceId = 1;
+  string userId = 2;
+}
+
+message GetTaskQuotaResponse {
+  int64 limit = 1;
+}

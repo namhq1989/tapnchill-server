@@ -85,6 +85,15 @@ func (r TaskRepository) Delete(ctx *appcontext.AppContext, taskID string) error 
 	return err
 }
 
+func (r TaskRepository) CountByGoalID(ctx *appcontext.AppContext, goalID string) (int64, error) {
+	gid, err := database.ObjectIDFromString(goalID)
+	if err != nil {
+		return 0, apperrors.Task.InvalidGoalID
+	}
+
+	return r.collection().CountDocuments(ctx.Context(), bson.M{"goalId": gid})
+}
+
 func (r TaskRepository) FindByID(ctx *appcontext.AppContext, taskID string) (*domain.Task, error) {
 	tid, err := database.ObjectIDFromString(taskID)
 	if err != nil {

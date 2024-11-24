@@ -14,6 +14,7 @@ type GoalRepository interface {
 	Create(ctx *appcontext.AppContext, goal Goal) error
 	Update(ctx *appcontext.AppContext, goal Goal) error
 	Delete(ctx *appcontext.AppContext, id string) error
+	CountByUserID(ctx *appcontext.AppContext, userID string) (int64, error)
 	FindByFilter(ctx *appcontext.AppContext, filter GoalFilter) ([]Goal, error)
 	FindByID(ctx *appcontext.AppContext, goalID string) (*Goal, error)
 }

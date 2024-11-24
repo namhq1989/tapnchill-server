@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/pkg/task/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/task/dto"
 )
@@ -10,17 +11,20 @@ type CreateTaskHandler struct {
 	taskRepository domain.TaskRepository
 	goalRepository domain.GoalRepository
 	service        domain.Service
+	userHub        domain.UserHub
 }
 
 func NewCreateTaskHandler(
 	taskRepository domain.TaskRepository,
 	goalRepository domain.GoalRepository,
 	service domain.Service,
+	userHub domain.UserHub,
 ) CreateTaskHandler {
 	return CreateTaskHandler{
 		taskRepository: taskRepository,
 		goalRepository: goalRepository,
 		service:        service,
+		userHub:        userHub,
 	}
 }
 
@@ -33,6 +37,25 @@ func (h CreateTaskHandler) CreateTask(ctx *appcontext.AppContext, performerID st
 	goal, err := h.service.GetGoalByID(ctx, req.GoalID, performerID)
 	if err != nil {
 		return nil, err
+	}
+
+	ctx.Logger().Text("get user task quota")
+	quota, err := h.userHub.GetTaskQuota(ctx, performerID)
+	if err != nil {
+		ctx.Logger().Error("failed to get user task quota", err, appcontext.Fields{})
+		return nil, err
+	}
+
+	ctx.Logger().Text("count goal total tasks")
+	totalTasks, err := h.taskRepository.CountByGoalID(ctx, req.GoalID)
+	if err != nil {
+		ctx.Logger().Error("failed to count user total tasks", err, appcontext.Fields{})
+		return nil, err
+	}
+
+	if totalTasks >= quota {
+		ctx.Logger().Error("user task quota exceeded", err, appcontext.Fields{"quota": quota, "total": totalTasks})
+		return nil, apperrors.User.ResourceLimitReached
 	}
 
 	ctx.Logger().Text("create new task model")

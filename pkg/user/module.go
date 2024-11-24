@@ -4,6 +4,7 @@ import (
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/monolith"
 	"github.com/namhq1989/tapnchill-server/pkg/user/application"
+	"github.com/namhq1989/tapnchill-server/pkg/user/grpc"
 	"github.com/namhq1989/tapnchill-server/pkg/user/infrastructure"
 	"github.com/namhq1989/tapnchill-server/pkg/user/rest"
 	"github.com/namhq1989/tapnchill-server/pkg/user/shared"
@@ -37,10 +38,18 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 			queueRepository,
 			service,
 		)
+
+		// hub
+		hub = grpc.New(service)
 	)
 
 	// rest server
 	if err := rest.RegisterServer(ctx, app, mono.Rest(), mono.JWT(), mono.Config().IsEnvRelease); err != nil {
+		return err
+	}
+
+	// grpc
+	if err := grpc.RegisterServer(ctx, mono.RPC(), hub); err != nil {
 		return err
 	}
 

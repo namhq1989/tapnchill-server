@@ -18,7 +18,7 @@ func NewGetMeHandler(serviceRepository domain.Service) GetMeHandler {
 }
 
 func (h GetMeHandler) GetMe(ctx *appcontext.AppContext, performerID string, _ dto.GetMeRequest) (*dto.GetMeResponse, error) {
-	ctx.Logger().Print("new get me request", appcontext.Fields{"performerID": performerID})
+	ctx.Logger().Info("new get me request", appcontext.Fields{"performerID": performerID})
 
 	user, err := h.serviceRepository.GetUserByID(ctx, performerID)
 	if err != nil {

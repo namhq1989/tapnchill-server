@@ -32,6 +32,9 @@ type (
 		QueuePassword    string
 		QueueConcurrency int
 
+		// Paddle
+		PaddleApiKey string
+
 		// 3rd party
 		IpInfoToken         string
 		VisualCrossingToken string
@@ -63,6 +66,8 @@ func Init() Server {
 		QueuePassword:    getEnvStr("QUEUE_PASSWORD"),
 		QueueConcurrency: getEnvInt("QUEUE_CONCURRENCY"),
 
+		PaddleApiKey: getEnvStr("PADDLE_API_KEY"),
+
 		IpInfoToken:         getEnvStr("IP_INFO_TOKEN"),
 		VisualCrossingToken: getEnvStr("VISUAL_CROSSING_TOKEN"),
 		TelegramBotToken:    getEnvStr("TELEGRAM_BOT_TOKEN"),
@@ -93,6 +98,10 @@ func Init() Server {
 
 	if cfg.QueueRedisURL == "" {
 		panic(errors.New("missing QUEUE_REDIS_URL"))
+	}
+
+	if cfg.PaddleApiKey == "" {
+		panic(errors.New("missing PADDLE_API_KEY"))
 	}
 
 	return cfg

@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
+	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 	"github.com/namhq1989/tapnchill-server/pkg/habit/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/habit/dto"
@@ -10,12 +11,14 @@ import (
 type CreateHabitHandler struct {
 	habitRepository domain.HabitRepository
 	service         domain.Service
+	userHub         domain.UserHub
 }
 
-func NewCreateHabitHandler(habitRepository domain.HabitRepository, service domain.Service) CreateHabitHandler {
+func NewCreateHabitHandler(habitRepository domain.HabitRepository, service domain.Service, userHub domain.UserHub) CreateHabitHandler {
 	return CreateHabitHandler{
 		habitRepository: habitRepository,
 		service:         service,
+		userHub:         userHub,
 	}
 }
 
@@ -24,6 +27,25 @@ func (h CreateHabitHandler) CreateHabit(ctx *appcontext.AppContext, performerID 
 		"performerID": performerID, "date": req.Date, "name": req.Name, "goal": req.Goal,
 		"daysOfWeek": req.DaysOfWeek, "icon": req.Icon, "sortOrder": req.SortOrder,
 	})
+
+	ctx.Logger().Text("get user habit quota")
+	quota, err := h.userHub.GetHabitQuota(ctx, performerID)
+	if err != nil {
+		ctx.Logger().Error("failed to get user habit quota", err, appcontext.Fields{})
+		return nil, err
+	}
+
+	ctx.Logger().Text("count user total habits")
+	totalHabits, err := h.habitRepository.CountByUserID(ctx, performerID)
+	if err != nil {
+		ctx.Logger().Error("failed to count user total habits", err, appcontext.Fields{})
+		return nil, err
+	}
+
+	if totalHabits >= quota {
+		ctx.Logger().Error("user habit quota exceeded", err, appcontext.Fields{"quota": quota, "total": totalHabits})
+		return nil, apperrors.User.ResourceLimitReached
+	}
 
 	ctx.Logger().Text("create new habit model")
 	habit, err := domain.NewHabit(performerID, req.Name, req.Goal, req.DaysOfWeek, req.Icon, req.SortOrder)

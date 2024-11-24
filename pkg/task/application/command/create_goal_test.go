@@ -20,6 +20,7 @@ type createGoalTestSuite struct {
 	handler            command.CreateGoalHandler
 	mockCtrl           *gomock.Controller
 	mockGoalRepository *mocktask.MockGoalRepository
+	mockUserHub        *mocktask.MockUserHub
 }
 
 func (s *createGoalTestSuite) SetupSuite() {
@@ -29,8 +30,9 @@ func (s *createGoalTestSuite) SetupSuite() {
 func (s *createGoalTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockGoalRepository = mocktask.NewMockGoalRepository(s.mockCtrl)
+	s.mockUserHub = mocktask.NewMockUserHub(s.mockCtrl)
 
-	s.handler = command.NewCreateGoalHandler(s.mockGoalRepository)
+	s.handler = command.NewCreateGoalHandler(s.mockGoalRepository, s.mockUserHub)
 }
 
 func (s *createGoalTestSuite) TearDownTest() {
@@ -43,6 +45,14 @@ func (s *createGoalTestSuite) TearDownTest() {
 
 func (s *createGoalTestSuite) Test_1_Success() {
 	// mock data
+	s.mockUserHub.EXPECT().
+		GetGoalQuota(gomock.Any(), gomock.Any()).
+		Return(int64(5), nil)
+
+	s.mockGoalRepository.EXPECT().
+		CountByUserID(gomock.Any(), gomock.Any()).
+		Return(int64(0), nil)
+
 	s.mockGoalRepository.EXPECT().
 		Create(gomock.Any(), gomock.Any()).
 		Return(nil)
@@ -59,6 +69,15 @@ func (s *createGoalTestSuite) Test_1_Success() {
 }
 
 func (s *createGoalTestSuite) Test_2_Fail_InvalidName() {
+	// mock
+	s.mockUserHub.EXPECT().
+		GetGoalQuota(gomock.Any(), gomock.Any()).
+		Return(int64(5), nil)
+
+	s.mockGoalRepository.EXPECT().
+		CountByUserID(gomock.Any(), gomock.Any()).
+		Return(int64(0), nil)
+
 	// call
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.CreateGoal(ctx, database.NewStringID(), dto.CreateGoalRequest{
@@ -69,6 +88,28 @@ func (s *createGoalTestSuite) Test_2_Fail_InvalidName() {
 	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), resp)
 	assert.Equal(s.T(), apperrors.Common.InvalidName, err)
+}
+
+func (s *createGoalTestSuite) Test_2_Fail_ResourceLimitReached() {
+	// mock
+	s.mockUserHub.EXPECT().
+		GetGoalQuota(gomock.Any(), gomock.Any()).
+		Return(int64(5), nil)
+
+	s.mockGoalRepository.EXPECT().
+		CountByUserID(gomock.Any(), gomock.Any()).
+		Return(int64(10), nil)
+
+	// call
+	ctx := appcontext.NewRest(context.Background())
+	resp, err := s.handler.CreateGoal(ctx, database.NewStringID(), dto.CreateGoalRequest{
+		Name:        "goal name",
+		Description: "goal description",
+	})
+
+	assert.NotNil(s.T(), err)
+	assert.Nil(s.T(), resp)
+	assert.Equal(s.T(), apperrors.User.ResourceLimitReached, err)
 }
 
 //

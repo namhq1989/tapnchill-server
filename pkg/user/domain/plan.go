@@ -26,3 +26,14 @@ func ToPlan(value string) Plan {
 		return PlanUnknown
 	}
 }
+
+const (
+	FreePlanMaxHabits int64 = 5
+	ProPlanMaxHabits  int64 = 20
+
+	FreePlanMaxGoals int64 = 5
+	ProPlanMaxGoals  int64 = 20
+
+	FreePlanMaxTaskPerGoal int64 = 20
+	ProPlanMaxTaskPerGoal  int64 = 50
+)

@@ -40,6 +40,7 @@ tasks:
       - mockgen -source=pkg/task/domain/goal.go -destination=internal/mock/task/goal.go -package=mocktask
       - mockgen -source=pkg/task/domain/task.go -destination=internal/mock/task/task.go -package=mocktask
       - mockgen -source=pkg/task/domain/service.go -destination=internal/mock/task/service.go -package=mocktask
+      - mockgen -source=pkg/task/domain/user.go -destination=internal/mock/task/user.go -package=mocktask
 
       # habit
       - mockgen -source=pkg/habit/domain/habit.go -destination=internal/mock/habit/habit.go -package=mockhabit
@@ -47,6 +48,7 @@ tasks:
       - mockgen -source=pkg/habit/domain/habit_daily_stats.go -destination=internal/mock/habit/habit_daily_stats.go -package=mockhabit
       - mockgen -source=pkg/habit/domain/caching.go -destination=internal/mock/habit/caching.go -package=mockhabit
       - mockgen -source=pkg/habit/domain/service.go -destination=internal/mock/habit/service.go -package=mockhabit
+      - mockgen -source=pkg/habit/domain/user.go -destination=internal/mock/habit/user.go -package=mockhabit
 
       # user
       - mockgen -source=pkg/user/domain/user.go -destination=internal/mock/user/user.go -package=mockuser

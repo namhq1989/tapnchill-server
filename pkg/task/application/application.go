@@ -54,14 +54,15 @@ func New(
 	taskRepository domain.TaskRepository,
 	goalRepository domain.GoalRepository,
 	service domain.Service,
+	userHub domain.UserHub,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			CreateGoalHandler: command.NewCreateGoalHandler(goalRepository),
+			CreateGoalHandler: command.NewCreateGoalHandler(goalRepository, userHub),
 			UpdateGoalHandler: command.NewUpdateGoalHandler(goalRepository, service),
 			DeleteGoalHandler: command.NewDeleteGoalHandler(goalRepository, service),
 
-			CreateTaskHandler: command.NewCreateTaskHandler(taskRepository, goalRepository, service),
+			CreateTaskHandler: command.NewCreateTaskHandler(taskRepository, goalRepository, service, userHub),
 			UpdateTaskHandler: command.NewUpdateTaskHandler(taskRepository, service),
 			ChangeTaskStatusHandler: command.NewChangeTaskStatusHandler(
 				taskRepository,

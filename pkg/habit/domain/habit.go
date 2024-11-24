@@ -14,6 +14,7 @@ type HabitRepository interface {
 	Create(ctx *appcontext.AppContext, habit Habit) error
 	Update(ctx *appcontext.AppContext, habit Habit) error
 	Delete(ctx *appcontext.AppContext, habitID string) error
+	CountByUserID(ctx *appcontext.AppContext, userID string) (int64, error)
 	FindByID(ctx *appcontext.AppContext, habitID string) (*Habit, error)
 	FindByFilter(ctx *appcontext.AppContext, filter HabitFilter) ([]Habit, error)
 }

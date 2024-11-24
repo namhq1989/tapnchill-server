@@ -80,6 +80,15 @@ func (r HabitRepository) Delete(ctx *appcontext.AppContext, habitID string) erro
 	return err
 }
 
+func (r HabitRepository) CountByUserID(ctx *appcontext.AppContext, userID string) (int64, error) {
+	uid, err := database.ObjectIDFromString(userID)
+	if err != nil {
+		return 0, apperrors.User.InvalidUserID
+	}
+
+	return r.collection().CountDocuments(ctx.Context(), bson.M{"userId": uid})
+}
+
 func (r HabitRepository) FindByID(ctx *appcontext.AppContext, habitID string) (*domain.Habit, error) {
 	hid, err := database.ObjectIDFromString(habitID)
 	if err != nil {

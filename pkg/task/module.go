@@ -2,6 +2,7 @@ package task
 
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
+	"github.com/namhq1989/tapnchill-server/internal/grpcclient"
 	"github.com/namhq1989/tapnchill-server/internal/monolith"
 	"github.com/namhq1989/tapnchill-server/pkg/task/application"
 	"github.com/namhq1989/tapnchill-server/pkg/task/infrastructure"
@@ -17,6 +18,11 @@ func (Module) Name() string {
 }
 
 func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error {
+	userGRPCClient, err := grpcclient.NewUserClient(ctx, mono.Config().GRPCPort)
+	if err != nil {
+		return err
+	}
+
 	var (
 		// dependencies
 		taskRepository = infrastructure.NewTaskRepository(mono.Database())
@@ -24,16 +30,19 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 
 		service = shared.NewService(taskRepository, goalRepository)
 
+		userHub = infrastructure.NewUserHub(userGRPCClient)
+
 		// app
 		app = application.New(
 			taskRepository,
 			goalRepository,
 			service,
+			userHub,
 		)
 	)
 
 	// rest server
-	if err := rest.RegisterServer(ctx, app, mono.Rest(), mono.JWT(), mono.Config().IsEnvRelease); err != nil {
+	if err = rest.RegisterServer(ctx, app, mono.Rest(), mono.JWT(), mono.Config().IsEnvRelease); err != nil {
 		return err
 	}
 

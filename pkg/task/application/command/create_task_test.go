@@ -23,6 +23,7 @@ type createTaskTestSuite struct {
 	mockTaskRepository *mocktask.MockTaskRepository
 	mockGoalRepository *mocktask.MockGoalRepository
 	mockService        *mocktask.MockService
+	mockUserHub        *mocktask.MockUserHub
 }
 
 func (s *createTaskTestSuite) SetupSuite() {
@@ -34,8 +35,9 @@ func (s *createTaskTestSuite) setupApplication() {
 	s.mockTaskRepository = mocktask.NewMockTaskRepository(s.mockCtrl)
 	s.mockGoalRepository = mocktask.NewMockGoalRepository(s.mockCtrl)
 	s.mockService = mocktask.NewMockService(s.mockCtrl)
+	s.mockUserHub = mocktask.NewMockUserHub(s.mockCtrl)
 
-	s.handler = command.NewCreateTaskHandler(s.mockTaskRepository, s.mockGoalRepository, s.mockService)
+	s.handler = command.NewCreateTaskHandler(s.mockTaskRepository, s.mockGoalRepository, s.mockService, s.mockUserHub)
 }
 
 func (s *createTaskTestSuite) TearDownTest() {
@@ -59,6 +61,14 @@ func (s *createTaskTestSuite) Test_1_Success() {
 			ID:     goalID,
 			UserID: performerID,
 		}, nil)
+
+	s.mockUserHub.EXPECT().
+		GetTaskQuota(gomock.Any(), gomock.Any()).
+		Return(int64(5), nil)
+
+	s.mockTaskRepository.EXPECT().
+		CountByGoalID(gomock.Any(), gomock.Any()).
+		Return(int64(0), nil)
 
 	s.mockTaskRepository.EXPECT().
 		Create(gomock.Any(), gomock.Any()).
@@ -93,6 +103,14 @@ func (s *createTaskTestSuite) Test_2_Fail_InvalidName() {
 			ID:     goalID,
 			UserID: performerID,
 		}, nil)
+
+	s.mockUserHub.EXPECT().
+		GetTaskQuota(gomock.Any(), gomock.Any()).
+		Return(int64(5), nil)
+
+	s.mockTaskRepository.EXPECT().
+		CountByGoalID(gomock.Any(), gomock.Any()).
+		Return(int64(0), nil)
 
 	ctx := appcontext.NewRest(context.Background())
 	resp, err := s.handler.CreateTask(ctx, performerID, dto.CreateTaskRequest{
@@ -140,6 +158,41 @@ func (s *createTaskTestSuite) Test_2_Fail_NotGoalOwner() {
 	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), resp)
 	assert.Equal(s.T(), apperrors.Common.NotFound, err)
+}
+
+func (s *createTaskTestSuite) Test_2_Fail_ResourceLimitReached() {
+	// mock
+	var (
+		goalID      = database.NewStringID()
+		performerID = database.NewStringID()
+	)
+
+	s.mockService.EXPECT().
+		GetGoalByID(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(&domain.Goal{
+			ID:     goalID,
+			UserID: performerID,
+		}, nil)
+
+	s.mockUserHub.EXPECT().
+		GetTaskQuota(gomock.Any(), gomock.Any()).
+		Return(int64(5), nil)
+
+	s.mockTaskRepository.EXPECT().
+		CountByGoalID(gomock.Any(), gomock.Any()).
+		Return(int64(10), nil)
+
+	// call
+	ctx := appcontext.NewRest(context.Background())
+	resp, err := s.handler.CreateTask(ctx, performerID, dto.CreateTaskRequest{
+		GoalID:      goalID,
+		Name:        "task name",
+		Description: "task description",
+	})
+
+	assert.NotNil(s.T(), err)
+	assert.Nil(s.T(), resp)
+	assert.Equal(s.T(), apperrors.User.ResourceLimitReached, err)
 }
 
 //

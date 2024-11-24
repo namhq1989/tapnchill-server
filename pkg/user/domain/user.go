@@ -93,6 +93,14 @@ func (u *User) SetName(name string) error {
 	return nil
 }
 
+func (u *User) IsFreePlan() bool {
+	return u.Subscription.Plan == PlanFree
+}
+
+func (u *User) IsProPlan() bool {
+	return u.Subscription.Plan == PlanPro
+}
+
 func (u *User) SetPlanFree() {
 	u.Subscription.Plan = PlanFree
 	u.Subscription.Expiry = nil

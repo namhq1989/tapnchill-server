@@ -33,6 +33,6 @@ func (h GetMeHandler) GetMe(ctx *appcontext.AppContext, performerID string, _ dt
 	ctx.Logger().Text("done get me request")
 	return &dto.GetMeResponse{
 		Ip:           ctx.GetIP(),
-		Subscription: dto.Subscription{}.FromDomain(user.Subscription),
+		Subscription: dto.UserSubscription{}.FromDomain(user.Subscription),
 	}, nil
 }

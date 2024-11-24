@@ -7,11 +7,8 @@ import (
 )
 
 type QueueRepository interface {
-	CreateUserDefaultGoal(ctx *appcontext.AppContext, payload QueueCreateUserDefaultGoalPayload) error
-}
-
-type QueueCreateUserDefaultGoalPayload struct {
-	UserID string
+	SubscriptionCreated(ctx *appcontext.AppContext, payload QueueSubscriptionCreatedPayload) error
+	TransactionCompleted(ctx *appcontext.AppContext, payload QueueTransactionCompletedPayload) error
 }
 
 type QueueSubscriptionCreatedPayload struct {

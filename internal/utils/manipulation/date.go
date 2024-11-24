@@ -59,3 +59,13 @@ func GetStartOfDayWithClientDate(date string) (*time.Time, error) {
 	s := StartOfDay(clientTime)
 	return &s, nil
 }
+
+func GetEndOfDayWithClientDate(date string) (*time.Time, error) {
+	clientTime, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		return nil, fmt.Errorf("invalid client date: %w", err)
+	}
+
+	s := EndOfDay(clientTime)
+	return &s, nil
+}

@@ -21,7 +21,7 @@ type UserRepository interface {
 type User struct {
 	ID            string
 	Name          string
-	Subscription  Subscription
+	Subscription  UserSubscription
 	AuthProviders []AuthProvider
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
@@ -35,9 +35,10 @@ func NewExtensionUser(clientID string) (*User, error) {
 	return &User{
 		ID:   database.NewStringID(),
 		Name: clientID,
-		Subscription: Subscription{
-			Plan:   PlanFree,
-			Expiry: nil,
+		Subscription: UserSubscription{
+			Plan:       PlanFree,
+			Expiry:     nil,
+			CustomerID: "",
 		},
 		AuthProviders: []AuthProvider{
 			{
@@ -64,9 +65,10 @@ func NewGoogleUser(id, email, name string) (*User, error) {
 	return &User{
 		ID:   database.NewStringID(),
 		Name: name,
-		Subscription: Subscription{
-			Plan:   PlanFree,
-			Expiry: nil,
+		Subscription: UserSubscription{
+			Plan:       PlanFree,
+			Expiry:     nil,
+			CustomerID: "",
 		},
 		AuthProviders: []AuthProvider{
 			{
@@ -100,6 +102,11 @@ func (u *User) SetPlanFree() {
 func (u *User) SetPlanPro(expiry time.Time) {
 	u.Subscription.Plan = PlanPro
 	u.Subscription.Expiry = &expiry
+	u.SetUpdatedAt()
+}
+
+func (u *User) SetSubscriptionCustomerID(customerID string) {
+	u.Subscription.CustomerID = customerID
 	u.SetUpdatedAt()
 }
 

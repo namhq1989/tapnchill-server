@@ -4,6 +4,7 @@ import (
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/monolith"
 	"github.com/namhq1989/tapnchill-server/pkg/webhook/application"
+	"github.com/namhq1989/tapnchill-server/pkg/webhook/infrastructure"
 	"github.com/namhq1989/tapnchill-server/pkg/webhook/rest"
 )
 
@@ -15,8 +16,11 @@ func (Module) Name() string {
 
 func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error {
 	var (
+		// dependencies
+		queueRepository = infrastructure.NewQueueRepository(mono.Queue())
+
 		// app
-		app = application.New()
+		app = application.New(queueRepository)
 	)
 
 	// rest server

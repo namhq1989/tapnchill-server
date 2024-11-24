@@ -6,18 +6,20 @@ type PaddleRequest struct {
 }
 
 type PaddleRequestData struct {
-	ID            string                      `json:"id"`
-	BillingPeriod PaddleBillingPeriod         `json:"billing_period"`
-	CustomData    PaddleRequestDataCustomData `json:"custom_data"`
+	ID             string                      `json:"id"`
+	Items          []PaddleRequestDataItem     `json:"items"`
+	CustomData     PaddleRequestDataCustomData `json:"custom_data"`
+	NextBilledAt   string                      `json:"next_billed_at,omitempty"`
+	SubscriptionID string                      `json:"subscription_id,omitempty"`
+	CustomerID     string                      `json:"customer_id"`
 }
 
 type PaddleRequestDataItem struct {
-	PriceID string `json:"price_id"`
+	Price PaddleRequestDataItemPrice `json:"price"`
 }
 
-type PaddleBillingPeriod struct {
-	StartsAt string `json:"starts_at"`
-	EndsAt   string `json:"ends_at"`
+type PaddleRequestDataItemPrice struct {
+	ID string `json:"id"`
 }
 
 type PaddleRequestDataCustomData struct {

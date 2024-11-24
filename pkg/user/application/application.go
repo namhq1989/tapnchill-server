@@ -15,6 +15,7 @@ type (
 	}
 	Queries interface {
 		GetMe(ctx *appcontext.AppContext, performerID string, _ dto.GetMeRequest) (*dto.GetMeResponse, error)
+		GetSubscriptionPlans(ctx *appcontext.AppContext, performerID string, _ dto.GetSubscriptionPlansRequest) (*dto.GetSubscriptionPlansResponse, error)
 	}
 	Instance interface {
 		Commands
@@ -27,6 +28,7 @@ type (
 	}
 	queryHandlers struct {
 		query.GetMeHandler
+		query.GetSubscriptionPlansHandler
 	}
 	Application struct {
 		commandHandlers
@@ -49,7 +51,8 @@ func New(
 			GoogleSignInHandler:    command.NewGoogleSignInHandler(userRepository, ssoRepository, jwtRepository),
 		},
 		queryHandlers: queryHandlers{
-			GetMeHandler: query.NewGetMeHandler(service),
+			GetMeHandler:                query.NewGetMeHandler(service),
+			GetSubscriptionPlansHandler: query.NewGetSubscriptionPlansHandler(),
 		},
 	}
 }

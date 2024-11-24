@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/namhq1989/tapnchill-server/internal/payment"
+
 	"github.com/labstack/echo/v4"
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/caching"
@@ -31,6 +33,7 @@ type app struct {
 	queue       *queue.Queue
 	externalApi *externalapi.ExternalApi
 	sso         *sso.SSO
+	payment     *payment.Payment
 	rest        *echo.Echo
 	rpc         *grpc.Server
 	waiter      waiter.Waiter
@@ -75,6 +78,10 @@ func (a *app) ExternalApi() *externalapi.ExternalApi {
 
 func (a *app) SSO() *sso.SSO {
 	return a.sso
+}
+
+func (a *app) Payment() *payment.Payment {
+	return a.payment
 }
 
 func (a *app) startupModules() error {

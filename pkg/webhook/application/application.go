@@ -3,6 +3,7 @@ package application
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/pkg/webhook/application/command"
+	"github.com/namhq1989/tapnchill-server/pkg/webhook/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/webhook/dto"
 )
 
@@ -24,10 +25,12 @@ type (
 
 var _ Instance = (*Application)(nil)
 
-func New() *Application {
+func New(
+	queueRepository domain.QueueRepository,
+) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			PaddleHandler: command.NewPaddleHandler(),
+			PaddleHandler: command.NewPaddleHandler(queueRepository),
 		},
 	}
 }

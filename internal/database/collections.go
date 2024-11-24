@@ -3,7 +3,8 @@ package database
 import "go.mongodb.org/mongo-driver/mongo"
 
 var Collections = struct {
-	User string
+	User                string
+	SubscriptionHistory string
 
 	Quote    string
 	Feedback string
@@ -15,7 +16,8 @@ var Collections = struct {
 	HabitCompletion string
 	HabitDailyStats string
 }{
-	User: "user.users",
+	User:                "user.users",
+	SubscriptionHistory: "user.subscriptionHistories",
 
 	Quote:    "common.quotes",
 	Feedback: "common.feedbacks",

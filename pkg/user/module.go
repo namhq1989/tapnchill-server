@@ -7,6 +7,7 @@ import (
 	"github.com/namhq1989/tapnchill-server/pkg/user/infrastructure"
 	"github.com/namhq1989/tapnchill-server/pkg/user/rest"
 	"github.com/namhq1989/tapnchill-server/pkg/user/shared"
+	"github.com/namhq1989/tapnchill-server/pkg/user/worker"
 )
 
 type Module struct{}
@@ -18,7 +19,8 @@ func (Module) Name() string {
 func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error {
 	var (
 		// dependencies
-		userRepository = infrastructure.NewUserRepository(mono.Database(), mono.Config().AnonymousUserChecksumSecret)
+		userRepository                = infrastructure.NewUserRepository(mono.Database(), mono.Config().AnonymousUserChecksumSecret)
+		subscriptionHistoryRepository = infrastructure.NewSubscriptionHistoryRepository(mono.Database())
 
 		jwtRepository     = infrastructure.NewJwtRepository(mono.JWT())
 		ssoRepository     = infrastructure.NewSSORepository(mono.SSO())
@@ -41,6 +43,14 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 	if err := rest.RegisterServer(ctx, app, mono.Rest(), mono.JWT(), mono.Config().IsEnvRelease); err != nil {
 		return err
 	}
+
+	w := worker.New(
+		mono.Queue(),
+		userRepository,
+		subscriptionHistoryRepository,
+		cachingRepository,
+	)
+	w.Start()
 
 	return nil
 }

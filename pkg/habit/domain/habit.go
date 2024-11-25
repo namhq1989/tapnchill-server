@@ -115,36 +115,28 @@ func (h *Habit) SetSortOrder(order int) {
 }
 
 func (h *Habit) OnCompleted(date time.Time) {
-	now := manipulation.NowUTC()
-	h.StatsTotalCompletions++
+	var (
+		now = manipulation.NowUTC()
+		tz  = manipulation.GetTimezoneIdentifier(date)
+	)
 
-	if manipulation.IsToday(date) {
-		if h.LastCompletedAt == nil || manipulation.IsYesterday(*h.LastCompletedAt) {
+	if manipulation.IsToday(date, tz) {
+		if h.LastCompletedAt == nil || manipulation.IsYesterday(*h.LastCompletedAt, tz) {
 			h.StatsCurrentStreak++
 			h.LastCompletedAt = &now
 		} else {
 			h.StatsCurrentStreak = 1
+			h.LastCompletedAt = &date
 		}
-	}
-
-	if h.LastCompletedAt == nil || h.LastCompletedAt.Before(date) {
+	} else {
 		h.LastCompletedAt = &date
+		h.StatsCurrentStreak = 1
 	}
 
+	h.StatsTotalCompletions++
 	if h.StatsCurrentStreak > h.StatsLongestStreak {
 		h.StatsLongestStreak = h.StatsCurrentStreak
 	}
-}
-
-func (h *Habit) isInStreak(date time.Time) bool {
-	if !manipulation.IsToday(date) {
-		return false
-	}
-
-	now := manipulation.NowUTC()
-	startOfYesterday := time.Date(now.Year(), now.Month(), now.Day()-1, 0, 0, 0, 0, time.UTC)
-	endOfYesterday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
-	return h.LastCompletedAt.After(startOfYesterday) && h.LastCompletedAt.Before(endOfYesterday)
 }
 
 func (h *Habit) IsActive() bool {

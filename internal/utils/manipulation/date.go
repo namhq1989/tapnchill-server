@@ -18,6 +18,11 @@ func getLocation(tz string) *time.Location {
 	return loc
 }
 
+func GetTimezoneIdentifier(t time.Time) string {
+	location := t.Location()
+	return location.String()
+}
+
 func Now(tz string) time.Time {
 	loc := getLocation(tz)
 	return time.Now().In(loc)
@@ -27,19 +32,19 @@ func NowUTC() time.Time {
 	return time.Now().UTC()
 }
 
-func IsToday(t time.Time) bool {
-	nowUTC := NowUTC()
-	tUTC := t.UTC()
+func IsToday(t time.Time, tz string) bool {
+	now := Now(tz)
+	tInLoc := t.In(getLocation(tz))
 
-	return tUTC.Year() == nowUTC.Year() && tUTC.Month() == nowUTC.Month() && tUTC.Day() == nowUTC.Day()
+	return tInLoc.Year() == now.Year() && tInLoc.Month() == now.Month() && tInLoc.Day() == now.Day()
 }
 
-func IsYesterday(t time.Time) bool {
-	nowUTC := NowUTC()
-	yesterdayUTC := nowUTC.AddDate(0, 0, -1)
-	tUTC := t.UTC()
+func IsYesterday(t time.Time, tz string) bool {
+	now := Now(tz)
+	yesterday := now.AddDate(0, 0, -1)
+	tInLoc := t.In(getLocation(tz))
 
-	return tUTC.Year() == yesterdayUTC.Year() && tUTC.Month() == yesterdayUTC.Month() && tUTC.Day() == yesterdayUTC.Day()
+	return tInLoc.Year() == yesterday.Year() && tInLoc.Month() == yesterday.Month() && tInLoc.Day() == yesterday.Day()
 }
 
 func StartOfDay(t time.Time) time.Time {

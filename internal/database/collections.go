@@ -15,6 +15,8 @@ var Collections = struct {
 	Habit           string
 	HabitCompletion string
 	HabitDailyStats string
+
+	Note string
 }{
 	User:                "user.users",
 	SubscriptionHistory: "user.subscriptionHistories",
@@ -28,6 +30,8 @@ var Collections = struct {
 	Habit:           "habit.habits",
 	HabitCompletion: "habit.completions",
 	HabitDailyStats: "habit.dailyStats",
+
+	Note: "note.notes",
 }
 
 func (db Database) GetCollection(table string) *mongo.Collection {

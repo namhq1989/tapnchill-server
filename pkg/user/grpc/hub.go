@@ -11,6 +11,7 @@ type (
 		GetHabitQuota(ctx *appcontext.AppContext, req *userpb.GetHabitQuotaRequest) (*userpb.GetHabitQuotaResponse, error)
 		GetGoalQuota(ctx *appcontext.AppContext, req *userpb.GetGoalQuotaRequest) (*userpb.GetGoalQuotaResponse, error)
 		GetTaskQuota(ctx *appcontext.AppContext, req *userpb.GetTaskQuotaRequest) (*userpb.GetTaskQuotaResponse, error)
+		GetNoteQuota(ctx *appcontext.AppContext, req *userpb.GetNoteQuotaRequest) (*userpb.GetNoteQuotaResponse, error)
 	}
 	App interface {
 		Hubs
@@ -20,6 +21,7 @@ type (
 		GetHabitQuotaHandler
 		GetGoalQuotaHandler
 		GetTaskQuotaHandler
+		GetNoteQuotaHandler
 	}
 	Application struct {
 		appHubHandler
@@ -36,6 +38,7 @@ func New(
 			GetHabitQuotaHandler: NewGetHabitQuotaHandler(service),
 			GetGoalQuotaHandler:  NewGetGoalQuotaHandler(service),
 			GetTaskQuotaHandler:  NewGetTaskQuotaHandler(service),
+			GetNoteQuotaHandler:  NewGetNoteQuotaHandler(service),
 		},
 	}
 }

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/namhq1989/tapnchill-server/internal/payment"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/namhq1989/go-utilities/logger"
@@ -22,6 +20,7 @@ import (
 	"github.com/namhq1989/tapnchill-server/internal/utils/waiter"
 	"github.com/namhq1989/tapnchill-server/pkg/common"
 	"github.com/namhq1989/tapnchill-server/pkg/habit"
+	"github.com/namhq1989/tapnchill-server/pkg/note"
 	"github.com/namhq1989/tapnchill-server/pkg/task"
 	"github.com/namhq1989/tapnchill-server/pkg/user"
 	"github.com/namhq1989/tapnchill-server/pkg/webhook"
@@ -67,9 +66,6 @@ func main() {
 	// sso
 	a.sso = sso.NewSSOClient(cfg.FirebaseServiceAccount)
 
-	// payment
-	a.payment = payment.NewPayment(cfg.PaddleApiKey, cfg.IsEnvRelease)
-
 	// queue
 	a.queue = queue.Init(cfg.QueueRedisURL, cfg.QueueConcurrency)
 
@@ -91,6 +87,7 @@ func main() {
 		&task.Module{},
 		&user.Module{},
 		&habit.Module{},
+		&note.Module{},
 		&webhook.Module{},
 	}
 

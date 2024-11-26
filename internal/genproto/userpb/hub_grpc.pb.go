@@ -22,6 +22,7 @@ const (
 	UserService_GetHabitQuota_FullMethodName = "/userpb.UserService/GetHabitQuota"
 	UserService_GetGoalQuota_FullMethodName  = "/userpb.UserService/GetGoalQuota"
 	UserService_GetTaskQuota_FullMethodName  = "/userpb.UserService/GetTaskQuota"
+	UserService_GetNoteQuota_FullMethodName  = "/userpb.UserService/GetNoteQuota"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -31,6 +32,7 @@ type UserServiceClient interface {
 	GetHabitQuota(ctx context.Context, in *GetHabitQuotaRequest, opts ...grpc.CallOption) (*GetHabitQuotaResponse, error)
 	GetGoalQuota(ctx context.Context, in *GetGoalQuotaRequest, opts ...grpc.CallOption) (*GetGoalQuotaResponse, error)
 	GetTaskQuota(ctx context.Context, in *GetTaskQuotaRequest, opts ...grpc.CallOption) (*GetTaskQuotaResponse, error)
+	GetNoteQuota(ctx context.Context, in *GetNoteQuotaRequest, opts ...grpc.CallOption) (*GetNoteQuotaResponse, error)
 }
 
 type userServiceClient struct {
@@ -71,6 +73,16 @@ func (c *userServiceClient) GetTaskQuota(ctx context.Context, in *GetTaskQuotaRe
 	return out, nil
 }
 
+func (c *userServiceClient) GetNoteQuota(ctx context.Context, in *GetNoteQuotaRequest, opts ...grpc.CallOption) (*GetNoteQuotaResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetNoteQuotaResponse)
+	err := c.cc.Invoke(ctx, UserService_GetNoteQuota_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations should embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -78,6 +90,7 @@ type UserServiceServer interface {
 	GetHabitQuota(context.Context, *GetHabitQuotaRequest) (*GetHabitQuotaResponse, error)
 	GetGoalQuota(context.Context, *GetGoalQuotaRequest) (*GetGoalQuotaResponse, error)
 	GetTaskQuota(context.Context, *GetTaskQuotaRequest) (*GetTaskQuotaResponse, error)
+	GetNoteQuota(context.Context, *GetNoteQuotaRequest) (*GetNoteQuotaResponse, error)
 }
 
 // UnimplementedUserServiceServer should be embedded to have forward compatible implementations.
@@ -92,6 +105,9 @@ func (UnimplementedUserServiceServer) GetGoalQuota(context.Context, *GetGoalQuot
 }
 func (UnimplementedUserServiceServer) GetTaskQuota(context.Context, *GetTaskQuotaRequest) (*GetTaskQuotaResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskQuota not implemented")
+}
+func (UnimplementedUserServiceServer) GetNoteQuota(context.Context, *GetNoteQuotaRequest) (*GetNoteQuotaResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNoteQuota not implemented")
 }
 
 // UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -159,6 +175,24 @@ func _UserService_GetTaskQuota_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetNoteQuota_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNoteQuotaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetNoteQuota(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetNoteQuota_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetNoteQuota(ctx, req.(*GetNoteQuotaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -177,6 +211,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTaskQuota",
 			Handler:    _UserService_GetTaskQuota_Handler,
+		},
+		{
+			MethodName: "GetNoteQuota",
+			Handler:    _UserService_GetNoteQuota_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

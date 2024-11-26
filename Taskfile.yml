@@ -59,6 +59,10 @@ tasks:
       - mockgen -source=pkg/user/domain/caching.go -destination=internal/mock/user/caching.go -package=mockuser
       - mockgen -source=pkg/user/domain/service.go -destination=internal/mock/user/service.go -package=mockuser
 
+      # note
+      - mockgen -source=pkg/note/domain/note.go -destination=internal/mock/note/note.go -package=mocknote
+      - mockgen -source=pkg/note/domain/user.go -destination=internal/mock/note/user.go -package=mocknote
+
   # test
   test:
     dotenv: ['.env.test']

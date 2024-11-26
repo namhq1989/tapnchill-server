@@ -6,6 +6,7 @@ service UserService {
   rpc GetHabitQuota(GetHabitQuotaRequest) returns (GetHabitQuotaResponse) {}
   rpc GetGoalQuota(GetGoalQuotaRequest) returns (GetGoalQuotaResponse) {}
   rpc GetTaskQuota(GetTaskQuotaRequest) returns (GetTaskQuotaResponse) {}
+  rpc GetNoteQuota(GetNoteQuotaRequest) returns (GetNoteQuotaResponse) {}
 }
 
 // GET HABIT QUOTA
@@ -38,5 +39,16 @@ message GetTaskQuotaRequest {
 }
 
 message GetTaskQuotaResponse {
+  int64 limit = 1;
+}
+
+// GET NOTE QUOTA
+
+message GetNoteQuotaRequest {
+  string traceId = 1;
+  string userId = 2;
+}
+
+message GetNoteQuotaResponse {
   int64 limit = 1;
 }

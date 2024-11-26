@@ -31,3 +31,7 @@ func (s server) GetGoalQuota(bgCtx context.Context, req *userpb.GetGoalQuotaRequ
 func (s server) GetTaskQuota(bgCtx context.Context, req *userpb.GetTaskQuotaRequest) (*userpb.GetTaskQuotaResponse, error) {
 	return s.hub.GetTaskQuota(appcontext.NewGRPC(bgCtx), req)
 }
+
+func (s server) GetNoteQuota(bgCtx context.Context, req *userpb.GetNoteQuotaRequest) (*userpb.GetNoteQuotaResponse, error) {
+	return s.hub.GetNoteQuota(appcontext.NewGRPC(bgCtx), req)
+}

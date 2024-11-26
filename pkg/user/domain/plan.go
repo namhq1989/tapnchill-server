@@ -36,4 +36,7 @@ const (
 
 	FreePlanMaxTaskPerGoal int64 = 20
 	ProPlanMaxTaskPerGoal  int64 = 50
+
+	FreePlanMaxNotes int64 = 50
+	ProPlanMaxNotes  int64 = 10000
 )

@@ -64,7 +64,7 @@ func (n *Note) SetTitle(title string) error {
 }
 
 func (n *Note) SetDescription(description string) error {
-	if len(description) > 300 {
+	if len(description) > 100000 {
 		return apperrors.Common.InvalidDescription
 	}
 

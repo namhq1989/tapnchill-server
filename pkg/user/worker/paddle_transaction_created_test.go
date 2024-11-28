@@ -14,29 +14,29 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-type transactionCompletedTestSuite struct {
+type paddleTransactionCompletedTestSuite struct {
 	suite.Suite
-	handler                           worker.TransactionCompletedHandler
+	handler                           worker.PaddleTransactionCompletedHandler
 	mockCtrl                          *gomock.Controller
 	mockUserRepository                *mockuser.MockUserRepository
 	mockSubscriptionHistoryRepository *mockuser.MockSubscriptionHistoryRepository
 	mockCachingRepository             *mockuser.MockCachingRepository
 }
 
-func (s *transactionCompletedTestSuite) SetupSuite() {
+func (s *paddleTransactionCompletedTestSuite) SetupSuite() {
 	s.setupApplication()
 }
 
-func (s *transactionCompletedTestSuite) setupApplication() {
+func (s *paddleTransactionCompletedTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockUserRepository = mockuser.NewMockUserRepository(s.mockCtrl)
 	s.mockSubscriptionHistoryRepository = mockuser.NewMockSubscriptionHistoryRepository(s.mockCtrl)
 	s.mockCachingRepository = mockuser.NewMockCachingRepository(s.mockCtrl)
 
-	s.handler = worker.NewTransactionCompletedHandler(s.mockUserRepository, s.mockSubscriptionHistoryRepository, s.mockCachingRepository)
+	s.handler = worker.NewPaddleTransactionCompletedHandler(s.mockUserRepository, s.mockSubscriptionHistoryRepository, s.mockCachingRepository)
 }
 
-func (s *transactionCompletedTestSuite) TearDownTest() {
+func (s *paddleTransactionCompletedTestSuite) TearDownTest() {
 	s.mockCtrl.Finish()
 }
 
@@ -44,7 +44,7 @@ func (s *transactionCompletedTestSuite) TearDownTest() {
 // CASES
 //
 
-func (s *transactionCompletedTestSuite) Test_1_Success() {
+func (s *paddleTransactionCompletedTestSuite) Test_1_Success() {
 	// mock data
 	s.mockUserRepository.EXPECT().
 		FindByID(gomock.Any(), gomock.Any()).
@@ -72,7 +72,7 @@ func (s *transactionCompletedTestSuite) Test_1_Success() {
 
 	// call
 	ctx := appcontext.NewWorker(context.Background())
-	err := s.handler.TransactionCompleted(ctx, domain.QueueTransactionCompletedPayload{
+	err := s.handler.PaddleTransactionCompleted(ctx, domain.QueuePaddleTransactionCompletedPayload{
 		UserID:         database.NewStringID(),
 		SubscriptionID: "subscription-id",
 	})
@@ -84,6 +84,6 @@ func (s *transactionCompletedTestSuite) Test_1_Success() {
 // END OF CASES
 //
 
-func TestTransactionCompletedTestSuite(t *testing.T) {
-	suite.Run(t, new(transactionCompletedTestSuite))
+func TestPaddleTransactionCompletedTestSuite(t *testing.T) {
+	suite.Run(t, new(paddleTransactionCompletedTestSuite))
 }

@@ -1,5 +1,6 @@
 package domain
 
 const (
-	PaymentSourcePaddle = "paddle"
+	PaymentSourcePaddle     = "paddle"
+	PaymentSourceFastspring = "fastspring"
 )

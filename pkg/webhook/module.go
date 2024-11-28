@@ -24,7 +24,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 	)
 
 	// rest server
-	if err := rest.RegisterServer(ctx, app, mono.Rest(), mono.JWT(), mono.Config().IsEnvRelease); err != nil {
+	if err := rest.RegisterServer(ctx, app, mono.Rest(), mono.JWT(), mono.Config().FastspringSecret, mono.Config().IsEnvRelease); err != nil {
 		return err
 	}
 

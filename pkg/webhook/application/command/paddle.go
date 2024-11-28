@@ -19,7 +19,7 @@ func NewPaddleHandler(queueRepository domain.QueueRepository) PaddleHandler {
 }
 
 func (h PaddleHandler) Paddle(ctx *appcontext.AppContext, req dto.PaddleRequest) (*dto.PaddleResponse, error) {
-	ctx.Logger().Info("new paddle webhook", appcontext.Fields{"eventType": req.EventType})
+	ctx.Logger().Text("new PADDLE webhook")
 
 	if req.EventType == "subscription.created" {
 		return &dto.PaddleResponse{}, h.subscriptionCreated(ctx, req)
@@ -27,7 +27,7 @@ func (h PaddleHandler) Paddle(ctx *appcontext.AppContext, req dto.PaddleRequest)
 		return &dto.PaddleResponse{}, h.transactionCompleted(ctx, req)
 	}
 
-	return nil, apperrors.Common.BadRequest
+	return nil, nil
 }
 
 func (h PaddleHandler) subscriptionCreated(ctx *appcontext.AppContext, req dto.PaddleRequest) error {
@@ -47,7 +47,8 @@ func (h PaddleHandler) subscriptionCreated(ctx *appcontext.AppContext, req dto.P
 		items[i] = item.Price.ID
 	}
 
-	if err = h.queueRepository.SubscriptionCreated(ctx, domain.QueueSubscriptionCreatedPayload{
+	ctx.Logger().Text("enqueue subscription created task")
+	if err = h.queueRepository.PaddleSubscriptionCreated(ctx, domain.QueuePaddleSubscriptionCreatedPayload{
 		UserID:         req.Data.CustomData.UserID,
 		SubscriptionID: req.Data.ID,
 		NextBilledAt:   *nextBilledAt,
@@ -66,11 +67,12 @@ func (h PaddleHandler) transactionCompleted(ctx *appcontext.AppContext, req dto.
 		"id": req.Data.ID, "subscriptionID": req.Data.SubscriptionID,
 	})
 
-	if err := h.queueRepository.TransactionCompleted(ctx, domain.QueueTransactionCompletedPayload{
+	ctx.Logger().Text("enqueue transaction completed task")
+	if err := h.queueRepository.PaddleTransactionCompleted(ctx, domain.QueuePaddleTransactionCompletedPayload{
 		UserID:         req.Data.CustomData.UserID,
 		SubscriptionID: req.Data.SubscriptionID,
 	}); err != nil {
-		ctx.Logger().Error("failed to enqueue subscription created task", err, appcontext.Fields{})
+		ctx.Logger().Error("failed to enqueue transaction completed task", err, appcontext.Fields{})
 		return err
 	}
 

@@ -15,27 +15,29 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-type subscriptionCreatedTestSuite struct {
+type fastspringSubscriptionActivatedTestSuite struct {
 	suite.Suite
-	handler                           worker.SubscriptionCreatedHandler
+	handler                           worker.FastspringSubscriptionActivatedHandler
 	mockCtrl                          *gomock.Controller
 	mockUserRepository                *mockuser.MockUserRepository
 	mockSubscriptionHistoryRepository *mockuser.MockSubscriptionHistoryRepository
+	mockCachingRepository             *mockuser.MockCachingRepository
 }
 
-func (s *subscriptionCreatedTestSuite) SetupSuite() {
+func (s *fastspringSubscriptionActivatedTestSuite) SetupSuite() {
 	s.setupApplication()
 }
 
-func (s *subscriptionCreatedTestSuite) setupApplication() {
+func (s *fastspringSubscriptionActivatedTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockUserRepository = mockuser.NewMockUserRepository(s.mockCtrl)
 	s.mockSubscriptionHistoryRepository = mockuser.NewMockSubscriptionHistoryRepository(s.mockCtrl)
+	s.mockCachingRepository = mockuser.NewMockCachingRepository(s.mockCtrl)
 
-	s.handler = worker.NewSubscriptionCreatedHandler(s.mockUserRepository, s.mockSubscriptionHistoryRepository)
+	s.handler = worker.NewFastspringSubscriptionActivatedHandler(s.mockUserRepository, s.mockSubscriptionHistoryRepository, s.mockCachingRepository)
 }
 
-func (s *subscriptionCreatedTestSuite) TearDownTest() {
+func (s *fastspringSubscriptionActivatedTestSuite) TearDownTest() {
 	s.mockCtrl.Finish()
 }
 
@@ -43,7 +45,7 @@ func (s *subscriptionCreatedTestSuite) TearDownTest() {
 // CASES
 //
 
-func (s *subscriptionCreatedTestSuite) Test_1_Success() {
+func (s *fastspringSubscriptionActivatedTestSuite) Test_1_Success() {
 	// mock data
 	s.mockUserRepository.EXPECT().
 		FindByID(gomock.Any(), gomock.Any()).
@@ -59,9 +61,13 @@ func (s *subscriptionCreatedTestSuite) Test_1_Success() {
 		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
+	s.mockCachingRepository.EXPECT().
+		DeleteUserByID(gomock.Any(), gomock.Any()).
+		Return(nil)
+
 	// call
 	ctx := appcontext.NewWorker(context.Background())
-	err := s.handler.SubscriptionCreated(ctx, domain.QueueSubscriptionCreatedPayload{
+	err := s.handler.FastspringSubscriptionActivated(ctx, domain.QueueFastspringSubscriptionActivatedPayload{
 		UserID:         database.NewStringID(),
 		SubscriptionID: "subscription-id",
 		NextBilledAt:   time.Now(),
@@ -76,6 +82,6 @@ func (s *subscriptionCreatedTestSuite) Test_1_Success() {
 // END OF CASES
 //
 
-func TestSubscriptionCreatedTestSuite(t *testing.T) {
-	suite.Run(t, new(subscriptionCreatedTestSuite))
+func TestFastspringSubscriptionActivatedTestSuite(t *testing.T) {
+	suite.Run(t, new(fastspringSubscriptionActivatedTestSuite))
 }

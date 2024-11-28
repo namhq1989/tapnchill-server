@@ -32,8 +32,8 @@ type (
 		QueuePassword    string
 		QueueConcurrency int
 
-		// Paddle
-		PaddleApiKey string
+		// Fast Spring
+		FastspringSecret string
 
 		// 3rd party
 		IpInfoToken         string
@@ -66,7 +66,7 @@ func Init() Server {
 		QueuePassword:    getEnvStr("QUEUE_PASSWORD"),
 		QueueConcurrency: getEnvInt("QUEUE_CONCURRENCY"),
 
-		PaddleApiKey: getEnvStr("PADDLE_API_KEY"),
+		FastspringSecret: getEnvStr("FASTSPRING_SECRET"),
 
 		IpInfoToken:         getEnvStr("IP_INFO_TOKEN"),
 		VisualCrossingToken: getEnvStr("VISUAL_CROSSING_TOKEN"),
@@ -100,8 +100,8 @@ func Init() Server {
 		panic(errors.New("missing QUEUE_REDIS_URL"))
 	}
 
-	if cfg.PaddleApiKey == "" {
-		panic(errors.New("missing PADDLE_API_KEY"))
+	if cfg.FastspringSecret == "" {
+		panic(errors.New("missing FASTSPRING_SECRET"))
 	}
 
 	return cfg

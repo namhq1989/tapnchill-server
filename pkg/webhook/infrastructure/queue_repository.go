@@ -16,10 +16,14 @@ func NewQueueRepository(queue queue.Operations) QueueRepository {
 	}
 }
 
-func (r QueueRepository) SubscriptionCreated(ctx *appcontext.AppContext, payload domain.QueueSubscriptionCreatedPayload) error {
-	return queue.EnqueueTask(ctx, r.queue, queue.TypeNames.SubscriptionCreated, payload, 5)
+func (r QueueRepository) PaddleSubscriptionCreated(ctx *appcontext.AppContext, payload domain.QueuePaddleSubscriptionCreatedPayload) error {
+	return queue.EnqueueTask(ctx, r.queue, queue.TypeNames.PaddleSubscriptionCreated, payload, 5)
 }
 
-func (r QueueRepository) TransactionCompleted(ctx *appcontext.AppContext, payload domain.QueueTransactionCompletedPayload) error {
-	return queue.EnqueueTask(ctx, r.queue, queue.TypeNames.TransactionCompleted, payload, 5)
+func (r QueueRepository) PaddleTransactionCompleted(ctx *appcontext.AppContext, payload domain.QueuePaddleTransactionCompletedPayload) error {
+	return queue.EnqueueTask(ctx, r.queue, queue.TypeNames.PaddleTransactionCompleted, payload, 5)
+}
+
+func (r QueueRepository) FastspringSubscriptionActivated(ctx *appcontext.AppContext, payload domain.QueueFastspringSubscriptionActivatedPayload) error {
+	return queue.EnqueueTask(ctx, r.queue, queue.TypeNames.FastspringSubscriptionActivated, payload, 5)
 }

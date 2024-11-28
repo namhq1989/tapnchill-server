@@ -7,11 +7,13 @@ import (
 )
 
 type QueueRepository interface {
-	SubscriptionCreated(ctx *appcontext.AppContext, payload QueueSubscriptionCreatedPayload) error
-	TransactionCompleted(ctx *appcontext.AppContext, payload QueueTransactionCompletedPayload) error
+	PaddleSubscriptionCreated(ctx *appcontext.AppContext, payload QueuePaddleSubscriptionCreatedPayload) error
+	PaddleTransactionCompleted(ctx *appcontext.AppContext, payload QueuePaddleTransactionCompletedPayload) error
+
+	FastspringSubscriptionActivated(ctx *appcontext.AppContext, payload QueueFastspringSubscriptionActivatedPayload) error
 }
 
-type QueueSubscriptionCreatedPayload struct {
+type QueuePaddleSubscriptionCreatedPayload struct {
 	UserID         string
 	SubscriptionID string
 	NextBilledAt   time.Time
@@ -19,7 +21,15 @@ type QueueSubscriptionCreatedPayload struct {
 	Items          []string
 }
 
-type QueueTransactionCompletedPayload struct {
+type QueuePaddleTransactionCompletedPayload struct {
 	UserID         string
 	SubscriptionID string
+}
+
+type QueueFastspringSubscriptionActivatedPayload struct {
+	UserID         string
+	SubscriptionID string
+	NextBilledAt   time.Time
+	CustomerID     string
+	Items          []string
 }

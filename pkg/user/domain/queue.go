@@ -14,7 +14,7 @@ type QueueCreateUserDefaultGoalPayload struct {
 	UserID string
 }
 
-type QueueSubscriptionCreatedPayload struct {
+type QueuePaddleSubscriptionCreatedPayload struct {
 	UserID         string
 	SubscriptionID string
 	NextBilledAt   time.Time
@@ -22,7 +22,15 @@ type QueueSubscriptionCreatedPayload struct {
 	Items          []string
 }
 
-type QueueTransactionCompletedPayload struct {
+type QueuePaddleTransactionCompletedPayload struct {
 	UserID         string
 	SubscriptionID string
+}
+
+type QueueFastspringSubscriptionActivatedPayload struct {
+	UserID         string
+	SubscriptionID string
+	NextBilledAt   time.Time
+	CustomerID     string
+	Items          []string
 }

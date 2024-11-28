@@ -5,22 +5,22 @@ import (
 	"github.com/namhq1989/tapnchill-server/pkg/user/domain"
 )
 
-type SubscriptionCreatedHandler struct {
+type PaddleSubscriptionCreatedHandler struct {
 	userRepository                domain.UserRepository
 	subscriptionHistoryRepository domain.SubscriptionHistoryRepository
 }
 
-func NewSubscriptionCreatedHandler(
+func NewPaddleSubscriptionCreatedHandler(
 	userRepository domain.UserRepository,
 	subscriptionHistoryRepository domain.SubscriptionHistoryRepository,
-) SubscriptionCreatedHandler {
-	return SubscriptionCreatedHandler{
+) PaddleSubscriptionCreatedHandler {
+	return PaddleSubscriptionCreatedHandler{
 		userRepository:                userRepository,
 		subscriptionHistoryRepository: subscriptionHistoryRepository,
 	}
 }
 
-func (h SubscriptionCreatedHandler) SubscriptionCreated(ctx *appcontext.AppContext, payload domain.QueueSubscriptionCreatedPayload) error {
+func (h PaddleSubscriptionCreatedHandler) PaddleSubscriptionCreated(ctx *appcontext.AppContext, payload domain.QueuePaddleSubscriptionCreatedPayload) error {
 	ctx.Logger().Text("find user in db")
 	user, err := h.userRepository.FindByID(ctx, payload.UserID)
 	if err != nil {

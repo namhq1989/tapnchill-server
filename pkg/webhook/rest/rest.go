@@ -8,18 +8,20 @@ import (
 )
 
 type server struct {
-	app          application.Instance
-	echo         *echo.Echo
-	jwt          appjwt.Operations
-	isEnvRelease bool
+	app              application.Instance
+	echo             *echo.Echo
+	jwt              appjwt.Operations
+	fastspringSecret string
+	isEnvRelease     bool
 }
 
-func RegisterServer(_ *appcontext.AppContext, app application.Instance, e *echo.Echo, jwt *appjwt.JWT, isEnvRelease bool) error {
+func RegisterServer(_ *appcontext.AppContext, app application.Instance, e *echo.Echo, jwt *appjwt.JWT, fastspringSecret string, isEnvRelease bool) error {
 	var s = server{
-		app:          app,
-		echo:         e,
-		jwt:          jwt,
-		isEnvRelease: isEnvRelease,
+		app:              app,
+		echo:             e,
+		jwt:              jwt,
+		fastspringSecret: fastspringSecret,
+		isEnvRelease:     isEnvRelease,
 	}
 
 	s.registerPaddleRoutes()

@@ -11,16 +11,20 @@ import (
 
 type (
 	Handlers interface {
-		SubscriptionCreated(ctx *appcontext.AppContext, payload domain.QueueSubscriptionCreatedPayload) error
-		TransactionCompleted(ctx *appcontext.AppContext, payload domain.QueueTransactionCompletedPayload) error
+		PaddleSubscriptionCreated(ctx *appcontext.AppContext, payload domain.QueuePaddleSubscriptionCreatedPayload) error
+		PaddleTransactionCompleted(ctx *appcontext.AppContext, payload domain.QueuePaddleTransactionCompletedPayload) error
+
+		FastspringSubscriptionActivated(ctx *appcontext.AppContext, payload domain.QueueFastspringSubscriptionActivatedPayload) error
 	}
 	Instance interface {
 		Handlers
 	}
 
 	workerHandlers struct {
-		SubscriptionCreatedHandler
-		TransactionCompletedHandler
+		PaddleSubscriptionCreatedHandler
+		PaddleTransactionCompletedHandler
+
+		FastspringSubscriptionActivatedHandler
 	}
 	Worker struct {
 		queue queue.Operations
@@ -39,8 +43,10 @@ func New(
 	return Worker{
 		queue: queue,
 		workerHandlers: workerHandlers{
-			SubscriptionCreatedHandler:  NewSubscriptionCreatedHandler(userRepository, subscriptionHistoryRepository),
-			TransactionCompletedHandler: NewTransactionCompletedHandler(userRepository, subscriptionHistoryRepository, cachingRepository),
+			PaddleSubscriptionCreatedHandler:  NewPaddleSubscriptionCreatedHandler(userRepository, subscriptionHistoryRepository),
+			PaddleTransactionCompletedHandler: NewPaddleTransactionCompletedHandler(userRepository, subscriptionHistoryRepository, cachingRepository),
+
+			FastspringSubscriptionActivatedHandler: NewFastspringSubscriptionActivatedHandler(userRepository, subscriptionHistoryRepository, cachingRepository),
 		},
 	}
 }
@@ -48,11 +54,15 @@ func New(
 func (w Worker) Start() {
 	server := w.queue.GetServer()
 
-	server.HandleFunc(w.queue.GenerateTypename(queue.TypeNames.SubscriptionCreated), func(bgCtx context.Context, t *asynq.Task) error {
-		return queue.ProcessTask[domain.QueueSubscriptionCreatedPayload](bgCtx, t, queue.ParsePayload[domain.QueueSubscriptionCreatedPayload], w.SubscriptionCreated)
+	server.HandleFunc(w.queue.GenerateTypename(queue.TypeNames.PaddleSubscriptionCreated), func(bgCtx context.Context, t *asynq.Task) error {
+		return queue.ProcessTask[domain.QueuePaddleSubscriptionCreatedPayload](bgCtx, t, queue.ParsePayload[domain.QueuePaddleSubscriptionCreatedPayload], w.PaddleSubscriptionCreated)
 	})
 
-	server.HandleFunc(w.queue.GenerateTypename(queue.TypeNames.TransactionCompleted), func(bgCtx context.Context, t *asynq.Task) error {
-		return queue.ProcessTask[domain.QueueTransactionCompletedPayload](bgCtx, t, queue.ParsePayload[domain.QueueTransactionCompletedPayload], w.TransactionCompleted)
+	server.HandleFunc(w.queue.GenerateTypename(queue.TypeNames.PaddleTransactionCompleted), func(bgCtx context.Context, t *asynq.Task) error {
+		return queue.ProcessTask[domain.QueuePaddleTransactionCompletedPayload](bgCtx, t, queue.ParsePayload[domain.QueuePaddleTransactionCompletedPayload], w.PaddleTransactionCompleted)
+	})
+
+	server.HandleFunc(w.queue.GenerateTypename(queue.TypeNames.FastspringSubscriptionActivated), func(bgCtx context.Context, t *asynq.Task) error {
+		return queue.ProcessTask[domain.QueueFastspringSubscriptionActivatedPayload](bgCtx, t, queue.ParsePayload[domain.QueueFastspringSubscriptionActivatedPayload], w.FastspringSubscriptionActivated)
 	})
 }

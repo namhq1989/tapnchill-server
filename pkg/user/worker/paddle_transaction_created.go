@@ -5,25 +5,25 @@ import (
 	"github.com/namhq1989/tapnchill-server/pkg/user/domain"
 )
 
-type TransactionCompletedHandler struct {
+type PaddleTransactionCompletedHandler struct {
 	userRepository                domain.UserRepository
 	subscriptionHistoryRepository domain.SubscriptionHistoryRepository
 	cachingRepository             domain.CachingRepository
 }
 
-func NewTransactionCompletedHandler(
+func NewPaddleTransactionCompletedHandler(
 	userRepository domain.UserRepository,
 	subscriptionHistoryRepository domain.SubscriptionHistoryRepository,
 	cachingRepository domain.CachingRepository,
-) TransactionCompletedHandler {
-	return TransactionCompletedHandler{
+) PaddleTransactionCompletedHandler {
+	return PaddleTransactionCompletedHandler{
 		userRepository:                userRepository,
 		subscriptionHistoryRepository: subscriptionHistoryRepository,
 		cachingRepository:             cachingRepository,
 	}
 }
 
-func (h TransactionCompletedHandler) TransactionCompleted(ctx *appcontext.AppContext, payload domain.QueueTransactionCompletedPayload) error {
+func (h PaddleTransactionCompletedHandler) PaddleTransactionCompleted(ctx *appcontext.AppContext, payload domain.QueuePaddleTransactionCompletedPayload) error {
 	ctx.Logger().Text("find user in db")
 	user, err := h.userRepository.FindByID(ctx, payload.UserID)
 	if err != nil {

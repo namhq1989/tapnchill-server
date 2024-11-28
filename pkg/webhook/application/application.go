@@ -10,6 +10,7 @@ import (
 type (
 	Commands interface {
 		Paddle(ctx *appcontext.AppContext, req dto.PaddleRequest) (*dto.PaddleResponse, error)
+		Fastspring(ctx *appcontext.AppContext, req dto.FastspringRequest) (*dto.FastspringResponse, error)
 	}
 	Instance interface {
 		Commands
@@ -17,6 +18,7 @@ type (
 
 	commandHandlers struct {
 		command.PaddleHandler
+		command.FastspringHandler
 	}
 	Application struct {
 		commandHandlers
@@ -30,7 +32,8 @@ func New(
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			PaddleHandler: command.NewPaddleHandler(queueRepository),
+			PaddleHandler:     command.NewPaddleHandler(queueRepository),
+			FastspringHandler: command.NewFastspringHandler(queueRepository),
 		},
 	}
 }

@@ -12,5 +12,6 @@ type SubscriptionPlan struct {
 type GetSubscriptionPlansRequest struct{}
 
 type GetSubscriptionPlansResponse struct {
-	Plans []SubscriptionPlan `json:"plans"`
+	IsEnabled bool               `json:"isEnabled"`
+	Plans     []SubscriptionPlan `json:"plans"`
 }

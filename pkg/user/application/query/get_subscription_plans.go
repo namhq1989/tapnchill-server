@@ -18,6 +18,20 @@ func NewGetSubscriptionPlansHandler() GetSubscriptionPlansHandler {
 func (h GetSubscriptionPlansHandler) GetSubscriptionPlans(ctx *appcontext.AppContext, performerID string, _ dto.GetSubscriptionPlansRequest) (*dto.GetSubscriptionPlansResponse, error) {
 	ctx.Logger().Info("new get subscription plans request", appcontext.Fields{"performerID": performerID})
 
+	ctx.Logger().Text("detect whether subscription is enabled or not")
+	isSubscriptionEnabled := false
+	if os.Getenv("IS_SUBSCRIPTION_ENABLED") == "true" {
+		isSubscriptionEnabled = true
+	}
+
+	if !isSubscriptionEnabled {
+		ctx.Logger().Text("subscription is disabled, respond")
+		return &dto.GetSubscriptionPlansResponse{
+			IsEnabled: false,
+			Plans:     []dto.SubscriptionPlan{},
+		}, nil
+	}
+
 	ctx.Logger().Text("prepare data")
 	if os.Getenv("PAYMENT_GATEWAY") == "paddle" {
 		return h.paddle(ctx, performerID)
@@ -27,7 +41,8 @@ func (h GetSubscriptionPlansHandler) GetSubscriptionPlans(ctx *appcontext.AppCon
 
 	ctx.Logger().ErrorText("invalid payment gateway")
 	return &dto.GetSubscriptionPlansResponse{
-		Plans: []dto.SubscriptionPlan{},
+		IsEnabled: false,
+		Plans:     []dto.SubscriptionPlan{},
 	}, nil
 }
 
@@ -54,7 +69,8 @@ func (h GetSubscriptionPlansHandler) paddle(ctx *appcontext.AppContext, performe
 
 	ctx.Logger().Text("done get subscription plans request")
 	return &dto.GetSubscriptionPlansResponse{
-		Plans: []dto.SubscriptionPlan{monthly, yearly},
+		IsEnabled: true,
+		Plans:     []dto.SubscriptionPlan{monthly, yearly},
 	}, nil
 }
 
@@ -81,6 +97,7 @@ func (h GetSubscriptionPlansHandler) fastspring(ctx *appcontext.AppContext, perf
 
 	ctx.Logger().Text("done get subscription plans request")
 	return &dto.GetSubscriptionPlansResponse{
-		Plans: []dto.SubscriptionPlan{monthly, yearly},
+		IsEnabled: true,
+		Plans:     []dto.SubscriptionPlan{monthly, yearly},
 	}, nil
 }

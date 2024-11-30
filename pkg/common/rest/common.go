@@ -11,6 +11,10 @@ import (
 func (s server) registerCommonRoutes() {
 	g := s.echo.Group("/api/common")
 
+	g.GET("/ping", func(c echo.Context) error {
+		return httprespond.R200(c, echo.Map{"ok": 1})
+	})
+
 	g.POST("/feedback", func(c echo.Context) error {
 		var (
 			ctx         = c.Get("ctx").(*appcontext.AppContext)

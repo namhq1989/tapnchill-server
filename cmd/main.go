@@ -61,7 +61,14 @@ func main() {
 	a.caching = caching.NewCachingClient(cfg.CachingRedisURL)
 
 	// external api
-	a.externalApi = externalapi.NewExternalAPIClient(cfg.VisualCrossingToken, cfg.IpInfoToken)
+	a.externalApi = externalapi.NewExternalAPIClient(cfg.VisualCrossingToken, cfg.IpInfoToken, externalapi.LemonsqueezyCfg{
+		Token:               cfg.LemonsqueezyAPIToken,
+		StoreID:             cfg.LemonsqueezyStoreID,
+		MonthlyVariantID:    cfg.LemonsqueezySubscriptionMonthlyVariantID,
+		MonthlyDiscountCode: cfg.LemonsqueezySubscriptionMonthlyDiscountCode,
+		YearlyVariantID:     cfg.LemonsqueezySubscriptionYearlyVariantID,
+		YearlyDiscountCode:  cfg.LemonsqueezySubscriptionYearlyDiscountCode,
+	})
 
 	// sso
 	a.sso = sso.NewSSOClient(cfg.FirebaseServiceAccount)

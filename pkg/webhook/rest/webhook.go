@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/base64"
+	"encoding/hex"
 	"io"
 	"net/http"
 
@@ -34,13 +34,13 @@ func (s server) registerPaddleRoutes() {
 		return validation.ValidateHTTPPayload[dto.PaddleRequest](next)
 	})
 
-	g.POST("/fastspring", func(c echo.Context) error {
+	g.POST("/lemonsqueezy", func(c echo.Context) error {
 		var (
 			ctx = c.Get("ctx").(*appcontext.AppContext)
-			req = c.Get("req").(dto.FastspringRequest)
+			req = c.Get("req").(dto.LemonsqueezyRequest)
 		)
 
-		resp, err := s.app.Fastspring(ctx, req)
+		resp, err := s.app.Lemonsqueezy(ctx, req)
 		if err != nil {
 			return httprespond.R400(c, err, nil)
 		}
@@ -55,10 +55,10 @@ func (s server) registerPaddleRoutes() {
 			}
 
 			// Retrieve the signature from the headers
-			fsSignature := c.Request().Header.Get("X-FS-Signature")
+			signatureHeader := c.Request().Header.Get("X-Signature")
 
 			// Validate the signature
-			if !isValidFastspringSignature(body, fsSignature, s.fastspringSecret) {
+			if !isValidLemonsqueezySignature(body, s.lemonsqueezySecret, signatureHeader) {
 				return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid signature"})
 			}
 
@@ -69,13 +69,17 @@ func (s server) registerPaddleRoutes() {
 			return next(c)
 		}
 	}, func(next echo.HandlerFunc) echo.HandlerFunc {
-		return validation.ValidateHTTPPayload[dto.FastspringRequest](next)
+		return validation.ValidateHTTPPayload[dto.LemonsqueezyRequest](next)
 	})
 }
 
-func isValidFastspringSignature(body []byte, fsSignature, secret string) bool {
+func isValidLemonsqueezySignature(body []byte, secret, signatureHeader string) bool {
 	h := hmac.New(sha256.New, []byte(secret))
 	h.Write(body)
-	computedSignature := base64.StdEncoding.EncodeToString(h.Sum(nil))
-	return fsSignature == computedSignature
+	expectedDigest := h.Sum(nil)
+	providedSignature, err := hex.DecodeString(signatureHeader)
+	if err != nil {
+		return false
+	}
+	return hmac.Equal(expectedDigest, providedSignature)
 }

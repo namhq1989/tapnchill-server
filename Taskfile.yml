@@ -62,6 +62,7 @@ tasks:
       - mockgen -source=pkg/user/domain/jwt.go -destination=internal/mock/user/jwt.go -package=mockuser
       - mockgen -source=pkg/user/domain/sso.go -destination=internal/mock/user/sso.go -package=mockuser
       - mockgen -source=pkg/user/domain/queue.go -destination=internal/mock/user/queue.go -package=mockuser
+      - mockgen -source=pkg/user/domain/external_api.go -destination=internal/mock/user/external_api.go -package=mockuser
       - mockgen -source=pkg/user/domain/caching.go -destination=internal/mock/user/caching.go -package=mockuser
       - mockgen -source=pkg/user/domain/service.go -destination=internal/mock/user/service.go -package=mockuser
 

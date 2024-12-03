@@ -1,12 +1,9 @@
 package dto
 
 type SubscriptionPlan struct {
-	PeriodText          string  `json:"periodText"`
-	PriceID             string  `json:"priceId"`
+	ID                  string  `json:"id"`
 	Amount              float64 `json:"amount"`
-	DiscountID          string  `json:"discountId"`
 	AfterDiscountAmount float64 `json:"afterDiscountAmount"`
-	Token               string  `json:"token"`
 }
 
 type GetSubscriptionPlansRequest struct{}

@@ -108,15 +108,24 @@ func addLanguageMiddleware(e *echo.Echo) {
 }
 
 func addCorsMiddleware(e *echo.Echo, cfg config.Server) {
-	allowedOrigins := []string{
-		"http://localhost:5173",
-		"http://127.0.0.1:5173",
-		"http://localhost:3000",
-		"http://127.0.0.1:3000",
-                "chrome-extension://ahpbddfeddnminklkodiapofdddmcmlb", // store
-		"chrome-extension://inncdblgnijbdpedbfcoieknfgpkflnd", // nam-pc
-		"chrome-extension://ceiekjfielahblijhbabcbakfbpkagld", // nam-mackbook
+	var allowedOrigins []string
+
+	if cfg.IsEnvRelease {
+		allowedOrigins = []string{
+			"chrome-extension://ahpbddfeddnminklkodiapofdddmcmlb", // store
+		}
+	} else {
+		allowedOrigins = []string{
+			"http://localhost:5173",
+			"http://127.0.0.1:5173",
+			"http://localhost:3000",
+			"http://127.0.0.1:3000",
+			"chrome-extension://ahpbddfeddnminklkodiapofdddmcmlb", // store
+			"chrome-extension://inncdblgnijbdpedbfcoieknfgpkflnd", // nam-pc
+			"chrome-extension://ceiekjfielahblijhbabcbakfbpkagld", // nam-mackbook
+		}
 	}
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     allowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},

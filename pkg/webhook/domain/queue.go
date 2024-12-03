@@ -10,7 +10,7 @@ type QueueRepository interface {
 	PaddleSubscriptionCreated(ctx *appcontext.AppContext, payload QueuePaddleSubscriptionCreatedPayload) error
 	PaddleTransactionCompleted(ctx *appcontext.AppContext, payload QueuePaddleTransactionCompletedPayload) error
 
-	FastspringSubscriptionActivated(ctx *appcontext.AppContext, payload QueueFastspringSubscriptionActivatedPayload) error
+	LemonsqueezySubscriptionPaymentSuccess(ctx *appcontext.AppContext, payload QueueLemonsqueezySubscriptionPaymentSuccessPayload) error
 }
 
 type QueuePaddleSubscriptionCreatedPayload struct {
@@ -26,10 +26,7 @@ type QueuePaddleTransactionCompletedPayload struct {
 	SubscriptionID string
 }
 
-type QueueFastspringSubscriptionActivatedPayload struct {
-	UserID         string
-	SubscriptionID string
-	NextBilledAt   time.Time
-	CustomerID     string
-	Items          []string
+type QueueLemonsqueezySubscriptionPaymentSuccessPayload struct {
+	UserID    string
+	InvoiceID string
 }

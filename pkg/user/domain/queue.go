@@ -27,10 +27,7 @@ type QueuePaddleTransactionCompletedPayload struct {
 	SubscriptionID string
 }
 
-type QueueFastspringSubscriptionActivatedPayload struct {
-	UserID         string
-	SubscriptionID string
-	NextBilledAt   time.Time
-	CustomerID     string
-	Items          []string
+type QueueLemonsqueezySubscriptionPaymentSuccessPayload struct {
+	UserID    string
+	InvoiceID string
 }

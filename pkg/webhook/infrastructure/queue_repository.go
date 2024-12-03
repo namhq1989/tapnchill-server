@@ -24,6 +24,6 @@ func (r QueueRepository) PaddleTransactionCompleted(ctx *appcontext.AppContext, 
 	return queue.EnqueueTask(ctx, r.queue, queue.TypeNames.PaddleTransactionCompleted, payload, 5)
 }
 
-func (r QueueRepository) FastspringSubscriptionActivated(ctx *appcontext.AppContext, payload domain.QueueFastspringSubscriptionActivatedPayload) error {
-	return queue.EnqueueTask(ctx, r.queue, queue.TypeNames.FastspringSubscriptionActivated, payload, 5)
+func (r QueueRepository) LemonsqueezySubscriptionPaymentSuccess(ctx *appcontext.AppContext, payload domain.QueueLemonsqueezySubscriptionPaymentSuccessPayload) error {
+	return queue.EnqueueTask(ctx, r.queue, queue.TypeNames.LemonsqueezySubscriptionPaymentSuccess, payload, 5)
 }

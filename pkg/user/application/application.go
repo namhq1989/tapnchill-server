@@ -12,6 +12,7 @@ type (
 	Commands interface {
 		ExtensionSignIn(ctx *appcontext.AppContext, req dto.ExtensionSignInRequest) (*dto.ExtensionSignInResponse, error)
 		GoogleSignIn(ctx *appcontext.AppContext, performerID string, req dto.GoogleSignInRequest) (*dto.GoogleSignInResponse, error)
+		GenerateSubscriptionCheckoutURL(ctx *appcontext.AppContext, performerID string, req dto.GenerateSubscriptionCheckoutURLRequest) (*dto.GenerateSubscriptionCheckoutURLResponse, error)
 	}
 	Queries interface {
 		GetMe(ctx *appcontext.AppContext, performerID string, _ dto.GetMeRequest) (*dto.GetMeResponse, error)
@@ -25,6 +26,7 @@ type (
 	commandHandlers struct {
 		command.ExtensionSignInHandler
 		command.GoogleSignInHandler
+		command.GenerateSubscriptionCheckoutURLHandler
 	}
 	queryHandlers struct {
 		query.GetMeHandler
@@ -43,12 +45,14 @@ func New(
 	jwtRepository domain.JwtRepository,
 	ssoRepository domain.SSORepository,
 	queueRepository domain.QueueRepository,
+	externalAPIRepository domain.ExternalAPIRepository,
 	service domain.Service,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			ExtensionSignInHandler: command.NewExtensionSignInHandler(userRepository, jwtRepository, queueRepository),
-			GoogleSignInHandler:    command.NewGoogleSignInHandler(userRepository, ssoRepository, jwtRepository),
+			ExtensionSignInHandler:                 command.NewExtensionSignInHandler(userRepository, jwtRepository, queueRepository),
+			GoogleSignInHandler:                    command.NewGoogleSignInHandler(userRepository, ssoRepository, jwtRepository),
+			GenerateSubscriptionCheckoutURLHandler: command.NewGenerateSubscriptionCheckoutURLHandler(externalAPIRepository),
 		},
 		queryHandlers: queryHandlers{
 			GetMeHandler:                query.NewGetMeHandler(service),

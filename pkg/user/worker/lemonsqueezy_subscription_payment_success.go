@@ -1,29 +1,35 @@
 package worker
 
 import (
+	"os"
+
 	"github.com/namhq1989/go-utilities/appcontext"
+	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 	"github.com/namhq1989/tapnchill-server/pkg/user/domain"
 )
 
-type FastspringSubscriptionActivatedHandler struct {
+type LemonsqueezySubscriptionPaymentSuccessHandler struct {
 	userRepository                domain.UserRepository
 	subscriptionHistoryRepository domain.SubscriptionHistoryRepository
 	cachingRepository             domain.CachingRepository
+	externalAPIRepository         domain.ExternalAPIRepository
 }
 
-func NewFastspringSubscriptionActivatedHandler(
+func NewLemonsqueezySubscriptionPaymentSuccessHandler(
 	userRepository domain.UserRepository,
 	subscriptionHistoryRepository domain.SubscriptionHistoryRepository,
 	cachingRepository domain.CachingRepository,
-) FastspringSubscriptionActivatedHandler {
-	return FastspringSubscriptionActivatedHandler{
+	externalAPIRepository domain.ExternalAPIRepository,
+) LemonsqueezySubscriptionPaymentSuccessHandler {
+	return LemonsqueezySubscriptionPaymentSuccessHandler{
 		userRepository:                userRepository,
 		subscriptionHistoryRepository: subscriptionHistoryRepository,
 		cachingRepository:             cachingRepository,
+		externalAPIRepository:         externalAPIRepository,
 	}
 }
 
-func (h FastspringSubscriptionActivatedHandler) FastspringSubscriptionActivated(ctx *appcontext.AppContext, payload domain.QueueFastspringSubscriptionActivatedPayload) error {
+func (h LemonsqueezySubscriptionPaymentSuccessHandler) LemonsqueezySubscriptionPaymentSuccess(ctx *appcontext.AppContext, payload domain.QueueLemonsqueezySubscriptionPaymentSuccessPayload) error {
 	ctx.Logger().Text("find user in db")
 	user, err := h.userRepository.FindByID(ctx, payload.UserID)
 	if err != nil {
@@ -35,8 +41,36 @@ func (h FastspringSubscriptionActivatedHandler) FastspringSubscriptionActivated(
 		return nil
 	}
 
+	ctx.Logger().Text("get Lemonsqueezy invoice data")
+	invoiceData, err := h.externalAPIRepository.GetLemonsqueezyInvoiceData(ctx, payload.InvoiceID)
+	if err != nil {
+		ctx.Logger().Error("failed to get invoice data", err, appcontext.Fields{})
+		return err
+	}
+	if invoiceData == nil {
+		ctx.Logger().ErrorText("invoice data not found, respond")
+		return nil
+	}
+
+	ctx.Logger().Info("got invoice data", appcontext.Fields{
+		"subscriptionID": invoiceData.SubscriptionID, "variantID": invoiceData.VariantID, "renewsAt": invoiceData.RenewsAt,
+	})
+
+	nextBilledAt := invoiceData.RenewsAt
+	if nextBilledAt == nil {
+		ctx.Logger().Text("renews at not found, calculate next billed at")
+		now := manipulation.NowUTC()
+		if invoiceData.VariantID == os.Getenv("LEMONSQUEEZY_SUBSCRIPTION_YEARLY_VARIANT_ID") {
+			now = now.AddDate(1, 0, 0)
+		} else {
+			now = now.AddDate(0, 1, 0)
+		}
+		now = manipulation.EndOfDay(now)
+		nextBilledAt = &now
+	}
+
 	ctx.Logger().Text("create new subscription history model")
-	history, err := domain.NewSubscriptionHistory(payload.UserID, payload.SubscriptionID, domain.PaymentSourceFastspring, payload.CustomerID, payload.Items, payload.NextBilledAt)
+	history, err := domain.NewSubscriptionHistory(payload.UserID, invoiceData.SubscriptionID, domain.PaymentSourceLemonsqueezy, invoiceData.CustomerID, []string{invoiceData.VariantID}, *nextBilledAt)
 	if err != nil {
 		ctx.Logger().Error("failed to create new subscription history model", err, appcontext.Fields{})
 		return err
@@ -52,8 +86,8 @@ func (h FastspringSubscriptionActivatedHandler) FastspringSubscriptionActivated(
 	}
 
 	ctx.Logger().Text("update user subscription")
-	user.SetPlanPro(payload.NextBilledAt)
-	user.SetSubscriptionCustomerID(payload.CustomerID)
+	user.SetPlanPro(history.NextBilledAt)
+	user.SetSubscriptionCustomerID(history.SourceCustomerID)
 
 	ctx.Logger().Text("update user in db")
 	if err = h.userRepository.Update(ctx, *user); err != nil {

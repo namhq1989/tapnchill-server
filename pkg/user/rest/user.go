@@ -77,4 +77,21 @@ func (s server) registerUserRoutes() {
 	}, s.jwt.RequireLoggedIn, func(next echo.HandlerFunc) echo.HandlerFunc {
 		return validation.ValidateHTTPPayload[dto.GetSubscriptionPlansRequest](next)
 	})
+
+	g.POST("/subscription-plans/checkout-url", func(c echo.Context) error {
+		var (
+			ctx         = c.Get("ctx").(*appcontext.AppContext)
+			req         = c.Get("req").(dto.GenerateSubscriptionCheckoutURLRequest)
+			performerID = ctx.GetUserID()
+		)
+
+		resp, err := s.app.GenerateSubscriptionCheckoutURL(ctx, performerID, req)
+		if err != nil {
+			return httprespond.R400(c, err, nil)
+		}
+
+		return httprespond.R200(c, resp)
+	}, s.jwt.RequireLoggedIn, func(next echo.HandlerFunc) echo.HandlerFunc {
+		return validation.ValidateHTTPPayload[dto.GenerateSubscriptionCheckoutURLRequest](next)
+	})
 }

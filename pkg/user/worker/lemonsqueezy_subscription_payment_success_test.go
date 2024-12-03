@@ -15,29 +15,36 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-type fastspringSubscriptionActivatedTestSuite struct {
+type lemonsqueezySubscriptionPaymentSuccessTestSuite struct {
 	suite.Suite
-	handler                           worker.FastspringSubscriptionActivatedHandler
+	handler                           worker.LemonsqueezySubscriptionPaymentSuccessHandler
 	mockCtrl                          *gomock.Controller
 	mockUserRepository                *mockuser.MockUserRepository
 	mockSubscriptionHistoryRepository *mockuser.MockSubscriptionHistoryRepository
 	mockCachingRepository             *mockuser.MockCachingRepository
+	mockExternalAPIRepository         *mockuser.MockExternalAPIRepository
 }
 
-func (s *fastspringSubscriptionActivatedTestSuite) SetupSuite() {
+func (s *lemonsqueezySubscriptionPaymentSuccessTestSuite) SetupSuite() {
 	s.setupApplication()
 }
 
-func (s *fastspringSubscriptionActivatedTestSuite) setupApplication() {
+func (s *lemonsqueezySubscriptionPaymentSuccessTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockUserRepository = mockuser.NewMockUserRepository(s.mockCtrl)
 	s.mockSubscriptionHistoryRepository = mockuser.NewMockSubscriptionHistoryRepository(s.mockCtrl)
 	s.mockCachingRepository = mockuser.NewMockCachingRepository(s.mockCtrl)
+	s.mockExternalAPIRepository = mockuser.NewMockExternalAPIRepository(s.mockCtrl)
 
-	s.handler = worker.NewFastspringSubscriptionActivatedHandler(s.mockUserRepository, s.mockSubscriptionHistoryRepository, s.mockCachingRepository)
+	s.handler = worker.NewLemonsqueezySubscriptionPaymentSuccessHandler(
+		s.mockUserRepository,
+		s.mockSubscriptionHistoryRepository,
+		s.mockCachingRepository,
+		s.mockExternalAPIRepository,
+	)
 }
 
-func (s *fastspringSubscriptionActivatedTestSuite) TearDownTest() {
+func (s *lemonsqueezySubscriptionPaymentSuccessTestSuite) TearDownTest() {
 	s.mockCtrl.Finish()
 }
 
@@ -45,12 +52,23 @@ func (s *fastspringSubscriptionActivatedTestSuite) TearDownTest() {
 // CASES
 //
 
-func (s *fastspringSubscriptionActivatedTestSuite) Test_1_Success() {
+func (s *lemonsqueezySubscriptionPaymentSuccessTestSuite) Test_1_Success() {
 	// mock data
+	renewsAt := time.Now().AddDate(1, 0, 0)
+
 	s.mockUserRepository.EXPECT().
 		FindByID(gomock.Any(), gomock.Any()).
 		Return(&domain.User{
 			ID: database.NewStringID(),
+		}, nil)
+
+	s.mockExternalAPIRepository.EXPECT().
+		GetLemonsqueezyInvoiceData(gomock.Any(), gomock.Any()).
+		Return(&domain.GetLemonsqueezyInvoiceDataResult{
+			SubscriptionID: "subscription-id",
+			CustomerID:     "customer-id",
+			VariantID:      "variant-id",
+			RenewsAt:       &renewsAt,
 		}, nil)
 
 	s.mockSubscriptionHistoryRepository.EXPECT().
@@ -67,12 +85,9 @@ func (s *fastspringSubscriptionActivatedTestSuite) Test_1_Success() {
 
 	// call
 	ctx := appcontext.NewWorker(context.Background())
-	err := s.handler.FastspringSubscriptionActivated(ctx, domain.QueueFastspringSubscriptionActivatedPayload{
-		UserID:         database.NewStringID(),
-		SubscriptionID: "subscription-id",
-		NextBilledAt:   time.Now(),
-		CustomerID:     "customer-id",
-		Items:          []string{"item-1", "item-2"},
+	err := s.handler.LemonsqueezySubscriptionPaymentSuccess(ctx, domain.QueueLemonsqueezySubscriptionPaymentSuccessPayload{
+		UserID:    database.NewStringID(),
+		InvoiceID: "invoice-id",
 	})
 
 	assert.Nil(s.T(), err)
@@ -82,6 +97,6 @@ func (s *fastspringSubscriptionActivatedTestSuite) Test_1_Success() {
 // END OF CASES
 //
 
-func TestFastspringSubscriptionActivatedTestSuite(t *testing.T) {
-	suite.Run(t, new(fastspringSubscriptionActivatedTestSuite))
+func TestLemonsqueezySubscriptionPaymentSuccessTestSuite(t *testing.T) {
+	suite.Run(t, new(lemonsqueezySubscriptionPaymentSuccessTestSuite))
 }

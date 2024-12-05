@@ -65,9 +65,10 @@ func (h GoogleSignInHandler) GoogleSignIn(ctx *appcontext.AppContext, performerI
 	} else {
 		ctx.Logger().Text("user found, check current user & google user")
 		if currentUser.ID != googleUser.ID {
-			ctx.Logger().Text("google user is different from current user, set current user to the older one")
-			if currentUser.CreatedAt.After(googleUser.CreatedAt) {
-				currentUser = googleUser
+			ctx.Logger().Text("google user is different from current user, set current user belongs to google user")
+			if err = currentUser.SetBelongsTo(googleUser.ID); err != nil {
+				ctx.Logger().Error("failed to set current user belongs to google user", err, appcontext.Fields{})
+				return nil, err
 			}
 		}
 	}

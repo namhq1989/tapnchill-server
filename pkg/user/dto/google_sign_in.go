@@ -8,4 +8,5 @@ type GoogleSignInResponse struct {
 	UserID      string `json:"userId"`
 	Provider    string `json:"provider"`
 	AccessToken string `json:"accessToken"`
+	Email       string `json:"email"`
 }

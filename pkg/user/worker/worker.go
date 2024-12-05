@@ -14,7 +14,7 @@ type (
 		PaddleSubscriptionCreated(ctx *appcontext.AppContext, payload domain.QueuePaddleSubscriptionCreatedPayload) error
 		PaddleTransactionCompleted(ctx *appcontext.AppContext, payload domain.QueuePaddleTransactionCompletedPayload) error
 
-		FastspringSubscriptionActivated(ctx *appcontext.AppContext, payload domain.QueueFastspringSubscriptionActivatedPayload) error
+		LemonsqueezySubscriptionPaymentSuccess(ctx *appcontext.AppContext, payload domain.QueueLemonsqueezySubscriptionPaymentSuccessPayload) error
 	}
 	Instance interface {
 		Handlers
@@ -24,7 +24,7 @@ type (
 		PaddleSubscriptionCreatedHandler
 		PaddleTransactionCompletedHandler
 
-		FastspringSubscriptionActivatedHandler
+		LemonsqueezySubscriptionPaymentSuccessHandler
 	}
 	Worker struct {
 		queue queue.Operations
@@ -39,6 +39,7 @@ func New(
 	userRepository domain.UserRepository,
 	subscriptionHistoryRepository domain.SubscriptionHistoryRepository,
 	cachingRepository domain.CachingRepository,
+	externalAPIRepository domain.ExternalAPIRepository,
 ) Worker {
 	return Worker{
 		queue: queue,
@@ -46,7 +47,7 @@ func New(
 			PaddleSubscriptionCreatedHandler:  NewPaddleSubscriptionCreatedHandler(userRepository, subscriptionHistoryRepository),
 			PaddleTransactionCompletedHandler: NewPaddleTransactionCompletedHandler(userRepository, subscriptionHistoryRepository, cachingRepository),
 
-			FastspringSubscriptionActivatedHandler: NewFastspringSubscriptionActivatedHandler(userRepository, subscriptionHistoryRepository, cachingRepository),
+			LemonsqueezySubscriptionPaymentSuccessHandler: NewLemonsqueezySubscriptionPaymentSuccessHandler(userRepository, subscriptionHistoryRepository, cachingRepository, externalAPIRepository),
 		},
 	}
 }
@@ -62,7 +63,7 @@ func (w Worker) Start() {
 		return queue.ProcessTask[domain.QueuePaddleTransactionCompletedPayload](bgCtx, t, queue.ParsePayload[domain.QueuePaddleTransactionCompletedPayload], w.PaddleTransactionCompleted)
 	})
 
-	server.HandleFunc(w.queue.GenerateTypename(queue.TypeNames.FastspringSubscriptionActivated), func(bgCtx context.Context, t *asynq.Task) error {
-		return queue.ProcessTask[domain.QueueFastspringSubscriptionActivatedPayload](bgCtx, t, queue.ParsePayload[domain.QueueFastspringSubscriptionActivatedPayload], w.FastspringSubscriptionActivated)
+	server.HandleFunc(w.queue.GenerateTypename(queue.TypeNames.LemonsqueezySubscriptionPaymentSuccess), func(bgCtx context.Context, t *asynq.Task) error {
+		return queue.ProcessTask[domain.QueueLemonsqueezySubscriptionPaymentSuccessPayload](bgCtx, t, queue.ParsePayload[domain.QueueLemonsqueezySubscriptionPaymentSuccessPayload], w.LemonsqueezySubscriptionPaymentSuccess)
 	})
 }

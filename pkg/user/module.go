@@ -23,10 +23,11 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 		userRepository                = infrastructure.NewUserRepository(mono.Database(), mono.Config().AnonymousUserChecksumSecret)
 		subscriptionHistoryRepository = infrastructure.NewSubscriptionHistoryRepository(mono.Database())
 
-		jwtRepository     = infrastructure.NewJwtRepository(mono.JWT())
-		ssoRepository     = infrastructure.NewSSORepository(mono.SSO())
-		queueRepository   = infrastructure.NewQueueRepository(mono.Queue())
-		cachingRepository = infrastructure.NewCachingRepository(mono.Caching())
+		jwtRepository         = infrastructure.NewJwtRepository(mono.JWT())
+		ssoRepository         = infrastructure.NewSSORepository(mono.SSO())
+		queueRepository       = infrastructure.NewQueueRepository(mono.Queue())
+		externalAPIRepository = infrastructure.NewExternalAPIRepository(mono.ExternalApi())
+		cachingRepository     = infrastructure.NewCachingRepository(mono.Caching())
 
 		service = shared.NewService(userRepository, cachingRepository)
 
@@ -36,6 +37,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 			jwtRepository,
 			ssoRepository,
 			queueRepository,
+			externalAPIRepository,
 			service,
 		)
 
@@ -58,6 +60,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 		userRepository,
 		subscriptionHistoryRepository,
 		cachingRepository,
+		externalAPIRepository,
 	)
 	w.Start()
 

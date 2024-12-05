@@ -5,15 +5,15 @@ var TypeNames = struct {
 
 	GetRandomQuote string
 
-	PaddleSubscriptionCreated       string
-	PaddleTransactionCompleted      string
-	FastspringSubscriptionActivated string
+	PaddleSubscriptionCreated              string
+	PaddleTransactionCompleted             string
+	LemonsqueezySubscriptionPaymentSuccess string
 }{
 	CreateUserDefaultGoal: "task.createUserDefaultGoal",
 
 	GetRandomQuote: "common.getRandomQuote",
 
-	PaddleSubscriptionCreated:       "webhook.paddleSubscriptionCreated",
-	PaddleTransactionCompleted:      "webhook.paddleTransactionCompleted",
-	FastspringSubscriptionActivated: "webhook.fastspringSubscriptionActivated",
+	PaddleSubscriptionCreated:              "webhook.paddleSubscriptionCreated",
+	PaddleTransactionCompleted:             "webhook.paddleTransactionCompleted",
+	LemonsqueezySubscriptionPaymentSuccess: "webhook.lemonsqueezySubscriptionPaymentSuccess",
 }

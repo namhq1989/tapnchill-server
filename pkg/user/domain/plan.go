@@ -40,3 +40,8 @@ const (
 	FreePlanMaxNotes int64 = 20
 	ProPlanMaxNotes  int64 = 1000
 )
+
+const (
+	SubscriptionIDMonthly = "month"
+	SubscriptionIDYearly  = "year"
+)

@@ -32,8 +32,14 @@ type (
 		QueuePassword    string
 		QueueConcurrency int
 
-		// Fast Spring
-		FastspringSecret string
+		// Lemonsqueezy
+		LemonsqueezyAPIToken                        string
+		LemonsqueezySigningSecret                   string
+		LemonsqueezyStoreID                         string
+		LemonsqueezySubscriptionMonthlyVariantID    string
+		LemonsqueezySubscriptionMonthlyDiscountCode string
+		LemonsqueezySubscriptionYearlyVariantID     string
+		LemonsqueezySubscriptionYearlyDiscountCode  string
 
 		// 3rd party
 		IpInfoToken         string
@@ -66,7 +72,13 @@ func Init() Server {
 		QueuePassword:    getEnvStr("QUEUE_PASSWORD"),
 		QueueConcurrency: getEnvInt("QUEUE_CONCURRENCY"),
 
-		FastspringSecret: getEnvStr("FASTSPRING_SECRET"),
+		LemonsqueezyAPIToken:                        getEnvStr("LEMONSQUEEZY_API_TOKEN"),
+		LemonsqueezySigningSecret:                   getEnvStr("LEMONSQUEEZY_SIGNING_SECRET"),
+		LemonsqueezyStoreID:                         getEnvStr("LEMONSQUEEZY_STORE_ID"),
+		LemonsqueezySubscriptionMonthlyVariantID:    getEnvStr("LEMONSQUEEZY_SUBSCRIPTION_MONTHLY_VARIANT_ID"),
+		LemonsqueezySubscriptionMonthlyDiscountCode: getEnvStr("LEMONSQUEEZY_SUBSCRIPTION_MONTHLY_DISCOUNT_CODE"),
+		LemonsqueezySubscriptionYearlyVariantID:     getEnvStr("LEMONSQUEEZY_SUBSCRIPTION_YEARLY_VARIANT_ID"),
+		LemonsqueezySubscriptionYearlyDiscountCode:  getEnvStr("LEMONSQUEEZY_SUBSCRIPTION_YEARLY_DISCOUNT_CODE"),
 
 		IpInfoToken:         getEnvStr("IP_INFO_TOKEN"),
 		VisualCrossingToken: getEnvStr("VISUAL_CROSSING_TOKEN"),
@@ -100,8 +112,16 @@ func Init() Server {
 		panic(errors.New("missing QUEUE_REDIS_URL"))
 	}
 
-	if cfg.FastspringSecret == "" {
-		panic(errors.New("missing FASTSPRING_SECRET"))
+	if cfg.LemonsqueezyAPIToken == "" {
+		panic(errors.New("missing LEMONSQUEEZY_API_TOKEN"))
+	}
+
+	if cfg.LemonsqueezySigningSecret == "" {
+		panic(errors.New("missing LEMONSQUEEZY_SIGNING_SECRET"))
+	}
+
+	if cfg.LemonsqueezyStoreID == "" {
+		panic(errors.New("missing LEMONSQUEEZY_STORE_ID"))
 	}
 
 	return cfg

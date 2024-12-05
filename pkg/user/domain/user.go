@@ -20,6 +20,7 @@ type UserRepository interface {
 
 type User struct {
 	ID            string
+	BelongsTo     *string
 	Name          string
 	Subscription  UserSubscription
 	AuthProviders []AuthProvider
@@ -33,8 +34,9 @@ func NewExtensionUser(clientID string) (*User, error) {
 	}
 
 	return &User{
-		ID:   database.NewStringID(),
-		Name: clientID,
+		ID:        database.NewStringID(),
+		BelongsTo: nil,
+		Name:      clientID,
 		Subscription: UserSubscription{
 			Plan:       PlanFree,
 			Expiry:     nil,
@@ -81,6 +83,16 @@ func NewGoogleUser(id, email, name string) (*User, error) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}, nil
+}
+
+func (u *User) SetBelongsTo(userID string) error {
+	if !database.IsValidObjectID(userID) {
+		return apperrors.User.InvalidUserID
+	}
+
+	u.BelongsTo = &userID
+	u.UpdatedAt = manipulation.NowUTC()
+	return nil
 }
 
 func (u *User) SetName(name string) error {

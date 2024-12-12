@@ -66,7 +66,7 @@ func addIp(e *echo.Echo) {
 			)
 
 			if slices.Contains(localIps, ip) {
-				ip = "171.225.184.76" // set default to DN for local testing
+				ip = "116.110.50.117" // set default to Da-Nang for local testing (including Weather api)
 			}
 
 			ctx.SetIP(ip)

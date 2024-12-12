@@ -20,7 +20,7 @@ func (h GetSubscriptionPlansHandler) GetSubscriptionPlans(ctx *appcontext.AppCon
 	ctx.Logger().Text("detect whether subscription is enabled or not")
 	isSubscriptionEnabled := false
 
-	ctx.Logger().Print("IS_SUBSCRIPTION_ENABLED", os.Getenv("IS_SUBSCRIPTION_ENABLED"))
+	// ctx.Logger().Print("IS_SUBSCRIPTION_ENABLED", os.Getenv("IS_SUBSCRIPTION_ENABLED"))
 	if os.Getenv("IS_SUBSCRIPTION_ENABLED") == "true" {
 		isSubscriptionEnabled = true
 	}
@@ -47,7 +47,7 @@ func (h GetSubscriptionPlansHandler) GetSubscriptionPlans(ctx *appcontext.AppCon
 		AfterDiscountAmount: 30,
 	}
 
-	ctx.Logger().ErrorText("done get subscription plans request")
+	ctx.Logger().Text("done get subscription plans request")
 	return &dto.GetSubscriptionPlansResponse{
 		IsEnabled: true,
 		Plans: []dto.SubscriptionPlan{

@@ -3,6 +3,8 @@ package command
 import (
 	"slices"
 
+	"github.com/namhq1989/tapnchill-server/internal/utils/httprespond"
+
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 	"github.com/namhq1989/tapnchill-server/pkg/habit/domain"
@@ -119,5 +121,10 @@ func (h CompleteHabitHandler) CompleteHabit(ctx *appcontext.AppContext, performe
 	_ = h.service.DeleteUserCaching(ctx, performerID, manipulation.NowUTC())
 
 	ctx.Logger().Text("done complete habit request")
-	return &dto.CompleteHabitResponse{}, nil
+	return &dto.CompleteHabitResponse{
+		LastCompletedAt:       httprespond.NewTimeResponse(*habit.LastCompletedAt),
+		StatsTotalCompletions: habit.StatsTotalCompletions,
+		StatsLongestStreak:    habit.StatsLongestStreak,
+		StatsCurrentStreak:    habit.StatsCurrentStreak,
+	}, nil
 }

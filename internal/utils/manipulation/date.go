@@ -74,3 +74,16 @@ func GetEndOfDayWithClientDate(date string) (*time.Time, error) {
 	s := EndOfDay(clientTime)
 	return &s, nil
 }
+
+func PreviousDay(date time.Time, tz string) time.Time {
+	loc := getLocation(tz)
+	yesterday := date.AddDate(0, 0, -1)
+	return yesterday.In(loc)
+}
+
+func IsSameDay(date1 time.Time, date2 time.Time, tz string) bool {
+	loc := getLocation(tz)
+	date1InLoc := date1.In(loc)
+	date2InLoc := date2.In(loc)
+	return date1InLoc.Year() == date2InLoc.Year() && date1InLoc.Month() == date2InLoc.Month() && date1InLoc.Day() == date2InLoc.Day()
+}

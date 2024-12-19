@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"slices"
 	"time"
 
 	"github.com/namhq1989/go-utilities/appcontext"
@@ -13,12 +14,12 @@ type HabitDailyStatsRepository interface {
 	Create(ctx *appcontext.AppContext, stats HabitDailyStats) error
 	Update(ctx *appcontext.AppContext, stats HabitDailyStats) error
 	FindByID(ctx *appcontext.AppContext, statsID string) (*HabitDailyStats, error)
-	FindByDate(ctx *appcontext.AppContext, habitID string, date time.Time) (*HabitDailyStats, error)
+	FindByDate(ctx *appcontext.AppContext, userID string, date time.Time) (*HabitDailyStats, error)
 	FindByFilter(ctx *appcontext.AppContext, filter HabitDailyStatsFilter) ([]HabitDailyStats, error)
 }
 
 const (
-	StatsDefaultPreviousDays = 5
+	StatsDefaultPreviousDays = 6
 )
 
 type HabitDailyStats struct {
@@ -50,6 +51,12 @@ func (s *HabitDailyStats) HabitCompleted(habitID string) {
 
 	if len(s.CompletedIDs) == len(s.ScheduledIDs) {
 		s.IsCompleted = true
+	}
+}
+
+func (s *HabitDailyStats) AddNewHabit(habitID string) {
+	if slices.Contains(s.ScheduledIDs, habitID) {
+		s.ScheduledIDs = append(s.ScheduledIDs, habitID)
 	}
 }
 

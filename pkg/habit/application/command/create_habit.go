@@ -9,16 +9,23 @@ import (
 )
 
 type CreateHabitHandler struct {
-	habitRepository domain.HabitRepository
-	service         domain.Service
-	userHub         domain.UserHub
+	habitRepository           domain.HabitRepository
+	habitDailyStatsRepository domain.HabitDailyStatsRepository
+	service                   domain.Service
+	userHub                   domain.UserHub
 }
 
-func NewCreateHabitHandler(habitRepository domain.HabitRepository, service domain.Service, userHub domain.UserHub) CreateHabitHandler {
+func NewCreateHabitHandler(
+	habitRepository domain.HabitRepository,
+	habitDailyStatsRepository domain.HabitDailyStatsRepository,
+	service domain.Service,
+	userHub domain.UserHub,
+) CreateHabitHandler {
 	return CreateHabitHandler{
-		habitRepository: habitRepository,
-		service:         service,
-		userHub:         userHub,
+		habitRepository:           habitRepository,
+		habitDailyStatsRepository: habitDailyStatsRepository,
+		service:                   service,
+		userHub:                   userHub,
 	}
 }
 
@@ -61,6 +68,21 @@ func (h CreateHabitHandler) CreateHabit(ctx *appcontext.AppContext, performerID 
 	}
 
 	_ = h.service.DeleteUserCaching(ctx, performerID, manipulation.NowUTC())
+
+	ctx.Logger().Text("update today habit stats")
+	dailyStats, err := h.habitDailyStatsRepository.FindByDate(ctx, performerID, manipulation.NowUTC())
+	if err != nil {
+		ctx.Logger().Error("failed to update today habit stats", err, appcontext.Fields{})
+	}
+	if dailyStats != nil {
+		dailyStats.AddNewHabit(habit.ID)
+
+		ctx.Logger().Text("update today habit stats in db")
+		if err = h.habitDailyStatsRepository.Update(ctx, *dailyStats); err != nil {
+			ctx.Logger().Error("failed to update today habit stats in db", err, appcontext.Fields{})
+			return nil, err
+		}
+	}
 
 	ctx.Logger().Text("done create habit request")
 	return &dto.CreateHabitResponse{

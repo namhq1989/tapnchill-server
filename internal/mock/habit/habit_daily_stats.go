@@ -56,18 +56,18 @@ func (mr *MockHabitDailyStatsRepositoryMockRecorder) Create(ctx, stats any) *gom
 }
 
 // FindByDate mocks base method.
-func (m *MockHabitDailyStatsRepository) FindByDate(ctx *appcontext.AppContext, habitID string, date time.Time) (*domain.HabitDailyStats, error) {
+func (m *MockHabitDailyStatsRepository) FindByDate(ctx *appcontext.AppContext, userID string, date time.Time) (*domain.HabitDailyStats, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByDate", ctx, habitID, date)
+	ret := m.ctrl.Call(m, "FindByDate", ctx, userID, date)
 	ret0, _ := ret[0].(*domain.HabitDailyStats)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindByDate indicates an expected call of FindByDate.
-func (mr *MockHabitDailyStatsRepositoryMockRecorder) FindByDate(ctx, habitID, date any) *gomock.Call {
+func (mr *MockHabitDailyStatsRepositoryMockRecorder) FindByDate(ctx, userID, date any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByDate", reflect.TypeOf((*MockHabitDailyStatsRepository)(nil).FindByDate), ctx, habitID, date)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByDate", reflect.TypeOf((*MockHabitDailyStatsRepository)(nil).FindByDate), ctx, userID, date)
 }
 
 // FindByFilter mocks base method.

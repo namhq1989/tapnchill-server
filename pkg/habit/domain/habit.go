@@ -115,31 +115,54 @@ func (h *Habit) SetSortOrder(order int) {
 }
 
 func (h *Habit) OnCompleted(date time.Time) {
-	var (
-		tz = manipulation.GetTimezoneIdentifier(date)
-	)
+	tz := manipulation.GetTimezoneIdentifier(date)
 
-	var previousDate time.Time
-	if h.LastCompletedAt != nil {
-		previousDate = *h.LastCompletedAt
-	} else {
-		previousDate = time.Time{}
-	}
-
-	expectedPreviousDate := manipulation.PreviousDay(date, tz)
-	if manipulation.IsSameDay(previousDate, expectedPreviousDate, tz) {
-		h.StatsCurrentStreak++
-	} else {
-		h.StatsCurrentStreak = 1
-	}
-
-	if h.LastCompletedAt == nil || date.After(*h.LastCompletedAt) {
-		h.LastCompletedAt = &date
-	}
+	// update total completions
 	h.StatsTotalCompletions++
 
-	if h.StatsCurrentStreak > h.StatsLongestStreak {
-		h.StatsLongestStreak = h.StatsCurrentStreak
+	// if no previous completion, initialize streaks
+	if h.LastCompletedAt == nil {
+		h.LastCompletedAt = &date
+		h.StatsCurrentStreak = 1
+		h.StatsLongestStreak = 1
+		return
+	}
+
+	lastCompleted := *h.LastCompletedAt
+
+	// handle retroactive completions
+	if date.Before(lastCompleted) {
+		// retroactive completions cannot update streaks but may initialize the longest streak
+		if h.StatsLongestStreak == 0 {
+			h.StatsLongestStreak = 1
+		}
+		if date.Before(*h.LastCompletedAt) {
+			// update LastCompletedAt for earliest recorded date
+			h.LastCompletedAt = &date
+		}
+		return
+	}
+
+	today := manipulation.Now(tz)
+	if manipulation.IsSameDay(date, today, tz) {
+		// if today is the next consecutive day, increment the streak
+		expectedPreviousDate := manipulation.PreviousDay(date, tz)
+		if manipulation.IsSameDay(lastCompleted, expectedPreviousDate, tz) {
+			h.StatsCurrentStreak++
+		} else {
+			// reset the current streak if there's a gap
+			h.StatsCurrentStreak = 1
+		}
+
+		// update longest streak
+		if h.StatsCurrentStreak > h.StatsLongestStreak {
+			h.StatsLongestStreak = h.StatsCurrentStreak
+		}
+	}
+
+	// update LastCompletedAt for any valid completion
+	if date.After(lastCompleted) {
+		h.LastCompletedAt = &date
 	}
 }
 

@@ -9,14 +9,20 @@ import (
 )
 
 type ChangeHabitStatusHandler struct {
-	habitRepository domain.HabitRepository
-	service         domain.Service
+	habitRepository           domain.HabitRepository
+	habitDailyStatsRepository domain.HabitDailyStatsRepository
+	service                   domain.Service
 }
 
-func NewChangeHabitStatusHandler(habitRepository domain.HabitRepository, service domain.Service) ChangeHabitStatusHandler {
+func NewChangeHabitStatusHandler(
+	habitRepository domain.HabitRepository,
+	habitDailyStatsRepository domain.HabitDailyStatsRepository,
+	service domain.Service,
+) ChangeHabitStatusHandler {
 	return ChangeHabitStatusHandler{
-		habitRepository: habitRepository,
-		service:         service,
+		habitRepository:           habitRepository,
+		habitDailyStatsRepository: habitDailyStatsRepository,
+		service:                   service,
 	}
 }
 
@@ -52,6 +58,23 @@ func (h ChangeHabitStatusHandler) ChangeHabitStatus(ctx *appcontext.AppContext, 
 	}
 
 	_ = h.service.DeleteUserCaching(ctx, performerID, manipulation.NowUTC())
+
+	if habit.IsActive() {
+		ctx.Logger().Text("update today habit stats")
+		dailyStats, dErr := h.habitDailyStatsRepository.FindByDate(ctx, performerID, manipulation.NowUTC())
+		if dErr != nil {
+			ctx.Logger().Error("failed to update today habit stats", dErr, appcontext.Fields{})
+		}
+		if dailyStats != nil {
+			dailyStats.AddNewHabit(habit.ID)
+
+			ctx.Logger().Text("update today habit stats in db")
+			if err = h.habitDailyStatsRepository.Update(ctx, *dailyStats); err != nil {
+				ctx.Logger().Error("failed to update today habit stats in db", err, appcontext.Fields{})
+				return nil, err
+			}
+		}
+	}
 
 	ctx.Logger().Text("done change habit status request")
 	return &dto.ChangeHabitStatusResponse{}, nil

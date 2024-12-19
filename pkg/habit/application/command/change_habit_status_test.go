@@ -19,10 +19,11 @@ import (
 
 type changeHabitStatusTestSuite struct {
 	suite.Suite
-	handler             command.ChangeHabitStatusHandler
-	mockCtrl            *gomock.Controller
-	mockHabitRepository *mockhabit.MockHabitRepository
-	mockService         *mockhabit.MockService
+	handler                       command.ChangeHabitStatusHandler
+	mockCtrl                      *gomock.Controller
+	mockHabitRepository           *mockhabit.MockHabitRepository
+	mockHabitDailyStatsRepository *mockhabit.MockHabitDailyStatsRepository
+	mockService                   *mockhabit.MockService
 }
 
 func (s *changeHabitStatusTestSuite) SetupSuite() {
@@ -34,7 +35,7 @@ func (s *changeHabitStatusTestSuite) setupApplication() {
 	s.mockHabitRepository = mockhabit.NewMockHabitRepository(s.mockCtrl)
 	s.mockService = mockhabit.NewMockService(s.mockCtrl)
 
-	s.handler = command.NewChangeHabitStatusHandler(s.mockHabitRepository, s.mockService)
+	s.handler = command.NewChangeHabitStatusHandler(s.mockHabitRepository, s.mockHabitDailyStatsRepository, s.mockService)
 }
 
 func (s *changeHabitStatusTestSuite) TearDownTest() {
@@ -64,6 +65,17 @@ func (s *changeHabitStatusTestSuite) Test_1_Success() {
 
 	s.mockService.EXPECT().
 		DeleteUserCaching(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	s.mockHabitDailyStatsRepository.EXPECT().
+		FindByDate(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(&domain.HabitDailyStats{
+			ID:           database.NewStringID(),
+			ScheduledIDs: make([]string, 0),
+		}, nil)
+
+	s.mockHabitDailyStatsRepository.EXPECT().
+		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	// call

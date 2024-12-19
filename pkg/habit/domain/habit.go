@@ -116,24 +116,28 @@ func (h *Habit) SetSortOrder(order int) {
 
 func (h *Habit) OnCompleted(date time.Time) {
 	var (
-		now = manipulation.NowUTC()
-		tz  = manipulation.GetTimezoneIdentifier(date)
+		tz = manipulation.GetTimezoneIdentifier(date)
 	)
 
-	if manipulation.IsToday(date, tz) {
-		if h.LastCompletedAt == nil || manipulation.IsYesterday(*h.LastCompletedAt, tz) {
-			h.StatsCurrentStreak++
-			h.LastCompletedAt = &now
-		} else {
-			h.StatsCurrentStreak = 1
-			h.LastCompletedAt = &date
-		}
+	var previousDate time.Time
+	if h.LastCompletedAt != nil {
+		previousDate = *h.LastCompletedAt
 	} else {
-		h.LastCompletedAt = &date
+		previousDate = time.Time{}
+	}
+
+	expectedPreviousDate := manipulation.PreviousDay(date, tz)
+	if manipulation.IsSameDay(previousDate, expectedPreviousDate, tz) {
+		h.StatsCurrentStreak++
+	} else {
 		h.StatsCurrentStreak = 1
 	}
 
+	if h.LastCompletedAt == nil || date.After(*h.LastCompletedAt) {
+		h.LastCompletedAt = &date
+	}
 	h.StatsTotalCompletions++
+
 	if h.StatsCurrentStreak > h.StatsLongestStreak {
 		h.StatsLongestStreak = h.StatsCurrentStreak
 	}

@@ -10,6 +10,7 @@ import (
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	mockhabit "github.com/namhq1989/tapnchill-server/internal/mock/habit"
 	"github.com/namhq1989/tapnchill-server/pkg/habit/application/command"
+	"github.com/namhq1989/tapnchill-server/pkg/habit/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/habit/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -18,11 +19,12 @@ import (
 
 type createHabitTestSuite struct {
 	suite.Suite
-	handler             command.CreateHabitHandler
-	mockCtrl            *gomock.Controller
-	mockHabitRepository *mockhabit.MockHabitRepository
-	mockService         *mockhabit.MockService
-	mockUserHub         *mockhabit.MockUserHub
+	handler                       command.CreateHabitHandler
+	mockCtrl                      *gomock.Controller
+	mockHabitRepository           *mockhabit.MockHabitRepository
+	mockHabitDailyStatsRepository *mockhabit.MockHabitDailyStatsRepository
+	mockService                   *mockhabit.MockService
+	mockUserHub                   *mockhabit.MockUserHub
 }
 
 func (s *createHabitTestSuite) SetupSuite() {
@@ -32,10 +34,11 @@ func (s *createHabitTestSuite) SetupSuite() {
 func (s *createHabitTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockHabitRepository = mockhabit.NewMockHabitRepository(s.mockCtrl)
+	s.mockHabitDailyStatsRepository = mockhabit.NewMockHabitDailyStatsRepository(s.mockCtrl)
 	s.mockService = mockhabit.NewMockService(s.mockCtrl)
 	s.mockUserHub = mockhabit.NewMockUserHub(s.mockCtrl)
 
-	s.handler = command.NewCreateHabitHandler(s.mockHabitRepository, s.mockService, s.mockUserHub)
+	s.handler = command.NewCreateHabitHandler(s.mockHabitRepository, s.mockHabitDailyStatsRepository, s.mockService, s.mockUserHub)
 }
 
 func (s *createHabitTestSuite) TearDownTest() {
@@ -62,6 +65,17 @@ func (s *createHabitTestSuite) Test_1_Success() {
 
 	s.mockService.EXPECT().
 		DeleteUserCaching(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	s.mockHabitDailyStatsRepository.EXPECT().
+		FindByDate(gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(&domain.HabitDailyStats{
+			ID:           database.NewStringID(),
+			ScheduledIDs: make([]string, 0),
+		}, nil)
+
+	s.mockHabitDailyStatsRepository.EXPECT().
+		Update(gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	// call

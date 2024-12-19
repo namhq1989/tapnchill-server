@@ -51,9 +51,9 @@ func New(
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			CreateHabitHandler:       command.NewCreateHabitHandler(habitRepository, service, userHub),
+			CreateHabitHandler:       command.NewCreateHabitHandler(habitRepository, habitDailyStatsRepository, service, userHub),
 			UpdateHabitHandler:       command.NewUpdateHabitHandler(habitRepository, service),
-			ChangeHabitStatusHandler: command.NewChangeHabitStatusHandler(habitRepository, service),
+			ChangeHabitStatusHandler: command.NewChangeHabitStatusHandler(habitRepository, habitDailyStatsRepository, service),
 			CompleteHabitHandler:     command.NewCompleteHabitHandler(habitRepository, habitCompletionRepository, habitDailyStatsRepository, service),
 		},
 		queryHandlers: queryHandlers{

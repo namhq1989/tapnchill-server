@@ -35,3 +35,7 @@ func (s server) GetTaskQuota(bgCtx context.Context, req *userpb.GetTaskQuotaRequ
 func (s server) GetNoteQuota(bgCtx context.Context, req *userpb.GetNoteQuotaRequest) (*userpb.GetNoteQuotaResponse, error) {
 	return s.hub.GetNoteQuota(appcontext.NewGRPC(bgCtx), req)
 }
+
+func (s server) GetQRCodeQuota(bgCtx context.Context, req *userpb.GetQRCodeQuotaRequest) (*userpb.GetQRCodeQuotaResponse, error) {
+	return s.hub.GetQRCodeQuota(appcontext.NewGRPC(bgCtx), req)
+}

@@ -9,28 +9,28 @@ import (
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
-	"github.com/namhq1989/tapnchill-server/pkg/habit/domain"
-	"github.com/namhq1989/tapnchill-server/pkg/habit/infrastructure/dbmodel"
+	"github.com/namhq1989/tapnchill-server/pkg/qrcode/domain"
+	"github.com/namhq1989/tapnchill-server/pkg/qrcode/infrastructure/dbmodel"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type HabitRepository struct {
+type QRCodeRepository struct {
 	db             *database.Database
 	collectionName string
 }
 
-func NewHabitRepository(db *database.Database) HabitRepository {
-	r := HabitRepository{
+func NewQRCodeRepository(db *database.Database) QRCodeRepository {
+	r := QRCodeRepository{
 		db:             db,
-		collectionName: database.Collections.Habit,
+		collectionName: database.Collections.QRCode,
 	}
 	r.ensureIndexes()
 	return r
 }
 
-func (r HabitRepository) ensureIndexes() {
+func (r QRCodeRepository) ensureIndexes() {
 	var (
 		ctx     = context.Background()
 		opts    = options.CreateIndexes().SetMaxTime(time.Minute * 30)
@@ -46,12 +46,12 @@ func (r HabitRepository) ensureIndexes() {
 	}
 }
 
-func (r HabitRepository) collection() *mongo.Collection {
+func (r QRCodeRepository) collection() *mongo.Collection {
 	return r.db.GetCollection(r.collectionName)
 }
 
-func (r HabitRepository) Create(ctx *appcontext.AppContext, habit domain.Habit) error {
-	doc, err := dbmodel.Habit{}.FromDomain(habit)
+func (r QRCodeRepository) Create(ctx *appcontext.AppContext, qrCode domain.QRCode) error {
+	doc, err := dbmodel.QRCode{}.FromDomain(qrCode)
 	if err != nil {
 		return err
 	}
@@ -60,8 +60,8 @@ func (r HabitRepository) Create(ctx *appcontext.AppContext, habit domain.Habit) 
 	return err
 }
 
-func (r HabitRepository) Update(ctx *appcontext.AppContext, habit domain.Habit) error {
-	doc, err := dbmodel.Habit{}.FromDomain(habit)
+func (r QRCodeRepository) Update(ctx *appcontext.AppContext, qrCode domain.QRCode) error {
+	doc, err := dbmodel.QRCode{}.FromDomain(qrCode)
 	if err != nil {
 		return err
 	}
@@ -70,17 +70,17 @@ func (r HabitRepository) Update(ctx *appcontext.AppContext, habit domain.Habit) 
 	return err
 }
 
-func (r HabitRepository) Delete(ctx *appcontext.AppContext, habitID string) error {
-	hid, err := database.ObjectIDFromString(habitID)
+func (r QRCodeRepository) Delete(ctx *appcontext.AppContext, qrCodeID string) error {
+	hid, err := database.ObjectIDFromString(qrCodeID)
 	if err != nil {
-		return apperrors.Habit.InvalidID
+		return apperrors.Common.InvalidID
 	}
 
 	_, err = r.collection().DeleteOne(ctx.Context(), bson.M{"_id": hid})
 	return err
 }
 
-func (r HabitRepository) CountByUserID(ctx *appcontext.AppContext, userID string) (int64, error) {
+func (r QRCodeRepository) CountByUserID(ctx *appcontext.AppContext, userID string) (int64, error) {
 	uid, err := database.ObjectIDFromString(userID)
 	if err != nil {
 		return 0, apperrors.User.InvalidUserID
@@ -89,13 +89,13 @@ func (r HabitRepository) CountByUserID(ctx *appcontext.AppContext, userID string
 	return r.collection().CountDocuments(ctx.Context(), bson.M{"userId": uid})
 }
 
-func (r HabitRepository) FindByID(ctx *appcontext.AppContext, habitID string) (*domain.Habit, error) {
-	hid, err := database.ObjectIDFromString(habitID)
+func (r QRCodeRepository) FindByID(ctx *appcontext.AppContext, qrCodeID string) (*domain.QRCode, error) {
+	hid, err := database.ObjectIDFromString(qrCodeID)
 	if err != nil {
-		return nil, apperrors.Habit.InvalidID
+		return nil, apperrors.Common.InvalidID
 	}
 
-	var doc dbmodel.Habit
+	var doc dbmodel.QRCode
 	if err = r.collection().FindOne(ctx.Context(), bson.M{
 		"_id": hid,
 	}).Decode(&doc); err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
@@ -108,7 +108,7 @@ func (r HabitRepository) FindByID(ctx *appcontext.AppContext, habitID string) (*
 	return &result, nil
 }
 
-func (r HabitRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.HabitFilter) ([]domain.Habit, error) {
+func (r QRCodeRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.QRCodeFilter) ([]domain.QRCode, error) {
 	uid, err := database.ObjectIDFromString(filter.UserID)
 	if err != nil {
 		return nil, apperrors.User.InvalidUserID
@@ -118,20 +118,25 @@ func (r HabitRepository) FindByFilter(ctx *appcontext.AppContext, filter domain.
 		condition = bson.M{
 			"userId": uid,
 		}
-		result = make([]domain.Habit, 0)
+		result = make([]domain.QRCode, 0)
 	)
 
+	if !filter.Timestamp.IsZero() {
+		condition["createdAt"] = bson.M{
+			"$lt": filter.Timestamp,
+		}
+	}
+
 	opts := options.Find().SetSort(bson.D{
-		{Key: "sortOrder", Value: 1},
 		{Key: "createdAt", Value: -1},
-	})
+	}).SetLimit(filter.Limit)
 	cursor, err := r.collection().Find(ctx.Context(), condition, opts)
 	if err != nil {
 		return result, err
 	}
 	defer func() { _ = cursor.Close(ctx.Context()) }()
 
-	var docs []dbmodel.Habit
+	var docs []dbmodel.QRCode
 	if err = cursor.All(ctx.Context(), &docs); err != nil {
 		return result, err
 	}

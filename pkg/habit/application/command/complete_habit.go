@@ -3,9 +3,8 @@ package command
 import (
 	"slices"
 
-	"github.com/namhq1989/tapnchill-server/internal/utils/httprespond"
-
 	"github.com/namhq1989/go-utilities/appcontext"
+	"github.com/namhq1989/tapnchill-server/internal/utils/httprespond"
 	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 	"github.com/namhq1989/tapnchill-server/pkg/habit/domain"
 	"github.com/namhq1989/tapnchill-server/pkg/habit/dto"

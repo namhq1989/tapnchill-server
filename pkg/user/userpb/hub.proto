@@ -7,6 +7,7 @@ service UserService {
   rpc GetGoalQuota(GetGoalQuotaRequest) returns (GetGoalQuotaResponse) {}
   rpc GetTaskQuota(GetTaskQuotaRequest) returns (GetTaskQuotaResponse) {}
   rpc GetNoteQuota(GetNoteQuotaRequest) returns (GetNoteQuotaResponse) {}
+  rpc GetQRCodeQuota(GetQRCodeQuotaRequest) returns (GetQRCodeQuotaResponse) {}
 }
 
 // GET HABIT QUOTA
@@ -50,5 +51,16 @@ message GetNoteQuotaRequest {
 }
 
 message GetNoteQuotaResponse {
+  int64 limit = 1;
+}
+
+// GET QR CODE QUOTA
+
+message GetQRCodeQuotaRequest {
+  string traceId = 1;
+  string userId = 2;
+}
+
+message GetQRCodeQuotaResponse {
   int64 limit = 1;
 }

@@ -33,6 +33,7 @@ func (s *changeHabitStatusTestSuite) SetupSuite() {
 func (s *changeHabitStatusTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockHabitRepository = mockhabit.NewMockHabitRepository(s.mockCtrl)
+	s.mockHabitDailyStatsRepository = mockhabit.NewMockHabitDailyStatsRepository(s.mockCtrl)
 	s.mockService = mockhabit.NewMockService(s.mockCtrl)
 
 	s.handler = command.NewChangeHabitStatusHandler(s.mockHabitRepository, s.mockHabitDailyStatsRepository, s.mockService)

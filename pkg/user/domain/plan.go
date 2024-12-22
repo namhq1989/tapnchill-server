@@ -39,6 +39,9 @@ const (
 
 	FreePlanMaxNotes int64 = 20
 	ProPlanMaxNotes  int64 = 1000
+
+	FreePlanMaxQRCode int64 = 20
+	ProPlanMaxQRCode  int64 = 1000
 )
 
 const (

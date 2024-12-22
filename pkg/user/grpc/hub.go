@@ -12,6 +12,7 @@ type (
 		GetGoalQuota(ctx *appcontext.AppContext, req *userpb.GetGoalQuotaRequest) (*userpb.GetGoalQuotaResponse, error)
 		GetTaskQuota(ctx *appcontext.AppContext, req *userpb.GetTaskQuotaRequest) (*userpb.GetTaskQuotaResponse, error)
 		GetNoteQuota(ctx *appcontext.AppContext, req *userpb.GetNoteQuotaRequest) (*userpb.GetNoteQuotaResponse, error)
+		GetQRCodeQuota(ctx *appcontext.AppContext, req *userpb.GetQRCodeQuotaRequest) (*userpb.GetQRCodeQuotaResponse, error)
 	}
 	App interface {
 		Hubs
@@ -22,6 +23,7 @@ type (
 		GetGoalQuotaHandler
 		GetTaskQuotaHandler
 		GetNoteQuotaHandler
+		GetQRCodeQuotaHandler
 	}
 	Application struct {
 		appHubHandler
@@ -35,10 +37,11 @@ func New(
 ) *Application {
 	return &Application{
 		appHubHandler: appHubHandler{
-			GetHabitQuotaHandler: NewGetHabitQuotaHandler(service),
-			GetGoalQuotaHandler:  NewGetGoalQuotaHandler(service),
-			GetTaskQuotaHandler:  NewGetTaskQuotaHandler(service),
-			GetNoteQuotaHandler:  NewGetNoteQuotaHandler(service),
+			GetHabitQuotaHandler:  NewGetHabitQuotaHandler(service),
+			GetGoalQuotaHandler:   NewGetGoalQuotaHandler(service),
+			GetTaskQuotaHandler:   NewGetTaskQuotaHandler(service),
+			GetNoteQuotaHandler:   NewGetNoteQuotaHandler(service),
+			GetQRCodeQuotaHandler: NewGetQRCodeQuotaHandler(service),
 		},
 	}
 }

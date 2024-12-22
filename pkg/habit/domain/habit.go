@@ -7,7 +7,6 @@ import (
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type HabitRepository interface {
@@ -175,16 +174,15 @@ func (h *Habit) IsInactive() bool {
 }
 
 type HabitFilter struct {
-	UserID primitive.ObjectID
+	UserID string
 }
 
 func NewHabitFilter(userID string) (*HabitFilter, error) {
-	uid, err := database.ObjectIDFromString(userID)
-	if err != nil {
+	if !database.IsValidObjectID(userID) {
 		return nil, apperrors.User.InvalidUserID
 	}
 
 	return &HabitFilter{
-		UserID: uid,
+		UserID: userID,
 	}, nil
 }

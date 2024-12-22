@@ -21,6 +21,7 @@ import (
 	"github.com/namhq1989/tapnchill-server/pkg/common"
 	"github.com/namhq1989/tapnchill-server/pkg/habit"
 	"github.com/namhq1989/tapnchill-server/pkg/note"
+	"github.com/namhq1989/tapnchill-server/pkg/qrcode"
 	"github.com/namhq1989/tapnchill-server/pkg/task"
 	"github.com/namhq1989/tapnchill-server/pkg/user"
 	"github.com/namhq1989/tapnchill-server/pkg/webhook"
@@ -95,6 +96,7 @@ func main() {
 		&user.Module{},
 		&habit.Module{},
 		&note.Module{},
+		&qrcode.Module{},
 		&webhook.Module{},
 	}
 

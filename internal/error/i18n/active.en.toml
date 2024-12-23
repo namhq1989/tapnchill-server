@@ -37,7 +37,8 @@ auth_not_allowed = "Not allowed"
 user_invalid_id = "Invalid user id"
 user_not_found = "User not found"
 user_invalid_client_id = "Invalid client id"
-user_resource_limit_reached = "You're doing great! To add more, consider upgrading your plan"
+user_free_plan_limit_reached = "Your Free plan limits have been reached. Upgrade to Pro for more flexibility!"
+user_pro_plan_limit_reached = "Your Pro plan resources are fully utilized. Get in touch if you need assistance!"
 
 # task
 task_invalid_goal_id = "Invalid goal id"

@@ -40,12 +40,13 @@ func (m *MockUserHub) EXPECT() *MockUserHubMockRecorder {
 }
 
 // GetQRCodeQuota mocks base method.
-func (m *MockUserHub) GetQRCodeQuota(ctx *appcontext.AppContext, userID string) (int64, error) {
+func (m *MockUserHub) GetQRCodeQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetQRCodeQuota", ctx, userID)
 	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(bool)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetQRCodeQuota indicates an expected call of GetQRCodeQuota.

@@ -35,13 +35,13 @@ const (
 	ProPlanMaxGoals  int64 = 20
 
 	FreePlanMaxTaskPerGoal int64 = 20
-	ProPlanMaxTaskPerGoal  int64 = 50
+	ProPlanMaxTaskPerGoal  int64 = 100
 
 	FreePlanMaxNotes int64 = 20
 	ProPlanMaxNotes  int64 = 1000
 
-	FreePlanMaxQRCode int64 = 20
-	ProPlanMaxQRCode  int64 = 1000
+	FreePlanMaxQRCodes int64 = 20
+	ProPlanMaxQRCodes  int64 = 1000
 )
 
 const (

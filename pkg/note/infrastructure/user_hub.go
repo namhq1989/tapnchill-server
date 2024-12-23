@@ -15,14 +15,14 @@ func NewUserHub(client userpb.UserServiceClient) UserHub {
 	}
 }
 
-func (r UserHub) GetNoteQuota(ctx *appcontext.AppContext, userID string) (int64, error) {
+func (r UserHub) GetNoteQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error) {
 	resp, err := r.client.GetNoteQuota(ctx.Context(), &userpb.GetNoteQuotaRequest{
 		TraceId: ctx.GetTraceID(),
 		UserId:  userID,
 	})
 	if err != nil {
-		return 0, err
+		return 0, true, err
 	}
 
-	return resp.GetLimit(), nil
+	return resp.GetLimit(), resp.GetIsFree(), nil
 }

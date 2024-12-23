@@ -20,7 +20,7 @@ func (h GetQRCodeQuotaHandler) GetQRCodeQuota(ctx *appcontext.AppContext, req *u
 	ctx.SetTraceID(req.TraceId)
 	ctx.Logger().Info("new get QR code quota request", appcontext.Fields{"userId": req.UserId})
 
-	limit := domain.FreePlanMaxQRCode
+	limit := domain.FreePlanMaxQRCodes
 
 	ctx.Logger().Text("find user in db")
 	user, err := h.service.GetUserByID(ctx, req.UserId)
@@ -31,18 +31,20 @@ func (h GetQRCodeQuotaHandler) GetQRCodeQuota(ctx *appcontext.AppContext, req *u
 	if user == nil {
 		ctx.Logger().ErrorText("user not found, respond")
 		return &userpb.GetQRCodeQuotaResponse{
-			Limit: limit,
+			Limit:  limit,
+			IsFree: true,
 		}, nil
 	}
 
 	ctx.Logger().Text("check if user is pro plan")
 	if user.IsProPlan() {
 		ctx.Logger().Text("user is pro plan")
-		limit = domain.ProPlanMaxQRCode
+		limit = domain.ProPlanMaxQRCodes
 	}
 
 	ctx.Logger().Text("done get QR code quota request")
 	return &userpb.GetQRCodeQuotaResponse{
-		Limit: limit,
+		Limit:  limit,
+		IsFree: user.IsFreePlan(),
 	}, nil
 }

@@ -64,7 +64,7 @@ func (s *createTaskTestSuite) Test_1_Success() {
 
 	s.mockUserHub.EXPECT().
 		GetTaskQuota(gomock.Any(), gomock.Any()).
-		Return(int64(5), nil)
+		Return(int64(5), true, nil)
 
 	s.mockTaskRepository.EXPECT().
 		CountByGoalID(gomock.Any(), gomock.Any()).
@@ -106,7 +106,7 @@ func (s *createTaskTestSuite) Test_2_Fail_InvalidName() {
 
 	s.mockUserHub.EXPECT().
 		GetTaskQuota(gomock.Any(), gomock.Any()).
-		Return(int64(5), nil)
+		Return(int64(5), true, nil)
 
 	s.mockTaskRepository.EXPECT().
 		CountByGoalID(gomock.Any(), gomock.Any()).
@@ -176,7 +176,7 @@ func (s *createTaskTestSuite) Test_2_Fail_ResourceLimitReached() {
 
 	s.mockUserHub.EXPECT().
 		GetTaskQuota(gomock.Any(), gomock.Any()).
-		Return(int64(5), nil)
+		Return(int64(5), true, nil)
 
 	s.mockTaskRepository.EXPECT().
 		CountByGoalID(gomock.Any(), gomock.Any()).
@@ -192,7 +192,7 @@ func (s *createTaskTestSuite) Test_2_Fail_ResourceLimitReached() {
 
 	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), resp)
-	assert.Equal(s.T(), apperrors.User.ResourceLimitReached, err)
+	assert.Equal(s.T(), apperrors.User.FreePlanLimitReached, err)
 }
 
 //

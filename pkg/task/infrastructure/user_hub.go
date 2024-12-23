@@ -15,26 +15,26 @@ func NewUserHub(client userpb.UserServiceClient) UserHub {
 	}
 }
 
-func (r UserHub) GetGoalQuota(ctx *appcontext.AppContext, userID string) (int64, error) {
+func (r UserHub) GetGoalQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error) {
 	resp, err := r.client.GetGoalQuota(ctx.Context(), &userpb.GetGoalQuotaRequest{
 		TraceId: ctx.GetTraceID(),
 		UserId:  userID,
 	})
 	if err != nil {
-		return 0, err
+		return 0, true, err
 	}
 
-	return resp.GetLimit(), nil
+	return resp.GetLimit(), resp.GetIsFree(), nil
 }
 
-func (r UserHub) GetTaskQuota(ctx *appcontext.AppContext, userID string) (int64, error) {
+func (r UserHub) GetTaskQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error) {
 	resp, err := r.client.GetTaskQuota(ctx.Context(), &userpb.GetTaskQuotaRequest{
 		TraceId: ctx.GetTraceID(),
 		UserId:  userID,
 	})
 	if err != nil {
-		return 0, err
+		return 0, true, err
 	}
 
-	return resp.GetLimit(), nil
+	return resp.GetLimit(), resp.GetIsFree(), nil
 }

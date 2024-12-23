@@ -31,7 +31,8 @@ func (h GetNoteQuotaHandler) GetNoteQuota(ctx *appcontext.AppContext, req *userp
 	if user == nil {
 		ctx.Logger().ErrorText("user not found, respond")
 		return &userpb.GetNoteQuotaResponse{
-			Limit: limit,
+			Limit:  limit,
+			IsFree: true,
 		}, nil
 	}
 
@@ -43,6 +44,7 @@ func (h GetNoteQuotaHandler) GetNoteQuota(ctx *appcontext.AppContext, req *userp
 
 	ctx.Logger().Text("done get note quota request")
 	return &userpb.GetNoteQuotaResponse{
-		Limit: limit,
+		Limit:  limit,
+		IsFree: user.IsFreePlan(),
 	}, nil
 }

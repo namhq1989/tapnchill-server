@@ -31,7 +31,8 @@ func (h GetHabitQuotaHandler) GetHabitQuota(ctx *appcontext.AppContext, req *use
 	if user == nil {
 		ctx.Logger().ErrorText("user not found, respond")
 		return &userpb.GetHabitQuotaResponse{
-			Limit: limit,
+			Limit:  limit,
+			IsFree: true,
 		}, nil
 	}
 
@@ -43,6 +44,7 @@ func (h GetHabitQuotaHandler) GetHabitQuota(ctx *appcontext.AppContext, req *use
 
 	ctx.Logger().Text("done get habit quota request")
 	return &userpb.GetHabitQuotaResponse{
-		Limit: limit,
+		Limit:  limit,
+		IsFree: user.IsFreePlan(),
 	}, nil
 }

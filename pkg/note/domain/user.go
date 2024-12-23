@@ -5,5 +5,5 @@ import (
 )
 
 type UserHub interface {
-	GetNoteQuota(ctx *appcontext.AppContext, userID string) (int64, error)
+	GetNoteQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error)
 }

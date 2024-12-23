@@ -31,7 +31,8 @@ func (h GetTaskQuotaHandler) GetTaskQuota(ctx *appcontext.AppContext, req *userp
 	if user == nil {
 		ctx.Logger().ErrorText("user not found, respond")
 		return &userpb.GetTaskQuotaResponse{
-			Limit: limit,
+			Limit:  limit,
+			IsFree: true,
 		}, nil
 	}
 
@@ -43,6 +44,7 @@ func (h GetTaskQuotaHandler) GetTaskQuota(ctx *appcontext.AppContext, req *userp
 
 	ctx.Logger().Text("done get task quota request")
 	return &userpb.GetTaskQuotaResponse{
-		Limit: limit,
+		Limit:  limit,
+		IsFree: user.IsFreePlan(),
 	}, nil
 }

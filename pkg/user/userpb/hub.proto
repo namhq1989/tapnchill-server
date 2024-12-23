@@ -19,6 +19,7 @@ message GetHabitQuotaRequest {
 
 message GetHabitQuotaResponse {
   int64 limit = 1;
+  bool isFree = 2;
 }
 
 // GET GOAL QUOTA
@@ -30,6 +31,7 @@ message GetGoalQuotaRequest {
 
 message GetGoalQuotaResponse {
   int64 limit = 1;
+  bool isFree = 2;
 }
 
 // GET TASK QUOTA
@@ -41,6 +43,7 @@ message GetTaskQuotaRequest {
 
 message GetTaskQuotaResponse {
   int64 limit = 1;
+  bool isFree = 2;
 }
 
 // GET NOTE QUOTA
@@ -52,6 +55,7 @@ message GetNoteQuotaRequest {
 
 message GetNoteQuotaResponse {
   int64 limit = 1;
+  bool isFree = 2;
 }
 
 // GET QR CODE QUOTA
@@ -63,4 +67,5 @@ message GetQRCodeQuotaRequest {
 
 message GetQRCodeQuotaResponse {
   int64 limit = 1;
+  bool isFree = 2;
 }

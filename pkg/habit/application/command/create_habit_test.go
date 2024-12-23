@@ -53,7 +53,7 @@ func (s *createHabitTestSuite) Test_1_Success() {
 	// mock data
 	s.mockUserHub.EXPECT().
 		GetHabitQuota(gomock.Any(), gomock.Any()).
-		Return(int64(5), nil)
+		Return(int64(5), true, nil)
 
 	s.mockHabitRepository.EXPECT().
 		CountByUserID(gomock.Any(), gomock.Any()).
@@ -96,7 +96,7 @@ func (s *createHabitTestSuite) Test_2_Fail_InvalidName() {
 	// mock
 	s.mockUserHub.EXPECT().
 		GetHabitQuota(gomock.Any(), gomock.Any()).
-		Return(int64(5), nil)
+		Return(int64(5), true, nil)
 
 	s.mockHabitRepository.EXPECT().
 		CountByUserID(gomock.Any(), gomock.Any()).
@@ -121,7 +121,7 @@ func (s *createHabitTestSuite) Test_2_Fail_ResourceLimitReached() {
 	// mock
 	s.mockUserHub.EXPECT().
 		GetHabitQuota(gomock.Any(), gomock.Any()).
-		Return(int64(5), nil)
+		Return(int64(5), true, nil)
 
 	s.mockHabitRepository.EXPECT().
 		CountByUserID(gomock.Any(), gomock.Any()).
@@ -139,7 +139,7 @@ func (s *createHabitTestSuite) Test_2_Fail_ResourceLimitReached() {
 
 	assert.NotNil(s.T(), err)
 	assert.Nil(s.T(), resp)
-	assert.Equal(s.T(), apperrors.User.ResourceLimitReached, err)
+	assert.Equal(s.T(), apperrors.User.FreePlanLimitReached, err)
 }
 
 //

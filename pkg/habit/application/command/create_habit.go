@@ -36,7 +36,7 @@ func (h CreateHabitHandler) CreateHabit(ctx *appcontext.AppContext, performerID 
 	})
 
 	ctx.Logger().Text("get user habit quota")
-	quota, err := h.userHub.GetHabitQuota(ctx, performerID)
+	quota, isFreePlan, err := h.userHub.GetHabitQuota(ctx, performerID)
 	if err != nil {
 		ctx.Logger().Error("failed to get user habit quota", err, appcontext.Fields{})
 		return nil, err
@@ -51,7 +51,12 @@ func (h CreateHabitHandler) CreateHabit(ctx *appcontext.AppContext, performerID 
 
 	if totalHabits >= quota {
 		ctx.Logger().Error("user habit quota exceeded", err, appcontext.Fields{"quota": quota, "total": totalHabits})
-		return nil, apperrors.User.ResourceLimitReached
+		err = apperrors.User.FreePlanLimitReached
+		if !isFreePlan {
+			err = apperrors.User.ProPlanLimitReached
+		}
+
+		return nil, err
 	}
 
 	ctx.Logger().Text("create new habit model")

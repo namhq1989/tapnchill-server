@@ -37,7 +37,8 @@ auth_not_allowed = "Không được phép"
 user_invalid_id = "ID người dùng không hợp lệ"
 user_not_found = "Không tìm thấy người dùng"
 user_invalid_client_id = "ID khách không hợp lệ"
-user_resource_limit_reached = "Bạn đang làm rất tốt! Để tạo được nhiều hơn, hãy cân nhắc nâng cấp gói của bạn"
+user_free_plan_limit_reached = "Bạn đã đến giới hạn của gói Miễn phí. Hãy nâng cấp gói Pro để tạo được nhiều tài nguyên hơn!"
+user_pro_plan_limit_reached = "Tài nguyên của gói Pro đã được sử dụng hết. Liên hệ với chúng tôi nếu bạn cần hỗ trợ!"
 
 # task
 task_invalid_goal_id = "ID mục tiêu không hợp lệ"

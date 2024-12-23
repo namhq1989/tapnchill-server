@@ -25,7 +25,7 @@ func (h CreateNoteHandler) CreateNote(ctx *appcontext.AppContext, performerID st
 	})
 
 	ctx.Logger().Text("get user note quota")
-	quota, err := h.userHub.GetNoteQuota(ctx, performerID)
+	quota, isFreePlan, err := h.userHub.GetNoteQuota(ctx, performerID)
 	if err != nil {
 		ctx.Logger().Error("failed to get user note quota", err, appcontext.Fields{})
 		return nil, err
@@ -40,7 +40,12 @@ func (h CreateNoteHandler) CreateNote(ctx *appcontext.AppContext, performerID st
 
 	if totalNotes >= quota {
 		ctx.Logger().Error("user note quota exceeded", err, appcontext.Fields{"quota": quota, "total": totalNotes})
-		return nil, apperrors.User.ResourceLimitReached
+		err = apperrors.User.FreePlanLimitReached
+		if !isFreePlan {
+			err = apperrors.User.ProPlanLimitReached
+		}
+
+		return nil, err
 	}
 
 	var data *domain.NoteData

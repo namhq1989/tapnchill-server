@@ -23,7 +23,7 @@ func (h CreateGoalHandler) CreateGoal(ctx *appcontext.AppContext, performerID st
 	ctx.Logger().Info("new create goal request", appcontext.Fields{"performerID": performerID, "name": req.Name, "description": req.Description})
 
 	ctx.Logger().Text("get user goal quota")
-	quota, err := h.userHub.GetGoalQuota(ctx, performerID)
+	quota, isFreePlan, err := h.userHub.GetGoalQuota(ctx, performerID)
 	if err != nil {
 		ctx.Logger().Error("failed to get user goal quota", err, appcontext.Fields{})
 		return nil, err
@@ -38,7 +38,12 @@ func (h CreateGoalHandler) CreateGoal(ctx *appcontext.AppContext, performerID st
 
 	if totalGoals >= quota {
 		ctx.Logger().Error("user goal quota exceeded", err, appcontext.Fields{"quota": quota, "total": totalGoals})
-		return nil, apperrors.User.ResourceLimitReached
+		err = apperrors.User.FreePlanLimitReached
+		if !isFreePlan {
+			err = apperrors.User.ProPlanLimitReached
+		}
+
+		return nil, err
 	}
 
 	ctx.Logger().Text("create new goal model")

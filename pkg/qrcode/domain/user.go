@@ -5,5 +5,5 @@ import (
 )
 
 type UserHub interface {
-	GetQRCodeQuota(ctx *appcontext.AppContext, userID string) (int64, error)
+	GetQRCodeQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error)
 }

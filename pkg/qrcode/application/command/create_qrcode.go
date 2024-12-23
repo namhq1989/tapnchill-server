@@ -29,7 +29,7 @@ func (h CreateQRCodeHandler) CreateQRCode(ctx *appcontext.AppContext, performerI
 	})
 
 	ctx.Logger().Text("get user QR codes quota")
-	quota, err := h.userHub.GetQRCodeQuota(ctx, performerID)
+	quota, isFreePlan, err := h.userHub.GetQRCodeQuota(ctx, performerID)
 	if err != nil {
 		ctx.Logger().Error("failed to get user QR code quota", err, appcontext.Fields{})
 		return nil, err
@@ -44,7 +44,12 @@ func (h CreateQRCodeHandler) CreateQRCode(ctx *appcontext.AppContext, performerI
 
 	if totalQRCodes >= quota {
 		ctx.Logger().Error("user QR codes quota exceeded", err, appcontext.Fields{"quota": quota, "total": totalQRCodes})
-		return nil, apperrors.User.ResourceLimitReached
+		err = apperrors.User.FreePlanLimitReached
+		if !isFreePlan {
+			err = apperrors.User.ProPlanLimitReached
+		}
+
+		return nil, err
 	}
 
 	ctx.Logger().Text("create new QR code model")

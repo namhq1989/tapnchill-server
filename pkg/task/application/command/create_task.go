@@ -40,7 +40,7 @@ func (h CreateTaskHandler) CreateTask(ctx *appcontext.AppContext, performerID st
 	}
 
 	ctx.Logger().Text("get user task quota")
-	quota, err := h.userHub.GetTaskQuota(ctx, performerID)
+	quota, isFreePlan, err := h.userHub.GetTaskQuota(ctx, performerID)
 	if err != nil {
 		ctx.Logger().Error("failed to get user task quota", err, appcontext.Fields{})
 		return nil, err
@@ -55,7 +55,12 @@ func (h CreateTaskHandler) CreateTask(ctx *appcontext.AppContext, performerID st
 
 	if totalTasks >= quota {
 		ctx.Logger().Error("user task quota exceeded", err, appcontext.Fields{"quota": quota, "total": totalTasks})
-		return nil, apperrors.User.ResourceLimitReached
+		err = apperrors.User.FreePlanLimitReached
+		if !isFreePlan {
+			err = apperrors.User.ProPlanLimitReached
+		}
+
+		return nil, err
 	}
 
 	ctx.Logger().Text("create new task model")

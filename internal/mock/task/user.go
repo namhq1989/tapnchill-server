@@ -40,12 +40,13 @@ func (m *MockUserHub) EXPECT() *MockUserHubMockRecorder {
 }
 
 // GetGoalQuota mocks base method.
-func (m *MockUserHub) GetGoalQuota(ctx *appcontext.AppContext, userID string) (int64, error) {
+func (m *MockUserHub) GetGoalQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetGoalQuota", ctx, userID)
 	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(bool)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetGoalQuota indicates an expected call of GetGoalQuota.
@@ -55,12 +56,13 @@ func (mr *MockUserHubMockRecorder) GetGoalQuota(ctx, userID any) *gomock.Call {
 }
 
 // GetTaskQuota mocks base method.
-func (m *MockUserHub) GetTaskQuota(ctx *appcontext.AppContext, userID string) (int64, error) {
+func (m *MockUserHub) GetTaskQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTaskQuota", ctx, userID)
 	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(bool)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetTaskQuota indicates an expected call of GetTaskQuota.

@@ -40,12 +40,13 @@ func (m *MockUserHub) EXPECT() *MockUserHubMockRecorder {
 }
 
 // GetNoteQuota mocks base method.
-func (m *MockUserHub) GetNoteQuota(ctx *appcontext.AppContext, userID string) (int64, error) {
+func (m *MockUserHub) GetNoteQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNoteQuota", ctx, userID)
 	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(bool)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetNoteQuota indicates an expected call of GetNoteQuota.

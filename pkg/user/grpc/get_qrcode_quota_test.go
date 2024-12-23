@@ -61,7 +61,7 @@ func (s *getQRCodeQuotaTestSuite) Test_1_Success() {
 
 	assert.Nil(s.T(), err)
 	assert.NotNil(s.T(), resp)
-	assert.Equal(s.T(), domain.FreePlanMaxQRCode, resp.GetLimit())
+	assert.Equal(s.T(), domain.FreePlanMaxQRCodes, resp.GetLimit())
 }
 
 //

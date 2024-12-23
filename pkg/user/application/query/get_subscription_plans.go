@@ -8,6 +8,29 @@ import (
 	"github.com/namhq1989/tapnchill-server/pkg/user/dto"
 )
 
+var resourceLimitations = dto.ResourcesLimitation{
+	Goal: dto.PlanLimitation{
+		Free: domain.FreePlanMaxGoals,
+		Pro:  domain.ProPlanMaxGoals,
+	},
+	Task: dto.PlanLimitation{
+		Free: domain.FreePlanMaxTaskPerGoal,
+		Pro:  domain.ProPlanMaxTaskPerGoal,
+	},
+	Habit: dto.PlanLimitation{
+		Free: domain.FreePlanMaxHabits,
+		Pro:  domain.ProPlanMaxHabits,
+	},
+	Note: dto.PlanLimitation{
+		Free: domain.FreePlanMaxNotes,
+		Pro:  domain.ProPlanMaxNotes,
+	},
+	QRCode: dto.PlanLimitation{
+		Free: domain.FreePlanMaxQRCodes,
+		Pro:  domain.ProPlanMaxQRCodes,
+	},
+}
+
 type GetSubscriptionPlansHandler struct{}
 
 func NewGetSubscriptionPlansHandler() GetSubscriptionPlansHandler {
@@ -28,8 +51,9 @@ func (h GetSubscriptionPlansHandler) GetSubscriptionPlans(ctx *appcontext.AppCon
 	if !isSubscriptionEnabled {
 		ctx.Logger().Text("subscription is disabled, respond")
 		return &dto.GetSubscriptionPlansResponse{
-			IsEnabled: false,
-			Plans:     []dto.SubscriptionPlan{},
+			IsEnabled:           false,
+			Plans:               []dto.SubscriptionPlan{},
+			ResourcesLimitation: resourceLimitations,
 		}, nil
 	}
 
@@ -54,5 +78,6 @@ func (h GetSubscriptionPlansHandler) GetSubscriptionPlans(ctx *appcontext.AppCon
 			monthly,
 			yearly,
 		},
+		ResourcesLimitation: resourceLimitations,
 	}, nil
 }

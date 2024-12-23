@@ -5,5 +5,5 @@ import (
 )
 
 type UserHub interface {
-	GetHabitQuota(ctx *appcontext.AppContext, userID string) (int64, error)
+	GetHabitQuota(ctx *appcontext.AppContext, userID string) (int64, bool, error)
 }

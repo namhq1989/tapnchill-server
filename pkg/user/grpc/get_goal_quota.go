@@ -31,7 +31,8 @@ func (h GetGoalQuotaHandler) GetGoalQuota(ctx *appcontext.AppContext, req *userp
 	if user == nil {
 		ctx.Logger().ErrorText("user not found, respond")
 		return &userpb.GetGoalQuotaResponse{
-			Limit: limit,
+			Limit:  limit,
+			IsFree: true,
 		}, nil
 	}
 
@@ -43,6 +44,7 @@ func (h GetGoalQuotaHandler) GetGoalQuota(ctx *appcontext.AppContext, req *userp
 
 	ctx.Logger().Text("done get goal quota request")
 	return &userpb.GetGoalQuotaResponse{
-		Limit: limit,
+		Limit:  limit,
+		IsFree: user.IsFreePlan(),
 	}, nil
 }

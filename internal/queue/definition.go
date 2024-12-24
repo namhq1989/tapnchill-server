@@ -5,6 +5,8 @@ var TypeNames = struct {
 
 	GetRandomQuote string
 
+	DowngradeExpiredSubscriptions string
+
 	PaddleSubscriptionCreated              string
 	PaddleTransactionCompleted             string
 	LemonsqueezySubscriptionPaymentSuccess string
@@ -12,6 +14,8 @@ var TypeNames = struct {
 	CreateUserDefaultGoal: "task.createUserDefaultGoal",
 
 	GetRandomQuote: "common.getRandomQuote",
+
+	DowngradeExpiredSubscriptions: "user.downgradeExpiredSubscriptions",
 
 	PaddleSubscriptionCreated:              "webhook.paddleSubscriptionCreated",
 	PaddleTransactionCompleted:             "webhook.paddleTransactionCompleted",

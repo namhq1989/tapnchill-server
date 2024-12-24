@@ -31,3 +31,5 @@ type QueueLemonsqueezySubscriptionPaymentSuccessPayload struct {
 	UserID    string
 	InvoiceID string
 }
+
+type QueueDowngradeExpiredSubscriptionsPayload struct{}

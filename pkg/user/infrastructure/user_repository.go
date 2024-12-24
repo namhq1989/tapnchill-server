@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
+
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
@@ -134,4 +136,17 @@ func (r UserRepository) ValidateAnonymousChecksum(_ *appcontext.AppContext, clie
 	}
 
 	return hmac.Equal(expectedMAC, providedMAC)
+}
+
+func (r UserRepository) DowngradeAllExpiredSubscriptions(ctx *appcontext.AppContext) (int64, error) {
+	result, err := r.collection().UpdateMany(ctx.Context(), bson.M{
+		"subscription.plan": domain.PlanPro,
+		"subscription.expiry": bson.M{
+			"$lt": manipulation.NowUTC(),
+		},
+	}, bson.M{"$set": bson.M{"plan": "free"}})
+	if err != nil {
+		return 0, err
+	}
+	return result.ModifiedCount, nil
 }

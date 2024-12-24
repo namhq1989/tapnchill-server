@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"sort"
 	"time"
 
 	"github.com/namhq1989/go-utilities/appcontext"
@@ -88,6 +89,7 @@ func (h *Habit) SetDaysOfWeek(daysOfWeek []int) error {
 		return apperrors.Common.InvalidDaysOfWeek
 	}
 
+	sort.Ints(daysOfWeek)
 	h.DaysOfWeek = daysOfWeek
 	return nil
 }
@@ -113,8 +115,57 @@ func (h *Habit) SetSortOrder(order int) {
 	h.SortOrder = order
 }
 
+func (h *Habit) IsPreviousScheduledDayOf(currentDate time.Time) bool {
+	currentWeekday := int(currentDate.Weekday())
+
+	isValidDay := false
+	for _, day := range h.DaysOfWeek {
+		if day == currentWeekday {
+			isValidDay = true
+			break
+		}
+	}
+	if !isValidDay {
+		return false
+	}
+
+	if len(h.DaysOfWeek) == 1 {
+		if currentWeekday == h.DaysOfWeek[0] {
+			previousScheduledDate := currentDate.AddDate(0, 0, -7)
+			return h.LastCompletedAt.Equal(previousScheduledDate)
+		}
+	}
+
+	currentIndex := -1
+	for i, day := range h.DaysOfWeek {
+		if day == currentWeekday {
+			currentIndex = i
+			break
+		}
+	}
+	previousIndex := (currentIndex - 1 + len(h.DaysOfWeek)) % len(h.DaysOfWeek)
+	previousScheduledDay := h.DaysOfWeek[previousIndex]
+
+	offset := (currentWeekday - previousScheduledDay + 7) % 7
+	lastWeekStart := currentDate.AddDate(0, 0, -int(currentDate.Weekday()))
+	lastDoneWeekStart := h.LastCompletedAt.AddDate(0, 0, -int(h.LastCompletedAt.Weekday()))
+	if lastDoneWeekStart.Before(lastWeekStart) {
+		offset += 1
+	}
+
+	previousScheduledDate := currentDate.AddDate(0, 0, -offset)
+	isEqual := h.LastCompletedAt.Year() == previousScheduledDate.Year() &&
+		h.LastCompletedAt.Month() == previousScheduledDate.Month() &&
+		h.LastCompletedAt.Day() == previousScheduledDate.Day()
+
+	return isEqual
+}
+
 func (h *Habit) OnCompleted(date time.Time) {
 	tz := manipulation.GetTimezoneIdentifier(date)
+	if h.LastCompletedAt != nil && manipulation.IsSameDay(*h.LastCompletedAt, date, tz) {
+		return
+	}
 
 	// update total completions
 	h.StatsTotalCompletions++
@@ -127,42 +178,34 @@ func (h *Habit) OnCompleted(date time.Time) {
 		return
 	}
 
-	lastCompleted := *h.LastCompletedAt
-
-	// handle retroactive completions
-	if date.Before(lastCompleted) {
-		// retroactive completions cannot update streaks but may initialize the longest streak
-		if h.StatsLongestStreak == 0 {
-			h.StatsLongestStreak = 1
-		}
-		if date.Before(*h.LastCompletedAt) {
-			// update LastCompletedAt for earliest recorded date
+	var (
+		today           = manipulation.Now(tz)
+		lastCompletedAt = h.LastCompletedAt.In(today.Location())
+	)
+	if !manipulation.IsSameDay(date, today, tz) {
+		// if not today
+		if lastCompletedAt.Before(date) {
 			h.LastCompletedAt = &date
+			h.StatsCurrentStreak = 1
+			if h.StatsLongestStreak == 0 {
+				h.StatsLongestStreak = 1
+			}
 		}
 		return
 	}
 
-	today := manipulation.Now(tz)
-	if manipulation.IsSameDay(date, today, tz) {
-		// if today is the next consecutive day, increment the streak
-		expectedPreviousDate := manipulation.PreviousDay(date, tz)
-		if manipulation.IsSameDay(lastCompleted, expectedPreviousDate, tz) {
-			h.StatsCurrentStreak++
-		} else {
-			// reset the current streak if there's a gap
-			h.StatsCurrentStreak = 1
+	if isPreviousScheduledDay := h.IsPreviousScheduledDayOf(date); !isPreviousScheduledDay {
+		h.StatsCurrentStreak = 1
+		if h.StatsLongestStreak == 0 {
+			h.StatsLongestStreak = 1
 		}
-
-		// update longest streak
+	} else {
+		h.StatsCurrentStreak++
 		if h.StatsCurrentStreak > h.StatsLongestStreak {
 			h.StatsLongestStreak = h.StatsCurrentStreak
 		}
 	}
-
-	// update LastCompletedAt for any valid completion
-	if date.After(lastCompleted) {
-		h.LastCompletedAt = &date
-	}
+	h.LastCompletedAt = &date
 }
 
 func (h *Habit) IsActive() bool {

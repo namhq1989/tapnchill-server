@@ -68,6 +68,21 @@ func (mr *MockUserRepositoryMockRecorder) Delete(ctx, userID any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUserRepository)(nil).Delete), ctx, userID)
 }
 
+// DowngradeAllExpiredSubscriptions mocks base method.
+func (m *MockUserRepository) DowngradeAllExpiredSubscriptions(ctx *appcontext.AppContext) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DowngradeAllExpiredSubscriptions", ctx)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DowngradeAllExpiredSubscriptions indicates an expected call of DowngradeAllExpiredSubscriptions.
+func (mr *MockUserRepositoryMockRecorder) DowngradeAllExpiredSubscriptions(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DowngradeAllExpiredSubscriptions", reflect.TypeOf((*MockUserRepository)(nil).DowngradeAllExpiredSubscriptions), ctx)
+}
+
 // FindByAuthProviderID mocks base method.
 func (m *MockUserRepository) FindByAuthProviderID(ctx *appcontext.AppContext, id string) (*domain.User, error) {
 	m.ctrl.T.Helper()
@@ -113,15 +128,15 @@ func (mr *MockUserRepositoryMockRecorder) Update(ctx, user any) *gomock.Call {
 }
 
 // ValidateAnonymousChecksum mocks base method.
-func (m *MockUserRepository) ValidateAnonymousChecksum(arg0 *appcontext.AppContext, clientID, checksum string) bool {
+func (m *MockUserRepository) ValidateAnonymousChecksum(ctx *appcontext.AppContext, clientID, checksum string) bool {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateAnonymousChecksum", arg0, clientID, checksum)
+	ret := m.ctrl.Call(m, "ValidateAnonymousChecksum", ctx, clientID, checksum)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // ValidateAnonymousChecksum indicates an expected call of ValidateAnonymousChecksum.
-func (mr *MockUserRepositoryMockRecorder) ValidateAnonymousChecksum(arg0, clientID, checksum any) *gomock.Call {
+func (mr *MockUserRepositoryMockRecorder) ValidateAnonymousChecksum(ctx, clientID, checksum any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAnonymousChecksum", reflect.TypeOf((*MockUserRepository)(nil).ValidateAnonymousChecksum), arg0, clientID, checksum)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAnonymousChecksum", reflect.TypeOf((*MockUserRepository)(nil).ValidateAnonymousChecksum), ctx, clientID, checksum)
 }

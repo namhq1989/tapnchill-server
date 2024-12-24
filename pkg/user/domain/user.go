@@ -15,7 +15,8 @@ type UserRepository interface {
 	Delete(ctx *appcontext.AppContext, userID string) error
 	FindByID(ctx *appcontext.AppContext, userID string) (*User, error)
 	FindByAuthProviderID(ctx *appcontext.AppContext, id string) (*User, error)
-	ValidateAnonymousChecksum(_ *appcontext.AppContext, clientID, checksum string) bool
+	ValidateAnonymousChecksum(ctx *appcontext.AppContext, clientID, checksum string) bool
+	DowngradeAllExpiredSubscriptions(ctx *appcontext.AppContext) (int64, error)
 }
 
 type User struct {

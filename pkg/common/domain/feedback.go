@@ -27,7 +27,7 @@ func NewFeedback(userID, email, feedback, ip string) (*Feedback, error) {
 		return nil, apperrors.User.InvalidUserID
 	}
 
-	if len(feedback) == 0 {
+	if len(feedback) == 0 || len(feedback) > 1000 {
 		return nil, apperrors.Common.InvalidFeedback
 	}
 

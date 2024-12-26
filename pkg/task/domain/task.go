@@ -41,11 +41,7 @@ func NewTask(userID, goalID, name, description string, dueDate *time.Time) (*Tas
 		return nil, apperrors.Task.InvalidGoalID
 	}
 
-	if len(name) < 2 {
-		return nil, apperrors.Common.InvalidName
-	}
-
-	return &Task{
+	t := &Task{
 		ID:           database.NewStringID(),
 		UserID:       userID,
 		GoalID:       goalID,
@@ -55,7 +51,17 @@ func NewTask(userID, goalID, name, description string, dueDate *time.Time) (*Tas
 		DueDate:      dueDate,
 		Status:       TaskStatusTodo,
 		CreatedAt:    manipulation.NowUTC(),
-	}, nil
+	}
+
+	if err := t.SetName(name); err != nil {
+		return nil, err
+	}
+
+	if err := t.SetDescription(description); err != nil {
+		return nil, err
+	}
+
+	return t, nil
 }
 
 func (t *Task) SetName(name string) error {
@@ -64,13 +70,17 @@ func (t *Task) SetName(name string) error {
 	}
 
 	t.Name = name
-	t.SearchString = manipulation.NormalizeText(fmt.Sprintf("%s %s", name, t.Description))
+	t.SearchString = manipulation.NormalizeText(fmt.Sprintf("%s", name))
 	return nil
 }
 
-func (t *Task) SetDescription(description string) {
+func (t *Task) SetDescription(description string) error {
+	if len(description) > 1000 {
+		return apperrors.Common.InvalidDescription
+	}
+
 	t.Description = description
-	t.SearchString = manipulation.NormalizeText(fmt.Sprintf("%s %s", t.Name, description))
+	return nil
 }
 
 func (t *Task) SetDueDate(dueDate *time.Time) {

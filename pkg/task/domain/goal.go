@@ -46,23 +46,26 @@ func NewGoal(userID, name, description string) (*Goal, error) {
 		return nil, apperrors.User.InvalidUserID
 	}
 
-	if len(name) < 2 {
-		return nil, apperrors.Common.InvalidName
-	}
-
-	return &Goal{
-		ID:           database.NewStringID(),
-		UserID:       userID,
-		Name:         name,
-		Description:  description,
-		SearchString: manipulation.NormalizeText(fmt.Sprintf("%s %s", name, description)),
+	g := &Goal{
+		ID:     database.NewStringID(),
+		UserID: userID,
 		Stats: GoalStats{
 			TotalTask:     0,
 			TotalDoneTask: 0,
 		},
 		IsCompleted: false,
 		CreatedAt:   manipulation.NowUTC(),
-	}, nil
+	}
+
+	if err := g.SetName(name); err != nil {
+		return nil, err
+	}
+
+	if err := g.SetDescription(description); err != nil {
+		return nil, err
+	}
+
+	return g, nil
 }
 
 func (g *Goal) SetName(name string) error {
@@ -71,15 +74,20 @@ func (g *Goal) SetName(name string) error {
 	}
 
 	g.Name = name
-	g.SearchString = manipulation.NormalizeText(fmt.Sprintf("%s %s", name, g.Description))
+	g.SearchString = manipulation.NormalizeText(fmt.Sprintf("%s", name))
 	g.SetUpdatedAt()
 	return nil
 }
 
-func (g *Goal) SetDescription(description string) {
+func (g *Goal) SetDescription(description string) error {
+	if len(description) > 1000 {
+		return apperrors.Common.InvalidDescription
+	}
+
 	g.Description = description
-	g.SearchString = manipulation.NormalizeText(fmt.Sprintf("%s %s", g.Name, description))
 	g.SetUpdatedAt()
+
+	return nil
 }
 
 func (g *Goal) SetIsCompleted(isCompleted bool) {

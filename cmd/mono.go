@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/namhq1989/tapnchill-server/internal/monitoring"
+
 	"github.com/labstack/echo/v4"
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/caching"
@@ -29,6 +31,7 @@ type app struct {
 	caching     *caching.Caching
 	jwt         *appjwt.JWT
 	queue       *queue.Queue
+	monitoring  *monitoring.Monitoring
 	externalApi *externalapi.ExternalApi
 	sso         *sso.SSO
 	rest        *echo.Echo
@@ -67,6 +70,10 @@ func (a *app) JWT() *appjwt.JWT {
 
 func (a *app) Queue() *queue.Queue {
 	return a.queue
+}
+
+func (a *app) Monitoring() *monitoring.Monitoring {
+	return a.monitoring
 }
 
 func (a *app) ExternalApi() *externalapi.ExternalApi {

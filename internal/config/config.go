@@ -32,6 +32,16 @@ type (
 		QueuePassword    string
 		QueueConcurrency int
 
+		// Sentry
+		SentryDSN         string
+		SentryMachineName string
+
+		// Open Observe
+		OpenObserveHttpEndpoint string
+		OpenObserveStreamName   string
+		OpenObserveToken        string
+		OpenObserveOrganization string
+
 		// Lemonsqueezy
 		LemonsqueezyAPIToken                        string
 		LemonsqueezySigningSecret                   string
@@ -71,6 +81,14 @@ func Init() Server {
 		QueueUsername:    getEnvStr("QUEUE_USERNAME"),
 		QueuePassword:    getEnvStr("QUEUE_PASSWORD"),
 		QueueConcurrency: getEnvInt("QUEUE_CONCURRENCY"),
+
+		SentryDSN:         getEnvStr("SENTRY_DSN"),
+		SentryMachineName: getEnvStr("SENTRY_MACHINE_NAME"),
+
+		OpenObserveHttpEndpoint: getEnvStr("OPEN_OBSERVE_HTTP_ENDPOINT"),
+		OpenObserveStreamName:   getEnvStr("OPEN_OBSERVE_STREAM_NAME"),
+		OpenObserveToken:        getEnvStr("OPEN_OBSERVE_TOKEN"),
+		OpenObserveOrganization: getEnvStr("OPEN_OBSERVE_ORGANIZATION"),
 
 		LemonsqueezyAPIToken:                        getEnvStr("LEMONSQUEEZY_API_TOKEN"),
 		LemonsqueezySigningSecret:                   getEnvStr("LEMONSQUEEZY_SIGNING_SECRET"),

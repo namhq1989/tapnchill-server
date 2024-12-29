@@ -194,17 +194,23 @@ func (h *Habit) OnCompleted(date time.Time) {
 		return
 	}
 
-	if isPreviousScheduledDay := h.IsPreviousScheduledDayOf(date); !isPreviousScheduledDay {
-		h.StatsCurrentStreak = 1
-		if h.StatsLongestStreak == 0 {
-			h.StatsLongestStreak = 1
-		}
-	} else {
+	isConsecutiveDay := manipulation.IsSameDay(
+		date.AddDate(0, 0, -1), *h.LastCompletedAt, tz,
+	)
+	isPreviousScheduledDay := h.IsPreviousScheduledDayOf(date)
+
+	if isConsecutiveDay && isPreviousScheduledDay {
 		h.StatsCurrentStreak++
 		if h.StatsCurrentStreak > h.StatsLongestStreak {
 			h.StatsLongestStreak = h.StatsCurrentStreak
 		}
+	} else {
+		h.StatsCurrentStreak = 1
+		if h.StatsLongestStreak == 0 {
+			h.StatsLongestStreak = 1
+		}
 	}
+
 	h.LastCompletedAt = &date
 }
 

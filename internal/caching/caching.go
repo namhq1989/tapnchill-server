@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/namhq1989/go-utilities/appcontext"
+	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -33,6 +34,14 @@ func NewCachingClient(redisURL string) *Caching {
 
 	// ping
 	if _, err := client.Ping(ctx).Result(); err != nil {
+		panic(err)
+	}
+
+	if err := redisotel.InstrumentTracing(client); err != nil {
+		panic(err)
+	}
+
+	if err := redisotel.InstrumentMetrics(client, redisotel.WithAttributes()); err != nil {
 		panic(err)
 	}
 

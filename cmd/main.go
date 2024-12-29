@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/namhq1989/tapnchill-server/internal/monitoring"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/namhq1989/go-utilities/logger"
@@ -70,6 +72,23 @@ func main() {
 		YearlyVariantID:     cfg.LemonsqueezySubscriptionYearlyVariantID,
 		YearlyDiscountCode:  cfg.LemonsqueezySubscriptionYearlyDiscountCode,
 	})
+
+	// monitoring
+	a.monitoring = monitoring.NewMonitoringClient(
+		a.rest,
+		monitoring.OtelConfig{
+			Endpoint:     cfg.OpenObserveHttpEndpoint,
+			StreamName:   cfg.OpenObserveStreamName,
+			Token:        cfg.OpenObserveToken,
+			Organization: cfg.OpenObserveOrganization,
+		},
+		monitoring.SentryConfig{
+			Dsn:         cfg.SentryDSN,
+			MachineName: cfg.SentryMachineName,
+		},
+		cfg.AppName,
+		cfg.Environment,
+	)
 
 	// sso
 	a.sso = sso.NewSSOClient(cfg.FirebaseServiceAccount)

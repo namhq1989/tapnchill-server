@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
 )
 
 type Operations interface {
@@ -24,7 +25,7 @@ func NewDatabaseClient(url, dbName string) *Database {
 	// use the SetServerAPIOptions() method to set the Stable API version to 1
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 
-	opts := options.Client().ApplyURI(url).SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI(url).SetServerAPIOptions(serverAPI).SetMonitor(otelmongo.NewMonitor())
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		panic(err)

@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/config"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 	"golang.org/x/text/language"
 )
 
@@ -21,6 +22,7 @@ func initRest(cfg config.Server) *echo.Echo {
 }
 
 func setMiddleware(e *echo.Echo, cfg config.Server) {
+	e.Use(otelecho.Middleware(cfg.AppName))
 	addCorsMiddleware(e, cfg)
 	addContext(e)
 	addIp(e)
@@ -45,6 +47,7 @@ func addContext(e *echo.Echo) {
 		return func(c echo.Context) error {
 			ctx := appcontext.NewRest(c.Request().Context())
 			c.Set("ctx", ctx)
+			c.SetRequest(c.Request().WithContext(ctx.Context()))
 
 			return next(c)
 		}

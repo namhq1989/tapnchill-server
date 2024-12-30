@@ -8,6 +8,7 @@ var Common = struct {
 	NotFound              error
 	Unauthorized          error
 	Forbidden             error
+	SomethingWentWrong    error
 	AlreadyExisted        error
 	EmailAlreadyExisted   error
 	InvalidID             error
@@ -33,6 +34,7 @@ var Common = struct {
 	NotFound:              errors.New("not_found"),
 	Unauthorized:          errors.New("unauthorized"),
 	Forbidden:             errors.New("forbidden"),
+	SomethingWentWrong:    errors.New("something_went_wrong"),
 	AlreadyExisted:        errors.New("already_existed"),
 	EmailAlreadyExisted:   errors.New("email_already_existed"),
 	InvalidID:             errors.New("invalid_id"),

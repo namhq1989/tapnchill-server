@@ -17,6 +17,7 @@ type (
 	Queries interface {
 		GetMe(ctx *appcontext.AppContext, performerID string, _ dto.GetMeRequest) (*dto.GetMeResponse, error)
 		GetSubscriptionPlans(ctx *appcontext.AppContext, performerID string, _ dto.GetSubscriptionPlansRequest) (*dto.GetSubscriptionPlansResponse, error)
+		GetPaymentCustomerPortalURL(ctx *appcontext.AppContext, performerID string, _ dto.GetPaymentCustomerPortalURLRequest) (*dto.GetPaymentCustomerPortalURLResponse, error)
 	}
 	Instance interface {
 		Commands
@@ -31,6 +32,7 @@ type (
 	queryHandlers struct {
 		query.GetMeHandler
 		query.GetSubscriptionPlansHandler
+		query.GetPaymentCustomerPortalURLHandler
 	}
 	Application struct {
 		commandHandlers
@@ -55,8 +57,9 @@ func New(
 			GenerateSubscriptionCheckoutURLHandler: command.NewGenerateSubscriptionCheckoutURLHandler(externalAPIRepository),
 		},
 		queryHandlers: queryHandlers{
-			GetMeHandler:                query.NewGetMeHandler(service),
-			GetSubscriptionPlansHandler: query.NewGetSubscriptionPlansHandler(),
+			GetMeHandler:                       query.NewGetMeHandler(service),
+			GetSubscriptionPlansHandler:        query.NewGetSubscriptionPlansHandler(),
+			GetPaymentCustomerPortalURLHandler: query.NewGetPaymentCustomerPortalURLHandler(service),
 		},
 	}
 }

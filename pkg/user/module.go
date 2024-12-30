@@ -29,7 +29,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 		externalAPIRepository = infrastructure.NewExternalAPIRepository(mono.ExternalApi())
 		cachingRepository     = infrastructure.NewCachingRepository(mono.Caching())
 
-		service = shared.NewService(userRepository, cachingRepository)
+		service = shared.NewService(userRepository, cachingRepository, externalAPIRepository)
 
 		// app
 		app = application.New(

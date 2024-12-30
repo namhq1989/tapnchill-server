@@ -9,6 +9,7 @@ import (
 type ExternalAPIRepository interface {
 	GenerateLemonsqueezyCheckoutURL(ctx *appcontext.AppContext, userID, subscriptionID string) (*string, error)
 	GetLemonsqueezyInvoiceData(ctx *appcontext.AppContext, invoiceID string) (*GetLemonsqueezyInvoiceDataResult, error)
+	GetLemonsqueezyCustomerPortalURL(ctx *appcontext.AppContext, customerID string) (*string, error)
 }
 
 type GetLemonsqueezyInvoiceDataResult struct {

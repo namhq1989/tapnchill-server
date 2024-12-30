@@ -15,6 +15,7 @@ type Operations interface {
 	GetCityWeather(ctx *appcontext.AppContext, city string) (*GetCityWeatherResult, error)
 	GenerateLemonsqueezySubscriptionCheckoutURL(ctx *appcontext.AppContext, userID, subscriptionID string) (*string, error)
 	GetLemonsqueezySubscriptionInvoiceData(ctx *appcontext.AppContext, invoiceID string) (*GetLemonsqueezySubscriptionDataResult, error)
+	GetLemonsqueezyCustomerPortalURL(ctx *appcontext.AppContext, customerID string) (*GetLemonsqueezyCustomerPortalURLResult, error)
 }
 
 type LemonsqueezyCfg struct {

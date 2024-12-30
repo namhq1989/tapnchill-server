@@ -55,6 +55,21 @@ func (mr *MockExternalAPIRepositoryMockRecorder) GenerateLemonsqueezyCheckoutURL
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateLemonsqueezyCheckoutURL", reflect.TypeOf((*MockExternalAPIRepository)(nil).GenerateLemonsqueezyCheckoutURL), ctx, userID, subscriptionID)
 }
 
+// GetLemonsqueezyCustomerPortalURL mocks base method.
+func (m *MockExternalAPIRepository) GetLemonsqueezyCustomerPortalURL(ctx *appcontext.AppContext, customerID string) (*string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLemonsqueezyCustomerPortalURL", ctx, customerID)
+	ret0, _ := ret[0].(*string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLemonsqueezyCustomerPortalURL indicates an expected call of GetLemonsqueezyCustomerPortalURL.
+func (mr *MockExternalAPIRepositoryMockRecorder) GetLemonsqueezyCustomerPortalURL(ctx, customerID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLemonsqueezyCustomerPortalURL", reflect.TypeOf((*MockExternalAPIRepository)(nil).GetLemonsqueezyCustomerPortalURL), ctx, customerID)
+}
+
 // GetLemonsqueezyInvoiceData mocks base method.
 func (m *MockExternalAPIRepository) GetLemonsqueezyInvoiceData(ctx *appcontext.AppContext, invoiceID string) (*domain.GetLemonsqueezyInvoiceDataResult, error) {
 	m.ctrl.T.Helper()

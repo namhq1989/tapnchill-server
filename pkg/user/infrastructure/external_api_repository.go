@@ -33,3 +33,12 @@ func (r ExternalAPIRepository) GetLemonsqueezyInvoiceData(ctx *appcontext.AppCon
 		RenewsAt:       resp.RenewsAt,
 	}, nil
 }
+
+func (r ExternalAPIRepository) GetLemonsqueezyCustomerPortalURL(ctx *appcontext.AppContext, customerID string) (*string, error) {
+	resp, err := r.ea.GetLemonsqueezyCustomerPortalURL(ctx, customerID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.URL, nil
+}

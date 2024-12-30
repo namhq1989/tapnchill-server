@@ -94,4 +94,21 @@ func (s server) registerUserRoutes() {
 	}, s.jwt.RequireLoggedIn, func(next echo.HandlerFunc) echo.HandlerFunc {
 		return validation.ValidateHTTPPayload[dto.GenerateSubscriptionCheckoutURLRequest](next)
 	})
+
+	g.GET("/payment-customer-portal-url", func(c echo.Context) error {
+		var (
+			ctx         = c.Get("ctx").(*appcontext.AppContext)
+			req         = c.Get("req").(dto.GetPaymentCustomerPortalURLRequest)
+			performerID = ctx.GetUserID()
+		)
+
+		resp, err := s.app.GetPaymentCustomerPortalURL(ctx, performerID, req)
+		if err != nil {
+			return httprespond.R400(c, err, nil)
+		}
+
+		return httprespond.R200(c, resp)
+	}, s.jwt.RequireLoggedIn, func(next echo.HandlerFunc) echo.HandlerFunc {
+		return validation.ValidateHTTPPayload[dto.GetPaymentCustomerPortalURLRequest](next)
+	})
 }

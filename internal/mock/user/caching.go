@@ -54,6 +54,21 @@ func (mr *MockCachingRepositoryMockRecorder) DeleteUserByID(ctx, userID any) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserByID", reflect.TypeOf((*MockCachingRepository)(nil).DeleteUserByID), ctx, userID)
 }
 
+// GetLemonsqueezyCustomerPortalURL mocks base method.
+func (m *MockCachingRepository) GetLemonsqueezyCustomerPortalURL(ctx *appcontext.AppContext, customerID string) (*string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLemonsqueezyCustomerPortalURL", ctx, customerID)
+	ret0, _ := ret[0].(*string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLemonsqueezyCustomerPortalURL indicates an expected call of GetLemonsqueezyCustomerPortalURL.
+func (mr *MockCachingRepositoryMockRecorder) GetLemonsqueezyCustomerPortalURL(ctx, customerID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLemonsqueezyCustomerPortalURL", reflect.TypeOf((*MockCachingRepository)(nil).GetLemonsqueezyCustomerPortalURL), ctx, customerID)
+}
+
 // GetUserByID mocks base method.
 func (m *MockCachingRepository) GetUserByID(ctx *appcontext.AppContext, userID string) (*domain.User, error) {
 	m.ctrl.T.Helper()
@@ -67,6 +82,20 @@ func (m *MockCachingRepository) GetUserByID(ctx *appcontext.AppContext, userID s
 func (mr *MockCachingRepositoryMockRecorder) GetUserByID(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockCachingRepository)(nil).GetUserByID), ctx, userID)
+}
+
+// SetLemonsqueezyCustomerPortalURL mocks base method.
+func (m *MockCachingRepository) SetLemonsqueezyCustomerPortalURL(ctx *appcontext.AppContext, customerID, url string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetLemonsqueezyCustomerPortalURL", ctx, customerID, url)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetLemonsqueezyCustomerPortalURL indicates an expected call of SetLemonsqueezyCustomerPortalURL.
+func (mr *MockCachingRepositoryMockRecorder) SetLemonsqueezyCustomerPortalURL(ctx, customerID, url any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetLemonsqueezyCustomerPortalURL", reflect.TypeOf((*MockCachingRepository)(nil).SetLemonsqueezyCustomerPortalURL), ctx, customerID, url)
 }
 
 // SetUserByID mocks base method.

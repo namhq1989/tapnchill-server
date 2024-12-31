@@ -3,6 +3,8 @@ package worker
 import (
 	"os"
 
+	"go.opentelemetry.io/otel"
+
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/internal/utils/manipulation"
 	"github.com/namhq1989/tapnchill-server/pkg/user/domain"
@@ -30,6 +32,11 @@ func NewLemonsqueezySubscriptionPaymentSuccessHandler(
 }
 
 func (h LemonsqueezySubscriptionPaymentSuccessHandler) LemonsqueezySubscriptionPaymentSuccess(ctx *appcontext.AppContext, payload domain.QueueLemonsqueezySubscriptionPaymentSuccessPayload) error {
+	tracer := otel.Tracer("tracing")
+	spanCtx, span := tracer.Start(ctx.Context(), "[worker] LemonSqueezy subscription payment success")
+	ctx.SetContext(spanCtx)
+	defer span.End()
+
 	ctx.Logger().Text("find user in db")
 	user, err := h.userRepository.FindByID(ctx, payload.UserID)
 	if err != nil {

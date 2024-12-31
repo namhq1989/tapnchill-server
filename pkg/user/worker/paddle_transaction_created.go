@@ -3,6 +3,7 @@ package worker
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/pkg/user/domain"
+	"go.opentelemetry.io/otel"
 )
 
 type PaddleTransactionCompletedHandler struct {
@@ -24,6 +25,11 @@ func NewPaddleTransactionCompletedHandler(
 }
 
 func (h PaddleTransactionCompletedHandler) PaddleTransactionCompleted(ctx *appcontext.AppContext, payload domain.QueuePaddleTransactionCompletedPayload) error {
+	tracer := otel.Tracer("tracing")
+	spanCtx, span := tracer.Start(ctx.Context(), "[worker] Paddle transaction completed")
+	ctx.SetContext(spanCtx)
+	defer span.End()
+
 	ctx.Logger().Text("find user in db")
 	user, err := h.userRepository.FindByID(ctx, payload.UserID)
 	if err != nil {

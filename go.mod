@@ -13,7 +13,7 @@ require (
 	github.com/hibiken/asynq v0.24.1
 	github.com/hibiken/asynqmon v0.7.2
 	github.com/labstack/echo/v4 v4.13.2
-	github.com/namhq1989/go-utilities v0.0.4
+	github.com/namhq1989/go-utilities v0.0.5
 	github.com/nicksnyder/go-i18n/v2 v2.4.0
 	github.com/redis/go-redis/extra/redisotel/v9 v9.7.0
 	github.com/redis/go-redis/v9 v9.7.0

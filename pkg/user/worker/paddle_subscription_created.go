@@ -3,6 +3,7 @@ package worker
 import (
 	"github.com/namhq1989/go-utilities/appcontext"
 	"github.com/namhq1989/tapnchill-server/pkg/user/domain"
+	"go.opentelemetry.io/otel"
 )
 
 type PaddleSubscriptionCreatedHandler struct {
@@ -21,6 +22,11 @@ func NewPaddleSubscriptionCreatedHandler(
 }
 
 func (h PaddleSubscriptionCreatedHandler) PaddleSubscriptionCreated(ctx *appcontext.AppContext, payload domain.QueuePaddleSubscriptionCreatedPayload) error {
+	tracer := otel.Tracer("tracing")
+	spanCtx, span := tracer.Start(ctx.Context(), "[worker] Paddle subscription created")
+	ctx.SetContext(spanCtx)
+	defer span.End()
+
 	ctx.Logger().Text("find user in db")
 	user, err := h.userRepository.FindByID(ctx, payload.UserID)
 	if err != nil {

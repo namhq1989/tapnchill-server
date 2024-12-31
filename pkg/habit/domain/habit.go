@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"fmt"
 	"sort"
 	"time"
 
@@ -118,6 +119,8 @@ func (h *Habit) SetSortOrder(order int) {
 func (h *Habit) IsPreviousScheduledDayOf(currentDate time.Time) bool {
 	currentWeekday := int(currentDate.Weekday())
 
+	fmt.Println("currentWeekday", currentWeekday)
+
 	isValidDay := false
 	for _, day := range h.DaysOfWeek {
 		if day == currentWeekday {
@@ -158,10 +161,19 @@ func (h *Habit) IsPreviousScheduledDayOf(currentDate time.Time) bool {
 		h.LastCompletedAt.Month() == previousScheduledDate.Month() &&
 		h.LastCompletedAt.Day() == previousScheduledDate.Day()
 
+	fmt.Println("previousIndex", previousIndex)
+	fmt.Println("previousScheduledDay", previousScheduledDay)
+	fmt.Println("offset", offset)
+	fmt.Println("h.LastCompletedAt", h.LastCompletedAt)
+	fmt.Println("previousScheduledDate", previousScheduledDate)
+
 	return isEqual
 }
 
 func (h *Habit) OnCompleted(date time.Time) {
+	fmt.Println("------")
+	defer fmt.Println("------")
+
 	tz := manipulation.GetTimezoneIdentifier(date)
 	if h.LastCompletedAt != nil && manipulation.IsSameDay(*h.LastCompletedAt, date, tz) {
 		return
@@ -182,6 +194,12 @@ func (h *Habit) OnCompleted(date time.Time) {
 		today           = manipulation.Now(tz)
 		lastCompletedAt = h.LastCompletedAt.In(today.Location())
 	)
+
+	fmt.Println("tz", tz)
+	fmt.Println("today", today.Format("2006-01-02"))
+	fmt.Println("lastCompletedAt", lastCompletedAt.Format("2006-01-02"))
+	fmt.Println("manipulation.IsSameDay(date, today, tz)", manipulation.IsSameDay(date, today, tz))
+
 	if !manipulation.IsSameDay(date, today, tz) {
 		// if not today
 		if lastCompletedAt.Before(date) {
@@ -199,7 +217,10 @@ func (h *Habit) OnCompleted(date time.Time) {
 	)
 	isPreviousScheduledDay := h.IsPreviousScheduledDayOf(date)
 
-	if isConsecutiveDay && isPreviousScheduledDay {
+	fmt.Println("isConsecutiveDay", isConsecutiveDay)
+	fmt.Println("isPreviousScheduledDay", isPreviousScheduledDay)
+
+	if isConsecutiveDay || isPreviousScheduledDay {
 		h.StatsCurrentStreak++
 		if h.StatsCurrentStreak > h.StatsLongestStreak {
 			h.StatsLongestStreak = h.StatsCurrentStreak

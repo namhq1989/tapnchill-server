@@ -174,7 +174,7 @@ func (h *Habit) OnCompleted(date time.Time) {
 	fmt.Println("------")
 	defer fmt.Println("------")
 
-	tz := manipulation.GetTimezoneIdentifier(date)
+	tz := manipulation.GetUTCOffset(date)
 	if h.LastCompletedAt != nil && manipulation.IsSameDay(*h.LastCompletedAt, date, tz) {
 		return
 	}
@@ -196,8 +196,9 @@ func (h *Habit) OnCompleted(date time.Time) {
 	)
 
 	fmt.Println("tz", tz)
-	fmt.Println("today", today.Format("2006-01-02"))
-	fmt.Println("lastCompletedAt", lastCompletedAt.Format("2006-01-02"))
+	fmt.Println("date", date, date.Format("2006-01-02"))
+	fmt.Println("today", today, today.Format("2006-01-02"))
+	fmt.Println("lastCompletedAt", lastCompletedAt, lastCompletedAt.Format("2006-01-02"))
 	fmt.Println("manipulation.IsSameDay(date, today, tz)", manipulation.IsSameDay(date, today, tz))
 
 	if !manipulation.IsSameDay(date, today, tz) {

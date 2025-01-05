@@ -44,9 +44,9 @@ func initServer(redisConn asynq.RedisClientOpt, concurrency int) *asynq.ServeMux
 		concurrency = 100
 	}
 
-	// unrecognized retry delay in 10s
+	// unrecognized retry delay in (retry times * 5 minutes)
 	retryDelayFunc := func(n int, e error, t *asynq.Task) time.Duration {
-		return 10 * time.Second
+		return time.Duration(n*5) * time.Minute
 	}
 
 	// init server

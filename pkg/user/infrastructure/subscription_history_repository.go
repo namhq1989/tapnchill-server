@@ -37,10 +37,6 @@ func (r SubscriptionHistoryRepository) ensureIndexes() {
 			{
 				Keys: bson.D{{Key: "userId", Value: 1}, {Key: "createdAt", Value: -1}},
 			},
-			{
-				Keys:    bson.D{{Key: "sourceId", Value: 1}},
-				Options: options.Index().SetUnique(true),
-			},
 		}
 	)
 

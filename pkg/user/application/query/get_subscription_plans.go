@@ -29,6 +29,10 @@ var resourceLimitations = dto.ResourcesLimitation{
 		Free: domain.FreePlanMaxQRCodes,
 		Pro:  domain.ProPlanMaxQRCodes,
 	},
+	Highlight: dto.PlanLimitation{
+		Free: domain.FreePlanMaxHighlightURLs,
+		Pro:  domain.ProPlanMaxHighlightURLs,
+	},
 }
 
 type GetSubscriptionPlansHandler struct{}

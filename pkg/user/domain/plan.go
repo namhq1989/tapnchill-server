@@ -42,6 +42,9 @@ const (
 
 	FreePlanMaxQRCodes int64 = 20
 	ProPlanMaxQRCodes  int64 = 1000
+
+	FreePlanMaxHighlightURLs int64 = 5
+	ProPlanMaxHighlightURLs  int64 = 100
 )
 
 const (

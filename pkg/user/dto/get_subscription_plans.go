@@ -12,11 +12,12 @@ type PlanLimitation struct {
 }
 
 type ResourcesLimitation struct {
-	Goal   PlanLimitation `json:"goal"`
-	Task   PlanLimitation `json:"task"`
-	Habit  PlanLimitation `json:"habit"`
-	Note   PlanLimitation `json:"note"`
-	QRCode PlanLimitation `json:"qrCode"`
+	Goal      PlanLimitation `json:"goal"`
+	Task      PlanLimitation `json:"task"`
+	Habit     PlanLimitation `json:"habit"`
+	Note      PlanLimitation `json:"note"`
+	QRCode    PlanLimitation `json:"qrCode"`
+	Highlight PlanLimitation `json:"highlight"`
 }
 
 type GetSubscriptionPlansRequest struct{}

@@ -10,6 +10,7 @@ import (
 	appjwt "github.com/namhq1989/tapnchill-server/internal/jwt"
 	"github.com/namhq1989/tapnchill-server/internal/monitoring"
 	"github.com/namhq1989/tapnchill-server/internal/queue"
+	"github.com/namhq1989/tapnchill-server/internal/report"
 	"github.com/namhq1989/tapnchill-server/internal/sso"
 	"github.com/namhq1989/tapnchill-server/internal/utils/waiter"
 	"google.golang.org/grpc"
@@ -23,6 +24,7 @@ type Monolith interface {
 	Queue() *queue.Queue
 	Monitoring() *monitoring.Monitoring
 	ExternalApi() *externalapi.ExternalApi
+	Report() *report.Report
 	SSO() *sso.SSO
 	Rest() *echo.Echo
 	RPC() *grpc.Server

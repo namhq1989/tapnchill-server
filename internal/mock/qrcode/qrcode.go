@@ -21,6 +21,7 @@ import (
 type MockQRCodeRepository struct {
 	ctrl     *gomock.Controller
 	recorder *MockQRCodeRepositoryMockRecorder
+	isgomock struct{}
 }
 
 // MockQRCodeRepositoryMockRecorder is the mock recorder for MockQRCodeRepository.

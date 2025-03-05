@@ -55,7 +55,7 @@ type (
 		IpInfoToken         string
 		VisualCrossingToken string
 		TelegramBotToken    string
-		TelegramChannelID   string
+		TelegramChatID      string
 	}
 )
 
@@ -101,7 +101,7 @@ func Init() Server {
 		IpInfoToken:         getEnvStr("IP_INFO_TOKEN"),
 		VisualCrossingToken: getEnvStr("VISUAL_CROSSING_TOKEN"),
 		TelegramBotToken:    getEnvStr("TELEGRAM_BOT_TOKEN"),
-		TelegramChannelID:   getEnvStr("TELEGRAM_CHANNEL_ID"),
+		TelegramChatID:      getEnvStr("TELEGRAM_CHAT_ID"),
 	}
 	cfg.IsEnvRelease = cfg.Environment == "release"
 

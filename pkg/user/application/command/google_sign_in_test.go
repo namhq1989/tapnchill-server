@@ -17,11 +17,12 @@ import (
 
 type googleSignInTestSuite struct {
 	suite.Suite
-	handler            command.GoogleSignInHandler
-	mockCtrl           *gomock.Controller
-	mockUserRepository *mockuser.MockUserRepository
-	mockJwtRepository  *mockuser.MockJwtRepository
-	mockSSORepository  *mockuser.MockSSORepository
+	handler              command.GoogleSignInHandler
+	mockCtrl             *gomock.Controller
+	mockUserRepository   *mockuser.MockUserRepository
+	mockJwtRepository    *mockuser.MockJwtRepository
+	mockSSORepository    *mockuser.MockSSORepository
+	mockReportRepository *mockuser.MockReportRepository
 }
 
 func (s *googleSignInTestSuite) SetupSuite() {
@@ -33,8 +34,9 @@ func (s *googleSignInTestSuite) setupApplication() {
 	s.mockUserRepository = mockuser.NewMockUserRepository(s.mockCtrl)
 	s.mockJwtRepository = mockuser.NewMockJwtRepository(s.mockCtrl)
 	s.mockSSORepository = mockuser.NewMockSSORepository(s.mockCtrl)
+	s.mockReportRepository = mockuser.NewMockReportRepository(s.mockCtrl)
 
-	s.handler = command.NewGoogleSignInHandler(s.mockUserRepository, s.mockSSORepository, s.mockJwtRepository)
+	s.handler = command.NewGoogleSignInHandler(s.mockUserRepository, s.mockSSORepository, s.mockJwtRepository, s.mockReportRepository)
 }
 
 func (s *googleSignInTestSuite) TearDownTest() {

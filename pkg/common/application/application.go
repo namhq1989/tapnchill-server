@@ -40,11 +40,12 @@ func New(
 	feedbackRepository domain.FeedbackRepository,
 	quoteRepository domain.QuoteRepository,
 	cachingRepository domain.CachingRepository,
+	reportRepository domain.ReportRepository,
 	service domain.Service,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
-			CreateFeedbackHandler: command.NewCreateFeedbackHandler(feedbackRepository),
+			CreateFeedbackHandler: command.NewCreateFeedbackHandler(feedbackRepository, reportRepository),
 		},
 		queryHandlers: queryHandlers{
 			GetQuoteHandler:   query.NewGetQuoteHandler(quoteRepository, cachingRepository),

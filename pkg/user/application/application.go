@@ -48,12 +48,13 @@ func New(
 	ssoRepository domain.SSORepository,
 	queueRepository domain.QueueRepository,
 	externalAPIRepository domain.ExternalAPIRepository,
+	reportRepository domain.ReportRepository,
 	service domain.Service,
 ) *Application {
 	return &Application{
 		commandHandlers: commandHandlers{
 			ExtensionSignInHandler:                 command.NewExtensionSignInHandler(userRepository, jwtRepository, queueRepository),
-			GoogleSignInHandler:                    command.NewGoogleSignInHandler(userRepository, ssoRepository, jwtRepository),
+			GoogleSignInHandler:                    command.NewGoogleSignInHandler(userRepository, ssoRepository, jwtRepository, reportRepository),
 			GenerateSubscriptionCheckoutURLHandler: command.NewGenerateSubscriptionCheckoutURLHandler(externalAPIRepository),
 		},
 		queryHandlers: queryHandlers{

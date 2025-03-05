@@ -20,6 +20,7 @@ type createFeedbackTestSuite struct {
 	handler                command.CreateFeedbackHandler
 	mockCtrl               *gomock.Controller
 	mockFeedbackRepository *mockcommon.MockFeedbackRepository
+	mockReportRepository   *mockcommon.MockReportRepository
 }
 
 func (s *createFeedbackTestSuite) SetupSuite() {
@@ -29,8 +30,9 @@ func (s *createFeedbackTestSuite) SetupSuite() {
 func (s *createFeedbackTestSuite) setupApplication() {
 	s.mockCtrl = gomock.NewController(s.T())
 	s.mockFeedbackRepository = mockcommon.NewMockFeedbackRepository(s.mockCtrl)
+	s.mockReportRepository = mockcommon.NewMockReportRepository(s.mockCtrl)
 
-	s.handler = command.NewCreateFeedbackHandler(s.mockFeedbackRepository)
+	s.handler = command.NewCreateFeedbackHandler(s.mockFeedbackRepository, s.mockReportRepository)
 }
 
 func (s *createFeedbackTestSuite) TearDownTest() {
@@ -45,6 +47,10 @@ func (s *createFeedbackTestSuite) Test_1_Success() {
 	// mock data
 	s.mockFeedbackRepository.EXPECT().
 		Create(gomock.Any(), gomock.Any()).
+		Return(nil)
+
+	s.mockReportRepository.EXPECT().
+		NewUserFeedback(gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(nil)
 
 	// call

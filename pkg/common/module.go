@@ -24,6 +24,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 
 		cachingRepository     = infrastructure.NewCachingRepository(mono.Caching())
 		externalApiRepository = infrastructure.NewExternalAPIRepository(mono.ExternalApi())
+		reportRepository      = infrastructure.NewReportRepository(mono.Report())
 		service               = shared.NewService(externalApiRepository, cachingRepository)
 
 		// app
@@ -31,6 +32,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 			feedbackRepository,
 			quoteRepository,
 			cachingRepository,
+			reportRepository,
 			service,
 		)
 	)

@@ -28,6 +28,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 		queueRepository       = infrastructure.NewQueueRepository(mono.Queue())
 		externalAPIRepository = infrastructure.NewExternalAPIRepository(mono.ExternalApi())
 		cachingRepository     = infrastructure.NewCachingRepository(mono.Caching())
+		reportRepository      = infrastructure.NewReportRepository(mono.Report())
 
 		service = shared.NewService(userRepository, cachingRepository, externalAPIRepository)
 
@@ -38,6 +39,7 @@ func (Module) Startup(ctx *appcontext.AppContext, mono monolith.Monolith) error 
 			ssoRepository,
 			queueRepository,
 			externalAPIRepository,
+			reportRepository,
 			service,
 		)
 

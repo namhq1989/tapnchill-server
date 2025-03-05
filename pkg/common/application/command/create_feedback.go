@@ -8,11 +8,13 @@ import (
 
 type CreateFeedbackHandler struct {
 	feedbackRepository domain.FeedbackRepository
+	reportRepository   domain.ReportRepository
 }
 
-func NewCreateFeedbackHandler(feedbackRepository domain.FeedbackRepository) CreateFeedbackHandler {
+func NewCreateFeedbackHandler(feedbackRepository domain.FeedbackRepository, reportRepository domain.ReportRepository) CreateFeedbackHandler {
 	return CreateFeedbackHandler{
 		feedbackRepository: feedbackRepository,
+		reportRepository:   reportRepository,
 	}
 }
 
@@ -31,6 +33,13 @@ func (h CreateFeedbackHandler) CreateFeedback(ctx *appcontext.AppContext, perfor
 		ctx.Logger().Error("failed to persist feedback in db", err, appcontext.Fields{})
 		return nil, err
 	}
+
+	ctx.Logger().Text("send report for new user signed in with Google")
+	go func() {
+		if err = h.reportRepository.NewUserFeedback(ctx, feedback.ID, feedback.Feedback); err != nil {
+			ctx.Logger().Error("failed to send report", err, appcontext.Fields{})
+		}
+	}()
 
 	ctx.Logger().Text("done create feedback request")
 	return &dto.CreateFeedbackResponse{

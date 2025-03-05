@@ -8,16 +8,23 @@ import (
 )
 
 type GoogleSignInHandler struct {
-	userRepository domain.UserRepository
-	ssoRepository  domain.SSORepository
-	jwtRepository  domain.JwtRepository
+	userRepository   domain.UserRepository
+	ssoRepository    domain.SSORepository
+	jwtRepository    domain.JwtRepository
+	reportRepository domain.ReportRepository
 }
 
-func NewGoogleSignInHandler(userRepository domain.UserRepository, ssoRepository domain.SSORepository, jwtRepository domain.JwtRepository) GoogleSignInHandler {
+func NewGoogleSignInHandler(
+	userRepository domain.UserRepository,
+	ssoRepository domain.SSORepository,
+	jwtRepository domain.JwtRepository,
+	reportRepository domain.ReportRepository,
+) GoogleSignInHandler {
 	return GoogleSignInHandler{
-		userRepository: userRepository,
-		jwtRepository:  jwtRepository,
-		ssoRepository:  ssoRepository,
+		userRepository:   userRepository,
+		jwtRepository:    jwtRepository,
+		ssoRepository:    ssoRepository,
+		reportRepository: reportRepository,
 	}
 }
 
@@ -48,6 +55,8 @@ func (h GoogleSignInHandler) GoogleSignIn(ctx *appcontext.AppContext, performerI
 		ctx.Logger().Error("failed to find user by email via grpc", err, appcontext.Fields{})
 		return nil, err
 	}
+
+	isNewUser := false
 	if googleUser == nil {
 		ctx.Logger().Text("user not found, add new provider to current user")
 		currentUser.AddAuthProvider(domain.AuthProvider{
@@ -62,6 +71,8 @@ func (h GoogleSignInHandler) GoogleSignIn(ctx *appcontext.AppContext, performerI
 			ctx.Logger().Error("failed to persist user in db", err, appcontext.Fields{})
 			return nil, err
 		}
+
+		isNewUser = true
 	} else {
 		ctx.Logger().Text("user found, check current user & google user")
 		if currentUser.ID != googleUser.ID {
@@ -86,6 +97,15 @@ func (h GoogleSignInHandler) GoogleSignIn(ctx *appcontext.AppContext, performerI
 	if err != nil {
 		ctx.Logger().Error("failed to generate access token", err, appcontext.Fields{})
 		return nil, err
+	}
+
+	if isNewUser {
+		ctx.Logger().Text("send report for new user signed in with Google")
+		go func() {
+			if err = h.reportRepository.NewUserSignedInWithGoogle(ctx, currentUser.ID, ssoUser.Email); err != nil {
+				ctx.Logger().Error("failed to send report", err, appcontext.Fields{})
+			}
+		}()
 	}
 
 	ctx.Logger().Text("done Google sign in request")

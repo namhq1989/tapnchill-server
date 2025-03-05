@@ -4,11 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/namhq1989/tapnchill-server/internal/report"
 	"net"
 	"net/http"
 	"time"
-
-	"github.com/namhq1989/tapnchill-server/internal/monitoring"
 
 	"github.com/labstack/echo/v4"
 	"github.com/namhq1989/go-utilities/appcontext"
@@ -17,6 +16,7 @@ import (
 	"github.com/namhq1989/tapnchill-server/internal/database"
 	"github.com/namhq1989/tapnchill-server/internal/externalapi"
 	appjwt "github.com/namhq1989/tapnchill-server/internal/jwt"
+	"github.com/namhq1989/tapnchill-server/internal/monitoring"
 	"github.com/namhq1989/tapnchill-server/internal/monolith"
 	"github.com/namhq1989/tapnchill-server/internal/queue"
 	"github.com/namhq1989/tapnchill-server/internal/sso"
@@ -33,6 +33,7 @@ type app struct {
 	queue       *queue.Queue
 	monitoring  *monitoring.Monitoring
 	externalApi *externalapi.ExternalApi
+	report      *report.Report
 	sso         *sso.SSO
 	rest        *echo.Echo
 	rpc         *grpc.Server
@@ -78,6 +79,10 @@ func (a *app) Monitoring() *monitoring.Monitoring {
 
 func (a *app) ExternalApi() *externalapi.ExternalApi {
 	return a.externalApi
+}
+
+func (a *app) Report() *report.Report {
+	return a.report
 }
 
 func (a *app) SSO() *sso.SSO {

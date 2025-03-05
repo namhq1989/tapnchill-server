@@ -3,9 +3,8 @@ package main
 import (
 	"crypto/subtle"
 	"fmt"
+	"github.com/namhq1989/tapnchill-server/internal/report"
 	"time"
-
-	"github.com/namhq1989/tapnchill-server/internal/monitoring"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -16,6 +15,7 @@ import (
 	apperrors "github.com/namhq1989/tapnchill-server/internal/error"
 	"github.com/namhq1989/tapnchill-server/internal/externalapi"
 	appjwt "github.com/namhq1989/tapnchill-server/internal/jwt"
+	"github.com/namhq1989/tapnchill-server/internal/monitoring"
 	"github.com/namhq1989/tapnchill-server/internal/monolith"
 	"github.com/namhq1989/tapnchill-server/internal/queue"
 	"github.com/namhq1989/tapnchill-server/internal/sso"
@@ -72,6 +72,9 @@ func main() {
 		YearlyVariantID:     cfg.LemonsqueezySubscriptionYearlyVariantID,
 		YearlyDiscountCode:  cfg.LemonsqueezySubscriptionYearlyDiscountCode,
 	})
+
+	// report
+	a.report = report.NewReport(cfg.TelegramBotToken, cfg.TelegramChatID)
 
 	// monitoring
 	a.monitoring = monitoring.NewMonitoringClient(
